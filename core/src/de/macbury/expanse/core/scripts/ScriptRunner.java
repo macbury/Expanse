@@ -1,4 +1,4 @@
-package de.macbury.expanse.scripts;
+package de.macbury.expanse.core.scripts;
 
 import com.badlogic.gdx.utils.Disposable;
 import org.mozilla.javascript.Context;

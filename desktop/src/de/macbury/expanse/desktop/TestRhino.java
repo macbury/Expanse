@@ -1,7 +1,7 @@
 package de.macbury.expanse.desktop;
 
-import de.macbury.expanse.scripts.RobotScriptContextFactory;
-import de.macbury.expanse.scripts.ScriptRunner;
+import de.macbury.expanse.core.scripts.RobotScriptContextFactory;
+import de.macbury.expanse.core.scripts.ScriptRunner;
 
 /**
  * Created on 18.01.16.

@@ -1,4 +1,4 @@
-package de.macbury.expanse.scripts;
+package de.macbury.expanse.core.scripts;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
