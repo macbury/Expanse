@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import de.macbury.expanse.core.assets.Assets;
 import de.macbury.expanse.core.screens.ScreenManager;
+import de.macbury.expanse.core.scripts.RobotScriptContextFactory;
 import de.macbury.expanse.test.TestScreen;
 
 public class Expanse extends ApplicationAdapter {
@@ -29,6 +30,7 @@ public class Expanse extends ApplicationAdapter {
   public void create () {
     Gdx.app.setLogLevel(Application.LOG_DEBUG);
     Gdx.app.log(TAG, "Init...");
+    RobotScriptContextFactory.init();
 
     this.assets     = new Assets();
     this.messages   = new MessageDispatcher();

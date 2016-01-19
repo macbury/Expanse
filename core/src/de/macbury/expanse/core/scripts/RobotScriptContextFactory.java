@@ -17,14 +17,14 @@ public class RobotScriptContextFactory extends ContextFactory {
     }
   }
 
+  /**
+   * If script is required to stop, stop it, otherwise just sleep 10 miliseconds
+   * @param cx
+   * @param instructionCount
+   */
   @Override
   protected void observeInstructionCount(Context cx, int instructionCount) {
-    if (RobotScriptContext.class.isInstance(cx)) {
-      RobotScriptContext robotScriptContext = (RobotScriptContext)cx;
-      if (robotScriptContext.isStop()) {
-        throw new ManualScriptStopException();
-      }
-    }
+
   }
 
   @Override
@@ -32,7 +32,4 @@ public class RobotScriptContextFactory extends ContextFactory {
     return new RobotScriptContext(this);
   }
 
-  public class ManualScriptStopException extends RuntimeException {
-
-  }
 }
