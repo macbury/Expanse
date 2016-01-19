@@ -16,6 +16,7 @@ public class RobotScriptContext extends Context {
   protected RobotScriptContext(ContextFactory factory) {
     super(factory);
     setInstructionObserverThreshold(1);
+    setGenerateObserverCount(true);
     setOptimizationLevel(-1);
   }
 

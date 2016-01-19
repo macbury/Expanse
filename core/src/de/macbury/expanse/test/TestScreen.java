@@ -9,13 +9,14 @@ import com.badlogic.gdx.utils.Array;
 import de.macbury.expanse.core.entities.EntityManager;
 import de.macbury.expanse.core.screens.ScreenBase;
 import de.macbury.expanse.core.scripts.ScriptRunner;
-import de.macbury.expanse.core.scripts.scope.Console;
+import de.macbury.expanse.core.scripts.modules.Console;
 import org.mozilla.javascript.ScriptableObject;
 
 /**
  * Created on 18.01.16.
  */
 public class TestScreen extends ScreenBase {
+  private static final String TAG = "TestScreen";
   private Texture texture;
   private SpriteBatch spriteBatch;
   private OrthographicCamera camera;
@@ -40,8 +41,10 @@ public class TestScreen extends ScreenBase {
     Array<ScriptableObject> globalObjectFunctions = new Array<ScriptableObject>();
     globalObjectFunctions.add(new Console());
 
-    this.scriptRunner = new ScriptRunner(Gdx.files.internal("scripts/pause.js").readString(), globalObjectFunctions);
+    this.scriptRunner = new ScriptRunner(Gdx.files.internal("scripts/for.js").readString(), globalObjectFunctions);
+    //long startAt      = System.currentTimeMillis();
     scriptRunner.start();
+    //Gdx.app.log(TAG, "Speed of script: " + (System.currentTimeMillis() - startAt) + " miliseconds!");
 
   }
 
@@ -57,21 +60,8 @@ public class TestScreen extends ScreenBase {
     fpsLogger.log();
 
     frameNo += 1;
+    scriptRunner.resume("random result");
 
-    if (frameNo == 50) {
-      Gdx.app.log("SSS", "Pause!");
-      //scriptRunner.pauseScript();
-    }
-
-    if (frameNo == 400) {
-      Gdx.app.log("SSS", "Resume!");
-      scriptRunner.resume();
-    }
-
-    if (frameNo == 700) {
-      Gdx.app.log("SSS", "Abort!");
-      scriptRunner.resume();
-    }
   }
 
   @Override

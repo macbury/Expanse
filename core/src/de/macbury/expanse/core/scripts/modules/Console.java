@@ -1,8 +1,7 @@
-package de.macbury.expanse.core.scripts.scope;
+package de.macbury.expanse.core.scripts.modules;
 
 import com.badlogic.gdx.Gdx;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.ScriptableObject;
 
 /**
@@ -23,7 +22,7 @@ public class Console extends ScriptableObject {
   }
 
   @ExposeAsGlobalFunction
-  public void pause() {
+  public void yield() {
     throw Context.getCurrentContext().captureContinuation();
   }
 

@@ -3,7 +3,7 @@ package de.macbury.expanse.core.scripts;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
-import de.macbury.expanse.core.scripts.scope.ExposeAsGlobalFunction;
+import de.macbury.expanse.core.scripts.modules.ExposeAsGlobalFunction;
 import org.mozilla.javascript.*;
 
 import java.lang.reflect.Method;
@@ -25,6 +25,8 @@ public class ScriptRunner implements Disposable {
   private State state;
   private ScriptThread internalThread;
   private ContinuationPending continuationPending;
+  private Object result; // passed to continuation pending
+
 
   /**
    * Initialize new script runner
@@ -35,22 +37,34 @@ public class ScriptRunner implements Disposable {
     this.source             = source;
     this.globalScopeObjects = globalScopeObjects;
     internalThread          = new ScriptThread();
+    state                   = ScriptRunner.State.Pending;
   }
 
   /**
    * Start script execution in separate thread!
    */
   public void start() {
+    state = State.Running;
     internalThread.start();
+  }
+
+  public void startAndWait() {
+    start();
+    try {
+      internalThread.join();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 
   /**
    * Resume script
    * @return true if script has been paused
    */
-  public boolean resume() {
+  public boolean resume(Object result) {
     if (state == State.Paused) {
       state = State.Running;
+      this.result = result;
       return true;
     } else {
       return false;
@@ -134,7 +148,6 @@ public class ScriptRunner implements Disposable {
     @Override
     public void run() {
       try {
-        state = ScriptRunner.State.Pending;
         configureContext();
         compileScript();
 
@@ -150,7 +163,8 @@ public class ScriptRunner implements Disposable {
                * If script is running and have pending continuation run it, otherwise run script from start
                */
               if (continuationPending != null) {
-                context.resumeContinuation(continuationPending.getContinuation(), mainScope, null);
+                context.resumeContinuation(continuationPending.getContinuation(), mainScope, result);
+                result = null;
               } else {
                 context.executeScriptWithContinuations(script, mainScope);
               }
@@ -183,6 +197,7 @@ public class ScriptRunner implements Disposable {
         }
       } finally {
         continuationPending = null;
+        result              = null;
         state               = ScriptRunner.State.Stopped;
         Gdx.app.debug(TAG, "Exiting script");
         Context.exit();
