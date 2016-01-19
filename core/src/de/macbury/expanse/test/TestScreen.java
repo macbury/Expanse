@@ -40,7 +40,7 @@ public class TestScreen extends ScreenBase {
     Array<ScriptableObject> globalObjectFunctions = new Array<ScriptableObject>();
     globalObjectFunctions.add(new Console());
 
-    this.scriptRunner = new ScriptRunner(Gdx.files.internal("scripts/for.js").readString(), globalObjectFunctions);
+    this.scriptRunner = new ScriptRunner(Gdx.files.internal("scripts/pause.js").readString(), globalObjectFunctions);
     scriptRunner.start();
 
   }
@@ -60,17 +60,17 @@ public class TestScreen extends ScreenBase {
 
     if (frameNo == 50) {
       Gdx.app.log("SSS", "Pause!");
-      scriptRunner.pauseScript();
+      //scriptRunner.pauseScript();
     }
 
     if (frameNo == 400) {
       Gdx.app.log("SSS", "Resume!");
-      scriptRunner.resumeScript();
+      scriptRunner.resume();
     }
 
     if (frameNo == 700) {
       Gdx.app.log("SSS", "Abort!");
-      //scriptRunner.abort();
+      scriptRunner.resume();
     }
   }
 
