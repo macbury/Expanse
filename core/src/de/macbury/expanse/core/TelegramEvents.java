@@ -7,15 +7,24 @@ import com.badlogic.gdx.ai.msg.Telegram;
  */
 public enum TelegramEvents {
   ScriptStart,
+  ScriptException,
   ScriptPause,
   ScriptAbort,
   ScriptStop,
   Test,//TODO remove
 
+  /**
+   * Make robot wait, payload is float with seconds
+   */
+  Wait,
+  /**
+   * Start robot moving
+   */
   Move;
 
   public static TelegramEvents RobotActionEvents[] = {
     Move,
+    Wait,
     Test //TODO remove
   };
 

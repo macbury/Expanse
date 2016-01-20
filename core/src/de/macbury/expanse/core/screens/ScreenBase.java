@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.Expanse;
 import de.macbury.expanse.core.assets.Assets;
+import de.macbury.expanse.core.entities.Messages;
 
 /** <p>
  * Represents one of many application screens, such as a main menu, a settings menu, the game screen and so on.
@@ -16,7 +17,7 @@ public abstract class ScreenBase implements Disposable {
   protected Expanse game;
   protected Assets assets;
   protected ScreenManager screens;
-  protected MessageDispatcher messages;
+  protected Messages messages;
 
   /**
    * Links references to current {@link Expanse}

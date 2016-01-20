@@ -5,26 +5,18 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import de.macbury.expanse.core.TelegramEvents;
 import de.macbury.expanse.core.entities.Components;
+import de.macbury.expanse.core.entities.Messages;
 
 /**
  * This class contains all modules
  */
 public class RobotActionController extends BaseModule {
-  private MessageDispatcher messages;
+  private Messages messages;
   private Entity entity;
 
-  public RobotActionController(Entity entity, MessageDispatcher messages) {
+  public RobotActionController(Entity entity, Messages messages) {
     this.entity = entity;
     this.messages = messages;
-  }
-
-  /**
-   * Dispatch message in two frames
-   * @param event
-   * @param payload
-   */
-  private void dispatchMessage(TelegramEvents event, Object payload) {
-    messages.dispatchMessage(Gdx.graphics.getDeltaTime() * 2, Components.RobotState.get(entity), event.ordinal(), payload);
   }
 
   @ExposeAsGlobalFunction
@@ -34,17 +26,22 @@ public class RobotActionController extends BaseModule {
 
   @ExposeAsGlobalFunction
   public void telegramTest() {
-    dispatchMessage(TelegramEvents.Test, null);
+    messages.dispatchInNextFrame(entity, TelegramEvents.Test, null);
   }
 
   @ExposeAsGlobalFunction
   public void startMoving(int distanceInMeters) {
-    dispatchMessage(TelegramEvents.Move, distanceInMeters);
+    messages.dispatchInNextFrame(entity, TelegramEvents.Move, null);
+  }
+
+  @ExposeAsGlobalFunction
+  public void startWaiting(float waitInSeconds) {
+    messages.dispatchInNextFrame(entity, TelegramEvents.Wait, waitInSeconds);
   }
 
   @Override
   public String getClassName() {
-    return getClass().getCanonicalName();
+    return "robot";
   }
 
   @Override

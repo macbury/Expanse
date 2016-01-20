@@ -9,13 +9,14 @@ import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.utils.Pool;
+import de.macbury.expanse.core.entities.Messages;
 
 /**
  * This component contains instance of {@link DefaultStateMachine}
  */
 public abstract class BaseFSMComponent<S extends State<Entity>> implements Component, Pool.Poolable, Telegraph {
   protected DefaultStateMachine<Entity, S> stateMachine;
-  protected MessageDispatcher messages;
+  protected Messages messages;
 
   /**
    * Creates state machine for entity
@@ -23,7 +24,7 @@ public abstract class BaseFSMComponent<S extends State<Entity>> implements Compo
    * @param messages
    * @return
    */
-  public BaseFSMComponent init(Entity entity, MessageDispatcher messages) {
+  public BaseFSMComponent init(Entity entity, Messages messages) {
     stateMachine = new DefaultStateMachine<Entity, S>(entity);
     this.messages  = messages;
     return this;
@@ -56,7 +57,7 @@ public abstract class BaseFSMComponent<S extends State<Entity>> implements Compo
     messages = null;
   }
 
-  public MessageDispatcher getMessages() {
+  public Messages getMessages() {
     return messages;
   }
 

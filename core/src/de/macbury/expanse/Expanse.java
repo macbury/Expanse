@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import de.macbury.expanse.core.assets.Assets;
+import de.macbury.expanse.core.entities.Messages;
 import de.macbury.expanse.core.screens.ScreenManager;
 import de.macbury.expanse.core.scripts.RobotScriptContextFactory;
 import de.macbury.expanse.test.TestScreen;
@@ -17,7 +18,7 @@ public class Expanse extends ApplicationAdapter {
   /**
    * Message comunication class used by EntityManager
    */
-  public MessageDispatcher messages;
+  public Messages messages;
   /**
    *  Loads and stores assets like textures, bitmapfonts, tile maps, sounds, music and so on.
    */
@@ -34,7 +35,7 @@ public class Expanse extends ApplicationAdapter {
     RobotScriptContextFactory.init();
 
     this.assets     = new Assets();
-    this.messages   = new MessageDispatcher();
+    this.messages   = new Messages();
     this.screens    = new ScreenManager(this);
 
     screens.set(new TestScreen());

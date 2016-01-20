@@ -33,11 +33,11 @@ public class RobotScriptComponent implements Component, Pool.Poolable {
   }
 
   /**
-   * Stops script runner thread
+   * Stops script runner thread and runs {@link ScriptRunner#dispose()}
    */
   public void stop() {
     if (scriptRunner != null)
-      this.scriptRunner.stop();
+      this.scriptRunner.dispose();
     scriptRunner = null;
   }
 

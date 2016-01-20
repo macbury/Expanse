@@ -11,7 +11,7 @@ public abstract class BaseModule extends ScriptableObject implements Disposable 
   /**
    * Yields control of script to main engine loop and pausing current script
    */
-  @ExposeAsGlobalFunction
+
   public void yield() {
     throw Context.getCurrentContext().captureContinuation();
   }

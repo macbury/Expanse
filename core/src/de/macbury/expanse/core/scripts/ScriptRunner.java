@@ -3,6 +3,7 @@ package de.macbury.expanse.core.scripts;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import de.macbury.expanse.core.scripts.language.BaseKeyword;
 import de.macbury.expanse.core.scripts.modules.ExposeAsGlobalFunction;
 import org.mozilla.javascript.*;
 import java.lang.reflect.Method;
@@ -16,7 +17,7 @@ public class ScriptRunner implements Disposable {
     Pending, Running, Paused, Stopped
   }
   private static final String TAG = "ScriptRunner";
-  private Array<ScriptableObject> coreScopeMethods;
+  private Array<BaseKeyword> keywords;
   private String source;
   private RobotScriptContext context;
   private ScriptableObject mainScope;
@@ -34,12 +35,12 @@ public class ScriptRunner implements Disposable {
    * @param source in js script
    * @param coreScopeMethods list of objects to get global functions
    */
-  public ScriptRunner(String source, Array<ScriptableObject> coreScopeMethods, boolean loop) {
+  public ScriptRunner(String source, Array<BaseKeyword> keywords, boolean loop) {
     this.source             = source;
     internalThread          = new ScriptThread();
     state                   = ScriptRunner.State.Pending;
     this.loop               = loop;
-    this.coreScopeMethods   = coreScopeMethods;
+    this.keywords           = keywords;
     this.listeners          = new Array<ScriptRunnerListener>();
   }
 
@@ -95,6 +96,7 @@ public class ScriptRunner implements Disposable {
 
   /**
    * Resume script
+   * @param result this will be returned in function that paused script. If result is instance of Exception, then it triggers exception!
    * @return true if script has been paused
    */
   public boolean resume(Object result) {
@@ -135,34 +137,20 @@ public class ScriptRunner implements Disposable {
   private void compileScript() {
     this.script  = context.compileString(source, "<src>", 1, null);
   }
-
-
-  /**
-   * Register as global functions all methods that use {@link ExposeAsGlobalFunction}
-   * @param object
-   */
-  private void registerFunctionsFromObject(Scriptable object, ScriptableObject target) {
-    for (Method method : object.getClass().getMethods()) {
-      if (method.isAnnotationPresent(ExposeAsGlobalFunction.class)) {
-        FunctionObject function = new FunctionObject(method.getName(), method, object);
-
-        target.put(function.getFunctionName(), target, function);
-      }
-    }
-  }
-
   /**
    * Loads all core functions like move, turn etc
    */
-  private void loadCoreFunctions() {
+  /*private void loadCoreFunctions() {
     ScriptableObject coreScope       = context.initStandardObjects();
 
     for (int i = 0; i < coreScopeMethods.size; i++) {
       registerFunctionsFromObject(coreScopeMethods.get(i), coreScope);
     }
 
+    //TODO: prepare this list elswhere, mayby each funciton is in separate class
     String coreFunctionFileNames[]   = new String[] {
-      "move"
+      "move",
+      "wait"
     };
 
     for (int i = 0; i < coreFunctionFileNames.length; i++) {
@@ -177,7 +165,7 @@ public class ScriptRunner implements Disposable {
 
       mainScope.put(function.getFunctionName(), mainScope, function);
     }
-  }
+  }*/
 
   /**
    * Starts {@link RobotScriptContext} and configure main scope
@@ -187,8 +175,11 @@ public class ScriptRunner implements Disposable {
     this.context   = (RobotScriptContext) Context.enter();
     this.mainScope = context.initStandardObjects(null, true);
 
-    loadCoreFunctions();
-
+    for (BaseKeyword keyword : keywords) {
+      ScriptableObject coreScope  = context.initStandardObjects();
+      NativeFunction function     = keyword.register(context, coreScope);
+      mainScope.put(function.getFunctionName(), mainScope, function);
+    }
   }
 
 
@@ -196,13 +187,12 @@ public class ScriptRunner implements Disposable {
   public void dispose() {
     stop();
 
-    for (ScriptableObject object : coreScopeMethods) {
-      if (Disposable.class.isInstance(object))
-        ((Disposable)object).dispose();
+    for (BaseKeyword keyword : keywords) {
+      keyword.dispose();
     }
 
-    coreScopeMethods.clear();
-    coreScopeMethods = null;
+    keywords.clear();
+    keywords = null;
     source = null;
     context = null;
     mainScope = null;
@@ -239,7 +229,20 @@ public class ScriptRunner implements Disposable {
                * If script is running and have pending continuation run it, otherwise run script from start
                */
               if (continuationPending != null) {
-                context.resumeContinuation(continuationPending.getContinuation(), mainScope, result);
+
+                /**
+                 * If result is exception throw it!
+                 */
+                if (Exception.class.isInstance(result)) {
+
+                  throw (Exception)result;
+                } else {
+                  /**
+                   * Otherwise resume script from last state
+                   */
+                  context.resumeContinuation(continuationPending.getContinuation(), mainScope, result);
+                }
+
                 result              = null;
                 continuationPending = null;
               } else {

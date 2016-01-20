@@ -52,7 +52,7 @@ public class TestScreen extends ScreenBase {
     robotStateComponent.changeState(RobotState.WaitForInstruction);
 
     RobotScriptComponent robotScriptComponent = entities.createComponent(RobotScriptComponent.class);
-    robotScriptComponent.setSource(Gdx.files.internal("scripts/move.js").readString());
+    robotScriptComponent.setSource(Gdx.files.internal("scripts/wait_test.js").readString());
 
     //setScriptRunner(new ScriptRunner(, globalObjectFunctions, true));
     PositionComponent positionComponent = entities.createComponent(PositionComponent.class);
@@ -64,6 +64,7 @@ public class TestScreen extends ScreenBase {
     spriteComponent.setRotation(45);
     spriteComponent.setRegion(texture);
 
+    robotEntity.add(entities.createComponent(TimerComponent.class));
     robotEntity.add(robotStateComponent);
     robotEntity.add(robotScriptComponent);
     robotEntity.add(positionComponent);
