@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Pool;
 public class PositionComponent extends Vector3 implements Component, Pool.Poolable {
   private boolean isVisible;
 
+
   @Override
   public void reset() {
     setZero();
