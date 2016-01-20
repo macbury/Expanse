@@ -41,7 +41,7 @@ public class TestScreen extends ScreenBase {
     Array<ScriptableObject> globalObjectFunctions = new Array<ScriptableObject>();
     globalObjectFunctions.add(new Console());
 
-    this.scriptRunner = new ScriptRunner(Gdx.files.internal("scripts/for.js").readString(), globalObjectFunctions);
+    this.scriptRunner = new ScriptRunner(Gdx.files.internal("scripts/move.js").readString(), globalObjectFunctions, true);
     //long startAt      = System.currentTimeMillis();
     scriptRunner.start();
     //Gdx.app.log(TAG, "Speed of script: " + (System.currentTimeMillis() - startAt) + " miliseconds!");

@@ -5,7 +5,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.core.scripts.modules.ExposeAsGlobalFunction;
 import org.mozilla.javascript.*;
-
 import java.lang.reflect.Method;
 
 
@@ -17,7 +16,7 @@ public class ScriptRunner implements Disposable {
     Pending, Running, Paused, Stopped
   }
   private static final String TAG = "ScriptRunner";
-  private Array<ScriptableObject> globalScopeObjects;
+  private Array<ScriptableObject> coreScopeMethods;
   private String source;
   private RobotScriptContext context;
   private ScriptableObject mainScope;
@@ -26,18 +25,18 @@ public class ScriptRunner implements Disposable {
   private ScriptThread internalThread;
   private ContinuationPending continuationPending;
   private Object result; // passed to continuation pending
-
-
+  private boolean loop = true;
   /**
    * Initialize new script runner
    * @param source in js script
-   * @param globalScopeObjects list of objects to get global functions
+   * @param coreScopeMethods list of objects to get global functions
    */
-  public ScriptRunner(String source, Array<ScriptableObject> globalScopeObjects) {
+  public ScriptRunner(String source, Array<ScriptableObject> coreScopeMethods, boolean loop) {
     this.source             = source;
-    this.globalScopeObjects = globalScopeObjects;
     internalThread          = new ScriptThread();
     state                   = ScriptRunner.State.Pending;
+    this.loop               = loop;
+    this.coreScopeMethods   = coreScopeMethods;
   }
 
   /**
@@ -77,6 +76,7 @@ public class ScriptRunner implements Disposable {
    */
   public boolean stop() {
     if (state == State.Running) {
+      loop = false;
       context.abort();
       try {
         internalThread.join();
@@ -104,13 +104,43 @@ public class ScriptRunner implements Disposable {
    * Register as global functions all methods that use {@link ExposeAsGlobalFunction}
    * @param object
    */
-  private void registerFunctionsFromObject(Scriptable object) {
+  private void registerFunctionsFromObject(Scriptable object, ScriptableObject target) {
     for (Method method : object.getClass().getMethods()) {
       if (method.isAnnotationPresent(ExposeAsGlobalFunction.class)) {
         FunctionObject function = new FunctionObject(method.getName(), method, object);
 
-        mainScope.put(function.getFunctionName(), mainScope, function);
+        target.put(function.getFunctionName(), target, function);
       }
+    }
+  }
+
+  /**
+   * Loads all core functions like move, turn etc
+   */
+  private void loadCoreFunctions() {
+    ScriptableObject coreScope       = context.initStandardObjects();
+
+    for (int i = 0; i < coreScopeMethods.size; i++) {
+      registerFunctionsFromObject(coreScopeMethods.get(i), coreScope);
+    }
+
+    coreScopeMethods = null;
+
+    String coreFunctionFileNames[]   = new String[] {
+      "move"
+    };
+
+    for (int i = 0; i < coreFunctionFileNames.length; i++) {
+      String functionSource       = Gdx.files.classpath("core/"+coreFunctionFileNames[i]+".js").readString();
+      NativeFunction function     = (NativeFunction)context.compileFunction(
+        coreScope,
+        functionSource,
+        coreFunctionFileNames[i],
+        0,
+        null
+      );
+
+      mainScope.put(function.getFunctionName(), mainScope, function);
     }
   }
 
@@ -121,19 +151,17 @@ public class ScriptRunner implements Disposable {
     Gdx.app.debug(TAG, "Configuring context");
     this.context   = (RobotScriptContext) Context.enter();
     this.mainScope = context.initStandardObjects(null, true);
-    for (int i = 0; i < globalScopeObjects.size; i++) {
-      registerFunctionsFromObject(globalScopeObjects.get(i));
-    }
 
-    globalScopeObjects = null;
+    loadCoreFunctions();
+
   }
 
 
   @Override
   public void dispose() {
     stop();
-    globalScopeObjects.clear();
-    globalScopeObjects = null;
+    coreScopeMethods.clear();
+    coreScopeMethods = null;
     source = null;
     context = null;
     mainScope = null;
@@ -164,15 +192,17 @@ public class ScriptRunner implements Disposable {
                */
               if (continuationPending != null) {
                 context.resumeContinuation(continuationPending.getContinuation(), mainScope, result);
-                result = null;
+                result              = null;
+                continuationPending = null;
               } else {
                 context.executeScriptWithContinuations(script, mainScope);
               }
 
               /**
-               * If nothing paused the script we can now stop it
+               * If nothing paused the script and is not set to loop we can now stop it
                */
-              state = ScriptRunner.State.Stopped;
+              if (!loop)
+                state = ScriptRunner.State.Stopped;
             } else {
               Thread.sleep(10);
             }
