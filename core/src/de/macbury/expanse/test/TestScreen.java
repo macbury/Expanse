@@ -1,5 +1,6 @@
 package de.macbury.expanse.test;
 
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -9,7 +10,9 @@ import com.badlogic.gdx.utils.Array;
 import de.macbury.expanse.core.entities.EntityManager;
 import de.macbury.expanse.core.screens.ScreenBase;
 import de.macbury.expanse.core.scripts.ScriptRunner;
+import de.macbury.expanse.core.scripts.ScriptRunnerListener;
 import de.macbury.expanse.core.scripts.modules.Console;
+import org.mozilla.javascript.ContinuationPending;
 import org.mozilla.javascript.ScriptableObject;
 
 /**
@@ -40,6 +43,9 @@ public class TestScreen extends ScreenBase {
 
     Array<ScriptableObject> globalObjectFunctions = new Array<ScriptableObject>();
     globalObjectFunctions.add(new Console());
+
+    Entity robotEntity = entities.createEntity();
+    entities.addEntity(robotEntity);
 
     this.scriptRunner = new ScriptRunner(Gdx.files.internal("scripts/move.js").readString(), globalObjectFunctions, true);
     //long startAt      = System.currentTimeMillis();

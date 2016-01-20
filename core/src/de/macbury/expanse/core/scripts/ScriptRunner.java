@@ -26,6 +26,8 @@ public class ScriptRunner implements Disposable {
   private ContinuationPending continuationPending;
   private Object result; // passed to continuation pending
   private boolean loop = true;
+  private Array<ScriptRunnerListener> listeners;
+
   /**
    * Initialize new script runner
    * @param source in js script
@@ -37,6 +39,35 @@ public class ScriptRunner implements Disposable {
     state                   = ScriptRunner.State.Pending;
     this.loop               = loop;
     this.coreScopeMethods   = coreScopeMethods;
+    this.listeners          = new Array<ScriptRunnerListener>();
+  }
+
+  /**
+   * Adds listener
+   * @param listener
+   * @return if listener have been added
+   */
+  public boolean addListener(ScriptRunnerListener listener) {
+    if (listeners.contains(listener, true)) {
+      return false;
+    } else {
+      listeners.add(listener);
+      return true;
+    }
+  }
+
+  /**
+   * Remove listener
+   * @param listener
+   * @return
+   */
+  public boolean removeListener(ScriptRunnerListener listener) {
+    if (listeners.contains(listener, true)) {;
+      listeners.removeValue(listener, true);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -167,6 +198,8 @@ public class ScriptRunner implements Disposable {
     mainScope = null;
     internalThread = null;
     continuationPending = null;
+    listeners.clear();
+    listeners = null;
   }
 
   /**
@@ -180,6 +213,10 @@ public class ScriptRunner implements Disposable {
         compileScript();
 
         state = ScriptRunner.State.Running;
+
+        for (ScriptRunnerListener listener : listeners) {
+          listener.onScriptStart(ScriptRunner.this);
+        }
 
         /**
          * Run forever while state is not {@link de.macbury.expanse.core.scripts.ScriptRunner.State#Stopped}
@@ -212,17 +249,28 @@ public class ScriptRunner implements Disposable {
              */
             Gdx.app.debug(TAG, "Script stopped by user");
             state = ScriptRunner.State.Stopped;
+            for (ScriptRunnerListener listener : listeners) {
+              listener.onScriptAbort(ScriptRunner.this);
+            }
           } catch (ContinuationPending continuationPending) {
             /**
              * Set state to {@link de.macbury.expanse.core.scripts.ScriptRunner.State#Paused} and store continuationPending
              */
             ScriptRunner.this.continuationPending = continuationPending;
             state = ScriptRunner.State.Paused;
+            for (ScriptRunnerListener listener : listeners) {
+              listener.onScriptPause(ScriptRunner.this, continuationPending);
+            }
           } catch (InterruptedException e) {
             /**
              * Set state to {@link de.macbury.expanse.core.scripts.ScriptRunner.State#Stopped} if antyhind did try to interput this thread
              */
             state = ScriptRunner.State.Stopped;
+          } catch (Exception e) {
+            state = ScriptRunner.State.Stopped;
+            for (ScriptRunnerListener listener : listeners) {
+              listener.onScriptException(ScriptRunner.this, e);
+            }
           }
         }
       } finally {
@@ -231,35 +279,11 @@ public class ScriptRunner implements Disposable {
         state               = ScriptRunner.State.Stopped;
         Gdx.app.debug(TAG, "Exiting script");
         Context.exit();
+        for (ScriptRunnerListener listener : listeners) {
+          listener.onScriptFinish(ScriptRunner.this);
+        }
       }
     }
-  }
-
-  public interface ScriptListener {
-    /**
-     * Triggered after script start
-     * @param scriptRunner
-     */
-    public void onScriptStart(ScriptRunner scriptRunner);
-
-    /**
-     * Triggered on any script exception
-     * @param scriptRunner
-     * @param exception
-     */
-    public void onScriptException(ScriptRunner scriptRunner, Exception exception);
-
-    /**
-     * Triggered if script is aborted
-     * @param scriptRunner
-     */
-    public void onScriptAbort(ScriptRunner scriptRunner);
-
-    /**
-     * Triggered on script finish
-     * @param scriptRunner
-     */
-    public void onScriptFinish(ScriptRunner scriptRunner);
   }
 
 

@@ -1,6 +1,7 @@
 package de.macbury.expanse.core.screens;
 
 
+import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.Expanse;
 import de.macbury.expanse.core.assets.Assets;
@@ -15,6 +16,7 @@ public abstract class ScreenBase implements Disposable {
   protected Expanse game;
   protected Assets assets;
   protected ScreenManager screens;
+  protected MessageDispatcher messages;
 
   /**
    * Links references to current {@link Expanse}
@@ -25,6 +27,7 @@ public abstract class ScreenBase implements Disposable {
     this.game     = game;
     this.assets   = game.assets;
     this.screens  = game.screens;
+    this.messages = game.messages;
   }
 
   /**
@@ -34,6 +37,7 @@ public abstract class ScreenBase implements Disposable {
     this.game     = null;
     this.assets   = null;
     this.screens  = null;
+    this.messages = null;
   }
 
   /**
