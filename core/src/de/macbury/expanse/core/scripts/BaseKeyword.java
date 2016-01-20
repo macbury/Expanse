@@ -1,4 +1,4 @@
-package de.macbury.expanse.core.scripts.language;
+package de.macbury.expanse.core.scripts;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
@@ -39,7 +39,7 @@ public abstract class BaseKeyword implements Disposable {
    */
   private static String loadSource(String filename) {
     if (!sourceCache.containsKey(filename)) {
-      sourceCache.put(filename, Gdx.files.classpath("core/"+filename+".js").readString());
+      sourceCache.put(filename, Gdx.files.internal("core/"+filename+".js").readString());
     }
 
     return sourceCache.get(filename);

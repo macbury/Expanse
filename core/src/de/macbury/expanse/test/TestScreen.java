@@ -13,7 +13,6 @@ import de.macbury.expanse.core.entities.components.*;
 import de.macbury.expanse.core.entities.states.RobotState;
 import de.macbury.expanse.core.screens.ScreenBase;
 import de.macbury.expanse.core.scripts.ScriptRunner;
-import de.macbury.expanse.core.scripts.modules.Console;
 import org.mozilla.javascript.ScriptableObject;
 
 /**
@@ -42,8 +41,6 @@ public class TestScreen extends ScreenBase {
     this.entities    = new EntityManager(camera, messages);
     this.fpsLogger   = new FPSLogger();
 
-    Array<ScriptableObject> globalObjectFunctions = new Array<ScriptableObject>();
-    globalObjectFunctions.add(new Console());
 
     Entity robotEntity                  = entities.createEntity();
 

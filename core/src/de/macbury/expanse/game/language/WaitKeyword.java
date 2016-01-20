@@ -1,8 +1,9 @@
-package de.macbury.expanse.core.scripts.language;
+package de.macbury.expanse.game.language;
 
 import com.badlogic.ashley.core.Entity;
 import de.macbury.expanse.core.TelegramEvents;
 import de.macbury.expanse.core.entities.Messages;
+import de.macbury.expanse.core.scripts.BaseKeyword;
 
 /**
  * Created on 20.01.16.

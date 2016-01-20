@@ -3,10 +3,7 @@ package de.macbury.expanse.core.scripts;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
-import de.macbury.expanse.core.scripts.language.BaseKeyword;
-import de.macbury.expanse.core.scripts.modules.ExposeAsGlobalFunction;
 import org.mozilla.javascript.*;
-import java.lang.reflect.Method;
 
 
 /**

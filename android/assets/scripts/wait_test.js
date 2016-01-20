@@ -1,13 +1,13 @@
-log("Start, now wait 1 second")
+message("Start, now wait 1 second")
 wait(1);
-log("Now wait 5 seconds");
+message("Now wait 5 seconds");
 wait(5);
 
-log("Wait half second");
+message("Wait half second");
 wait(0.5);
 
-log("Negative values");
+message("Negative values");
 wait(-0.5);
 
-log("String value");
+message("String value");
 wait("-0.5");
