@@ -27,6 +27,7 @@ public class ScriptRunner implements Disposable {
   private Object result; // passed to continuation pending
   private boolean loop = true;
   private Array<ScriptRunnerListener> listeners;
+  private Object owner;
 
   /**
    * Initialize new script runner
@@ -73,9 +74,14 @@ public class ScriptRunner implements Disposable {
   /**
    * Start script execution in separate thread!
    */
-  public void start() {
-    state = State.Running;
-    internalThread.start();
+  public boolean start() {
+    if (state == State.Pending) {
+      state = State.Running;
+      internalThread.start();
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public void startAndWait() {
@@ -155,8 +161,6 @@ public class ScriptRunner implements Disposable {
       registerFunctionsFromObject(coreScopeMethods.get(i), coreScope);
     }
 
-    coreScopeMethods = null;
-
     String coreFunctionFileNames[]   = new String[] {
       "move"
     };
@@ -191,6 +195,12 @@ public class ScriptRunner implements Disposable {
   @Override
   public void dispose() {
     stop();
+
+    for (ScriptableObject object : coreScopeMethods) {
+      if (Disposable.class.isInstance(object))
+        ((Disposable)object).dispose();
+    }
+
     coreScopeMethods.clear();
     coreScopeMethods = null;
     source = null;
@@ -200,6 +210,7 @@ public class ScriptRunner implements Disposable {
     continuationPending = null;
     listeners.clear();
     listeners = null;
+    owner = null;
   }
 
   /**
@@ -256,8 +267,8 @@ public class ScriptRunner implements Disposable {
             /**
              * Set state to {@link de.macbury.expanse.core.scripts.ScriptRunner.State#Paused} and store continuationPending
              */
-            ScriptRunner.this.continuationPending = continuationPending;
             state = ScriptRunner.State.Paused;
+            ScriptRunner.this.continuationPending = continuationPending;
             for (ScriptRunnerListener listener : listeners) {
               listener.onScriptPause(ScriptRunner.this, continuationPending);
             }
@@ -282,9 +293,16 @@ public class ScriptRunner implements Disposable {
         for (ScriptRunnerListener listener : listeners) {
           listener.onScriptFinish(ScriptRunner.this);
         }
+        owner               = null;
       }
     }
   }
 
+  public Object getOwner() {
+    return owner;
+  }
 
+  public void setOwner(Object owner) {
+    this.owner = owner;
+  }
 }

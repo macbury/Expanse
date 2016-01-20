@@ -3,6 +3,7 @@ package de.macbury.expanse;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import de.macbury.expanse.core.assets.Assets;
 import de.macbury.expanse.core.screens.ScreenManager;
@@ -41,6 +42,7 @@ public class Expanse extends ApplicationAdapter {
 
   @Override
   public void render () {
+    GdxAI.getTimepiece().update(Gdx.graphics.getDeltaTime());
     messages.update();
     screens.update();
   }

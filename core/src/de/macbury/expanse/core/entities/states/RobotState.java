@@ -3,12 +3,23 @@ package de.macbury.expanse.core.entities.states;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
+import de.macbury.expanse.core.TelegramEvents;
+import de.macbury.expanse.core.entities.Components;
 
 /**
  * This enum have all logic for controling the robot
  */
 public enum RobotState implements State<Entity> {
-  Idle,
+  WaitForInstruction {
+    @Override
+    public boolean onMessage(Entity entity, Telegram telegram) {
+      if (TelegramEvents.Test.is(telegram)) {
+        Components.RobotScript.get(entity).resume("Done!");
+        return true;
+      }
+      return super.onMessage(entity, telegram);
+    }
+  },
   Move,
   Turn,
   Wait

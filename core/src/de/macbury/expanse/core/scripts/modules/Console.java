@@ -16,25 +16,6 @@ public class Console extends ScriptableObject {
     Gdx.app.log(TAG, message);
   }
 
-  @ExposeAsGlobalFunction
-  public void test() {
-    Gdx.app.log(TAG, "TEST");
-  }
-
-  @ExposeAsGlobalFunction
-  public void yield() {
-    throw Context.getCurrentContext().captureContinuation();
-  }
-
-  @ExposeAsGlobalFunction
-  public void sleep(int miliseconds) {
-    try {
-      Thread.sleep(miliseconds);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-  }
-
   @Override
   public String getClassName() {
     return getClass().getName();

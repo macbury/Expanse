@@ -29,6 +29,9 @@ public abstract class BaseFSMComponent<S extends State<Entity>> implements Compo
     return this;
   }
 
+  /**
+   * Update state machine
+   */
   public void update () {
     stateMachine.update();
   }
@@ -48,6 +51,7 @@ public abstract class BaseFSMComponent<S extends State<Entity>> implements Compo
 
   @Override
   public void reset() {
+    stateMachine.setOwner(null);
     stateMachine = null;
     messages = null;
   }
@@ -56,4 +60,7 @@ public abstract class BaseFSMComponent<S extends State<Entity>> implements Compo
     return messages;
   }
 
+  public Entity getEntity() {
+    return stateMachine.getOwner();
+  }
 }

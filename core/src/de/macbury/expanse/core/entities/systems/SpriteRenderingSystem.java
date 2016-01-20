@@ -29,6 +29,7 @@ public class SpriteRenderingSystem extends IteratingSystem implements Disposable
   private SpriteBatch spriteBatch;
   private Camera camera;
   private Matrix4 tempMat;
+
   public SpriteRenderingSystem(Camera camera) {
     super(Family.all(PositionComponent.class, SpriteComponent.class).get());
     this.spriteBatch = new SpriteBatch();

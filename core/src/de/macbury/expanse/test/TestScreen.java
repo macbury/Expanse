@@ -9,14 +9,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import de.macbury.expanse.core.entities.EntityManager;
-import de.macbury.expanse.core.entities.components.PositionComponent;
-import de.macbury.expanse.core.entities.components.SpriteComponent;
-import de.macbury.expanse.core.entities.components.TextureComponent;
+import de.macbury.expanse.core.entities.components.*;
+import de.macbury.expanse.core.entities.states.RobotState;
 import de.macbury.expanse.core.screens.ScreenBase;
 import de.macbury.expanse.core.scripts.ScriptRunner;
-import de.macbury.expanse.core.scripts.ScriptRunnerListener;
 import de.macbury.expanse.core.scripts.modules.Console;
-import org.mozilla.javascript.ContinuationPending;
 import org.mozilla.javascript.ScriptableObject;
 
 /**
@@ -42,13 +39,22 @@ public class TestScreen extends ScreenBase {
     this.camera      = new OrthographicCamera();
     this.texture     = this.assets.get("textures:bot.png", Texture.class);
     this.spriteBatch = new SpriteBatch();
-    this.entities    = new EntityManager(camera);
+    this.entities    = new EntityManager(camera, messages);
     this.fpsLogger   = new FPSLogger();
 
     Array<ScriptableObject> globalObjectFunctions = new Array<ScriptableObject>();
     globalObjectFunctions.add(new Console());
 
     Entity robotEntity                  = entities.createEntity();
+
+    RobotStateComponent robotStateComponent = entities.createComponent(RobotStateComponent.class);
+    robotStateComponent.init(robotEntity, messages);
+    robotStateComponent.changeState(RobotState.WaitForInstruction);
+
+    RobotScriptComponent robotScriptComponent = entities.createComponent(RobotScriptComponent.class);
+    robotScriptComponent.setSource(Gdx.files.internal("scripts/move.js").readString());
+
+    //setScriptRunner(new ScriptRunner(, globalObjectFunctions, true));
     PositionComponent positionComponent = entities.createComponent(PositionComponent.class);
     positionComponent.set(250, 0, 250);
 
@@ -58,6 +64,8 @@ public class TestScreen extends ScreenBase {
     spriteComponent.setRotation(45);
     spriteComponent.setRegion(texture);
 
+    robotEntity.add(robotStateComponent);
+    robotEntity.add(robotScriptComponent);
     robotEntity.add(positionComponent);
     robotEntity.add(spriteComponent);
 
