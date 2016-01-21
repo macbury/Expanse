@@ -15,4 +15,5 @@ public class Components {
   public final static ComponentMapper<SpriteComponent>   Sprite                       = ComponentMapper.getFor(SpriteComponent.class);
 
   public final static ComponentMapper<MotorComponent>   Motor                         = ComponentMapper.getFor(MotorComponent.class);
+  public final static ComponentMapper<BodyComponent>   Body                         = ComponentMapper.getFor(BodyComponent.class);
 }

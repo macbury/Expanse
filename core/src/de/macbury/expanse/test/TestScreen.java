@@ -15,6 +15,7 @@ import de.macbury.expanse.core.entities.EntityManager;
 import de.macbury.expanse.core.entities.components.*;
 import de.macbury.expanse.core.entities.states.RobotInstructionState;
 import de.macbury.expanse.core.entities.states.RobotMotorState;
+import de.macbury.expanse.core.octree.WorldOctree;
 import de.macbury.expanse.core.screens.ScreenBase;
 import de.macbury.expanse.core.scripts.ScriptRunner;
 
@@ -32,6 +33,7 @@ public class TestScreen extends ScreenBase {
   private EntityManager entities;
   private boolean entityPause;
   private Entity myRobotEntity;
+  private WorldOctree octree;
 
   @Override
   public void preload() {
@@ -43,7 +45,8 @@ public class TestScreen extends ScreenBase {
     this.camera      = new OrthographicCamera();
     this.texture     = this.assets.get("textures:bot.png", Texture.class);
     this.spriteBatch = new SpriteBatch();
-    this.entities    = new EntityManager(camera, messages);
+    this.octree      = new WorldOctree();
+    this.entities    = new EntityManager(camera, messages, octree);
     this.fpsLogger   = new FPSLogger();
 
     createRobot(new Vector3(250, 0, 250), Gdx.files.internal("scripts/robot1.js").readString());
@@ -59,6 +62,9 @@ public class TestScreen extends ScreenBase {
 
   public Entity createRobot(Vector3 position, String source) {
     Entity robotEntity                            = entities.createEntity();
+
+    BodyComponent bodyComponent                   = entities.createComponent(BodyComponent.class);
+    bodyComponent.dimensions.set(48, 48, 48);
 
     MotorComponent motorComponent                 = entities.createComponent(MotorComponent.class);
     motorComponent.init(robotEntity, messages, null, null);
@@ -87,6 +93,7 @@ public class TestScreen extends ScreenBase {
     robotEntity.add(positionComponent);
     robotEntity.add(spriteComponent);
     robotEntity.add(motorComponent);
+    robotEntity.add(bodyComponent);
 
     entities.addEntity(robotEntity);
 
