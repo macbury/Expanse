@@ -1,13 +1,10 @@
 package de.macbury.expanse.core.entities.states;
 
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import de.macbury.expanse.core.TelegramEvents;
 import de.macbury.expanse.core.entities.Components;
-import de.macbury.expanse.core.entities.components.BaseFSMComponent;
-import de.macbury.expanse.core.entities.components.RobotInstructionStateComponent;
 import de.macbury.expanse.core.entities.components.TimerComponent;
 
 /**
@@ -21,11 +18,22 @@ public enum RobotInstructionState implements State<Entity> {
    */
   Living {
     @Override
-    public boolean onMessage(Entity entity, Telegram telegram) {
-      //Gdx.app.log("RobotInstructionState", "Ignore telegram: " + TelegramEvents.values()[telegram.message]);
+    public boolean onMessage(Entity reciverEntity, Telegram telegram) {
+      if (TelegramEvents.StartRobot.is(telegram)) {
+        Components.RobotInstructionState.get(reciverEntity).changeState(RobotInstructionState.WaitForInstruction);
+        return true;
+      } else if (TelegramEvents.StopRobot.is(telegram)) {
+        Components.RobotInstructionState.get(reciverEntity).changeState(RobotInstructionState.Stopped);
+        return true;
+      }
       return false;
     }
   },
+
+  /**
+   * If robot is stopped by user just dont do anything
+   */
+  Stopped,
 
   /**
    * InstructionWait for {@link Telegram} with is one of {@link TelegramEvents#RobotInstructionEvents}. Then change to required state
@@ -90,6 +98,7 @@ public enum RobotInstructionState implements State<Entity> {
 
     @Override
     public void exit(Entity entity) {
+      Components.Motor.get(entity).finishAlpha();
       Components.RobotScript.get(entity).resume(null);
     }
   },
@@ -114,6 +123,7 @@ public enum RobotInstructionState implements State<Entity> {
 
     @Override
     public void exit(Entity entity) {
+      Components.Motor.get(entity).finishAlpha();
       Components.RobotScript.get(entity).resume(null);
     }
 

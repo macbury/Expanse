@@ -112,7 +112,8 @@ public class ScriptRunner implements Disposable {
    */
   public boolean stop() {
     if (state == State.Running) {
-      loop = false;
+      state = State.Stopped;
+      loop  = false;
       context.abort();
       try {
         internalThread.join();
@@ -285,15 +286,18 @@ public class ScriptRunner implements Disposable {
           }
         }
       } finally {
+        if (listeners != null)
+          for (ScriptRunnerListener listener : listeners) {
+            listener.onScriptFinish(ScriptRunner.this);
+          }
+
         continuationPending = null;
         result              = null;
+        owner               = null;
         state               = ScriptRunner.State.Stopped;
         Gdx.app.debug(TAG, "Exiting script");
         Context.exit();
-        for (ScriptRunnerListener listener : listeners) {
-          listener.onScriptFinish(ScriptRunner.this);
-        }
-        owner               = null;
+
       }
     }
   }

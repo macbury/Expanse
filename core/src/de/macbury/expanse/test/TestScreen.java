@@ -2,12 +2,15 @@ package de.macbury.expanse.test;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import de.macbury.expanse.core.TelegramEvents;
+import de.macbury.expanse.core.entities.Components;
 import de.macbury.expanse.core.entities.EntityManager;
 import de.macbury.expanse.core.entities.components.*;
 import de.macbury.expanse.core.entities.states.RobotInstructionState;
@@ -27,6 +30,8 @@ public class TestScreen extends ScreenBase {
   private FPSLogger fpsLogger;
   private int frameNo;
   private EntityManager entities;
+  private boolean entityPause;
+  private Entity myRobotEntity;
 
   @Override
   public void preload() {
@@ -48,19 +53,20 @@ public class TestScreen extends ScreenBase {
     for (int i = 0; i < 10; i++) {
       createRobot(new Vector3(400, 0, 400), Gdx.files.internal("scripts/random_robot_mov_test.js").readString());
     }
+
+    this.myRobotEntity = createRobot(new Vector3(20, 0, 20), Gdx.files.internal("scripts/my_robot.js").readString());
   }
 
-  public void createRobot(Vector3 position, String source) {
+  public Entity createRobot(Vector3 position, String source) {
     Entity robotEntity                            = entities.createEntity();
 
     MotorComponent motorComponent                 = entities.createComponent(MotorComponent.class);
-    motorComponent.init(robotEntity, messages, null);
+    motorComponent.init(robotEntity, messages, null, null);
     motorComponent.changeState(RobotMotorState.Idle);
     motorComponent.speed                          = 1;
 
     RobotInstructionStateComponent robotInstructionStateComponent = entities.createComponent(RobotInstructionStateComponent.class);
-    robotInstructionStateComponent.init(robotEntity, messages, RobotInstructionState.Living);
-    robotInstructionStateComponent.changeState(RobotInstructionState.WaitForInstruction);
+    robotInstructionStateComponent.init(robotEntity, messages, RobotInstructionState.Living, RobotInstructionState.WaitForInstruction);
 
     RobotScriptComponent robotScriptComponent = entities.createComponent(RobotScriptComponent.class);
     robotScriptComponent.setSource(source);
@@ -83,16 +89,34 @@ public class TestScreen extends ScreenBase {
     robotEntity.add(motorComponent);
 
     entities.addEntity(robotEntity);
+
+    return robotEntity;
   }
 
   @Override
   public void render(float delta) {
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     camera.update();
-    entities.update(delta);
+    if (!entityPause) {
+      entities.update(delta);
+    }
+
 
     fpsLogger.log();
     //scriptRunner.resume("random result");
+    if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+      this.entityPause = !entityPause;
+    }
+
+    if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+      RobotInstructionStateComponent robotInstructionStateComponent = Components.RobotInstructionState.get(myRobotEntity);
+      messages.dispatchMessage(robotInstructionStateComponent, null, TelegramEvents.StopRobot.ordinal());
+    }
+
+    if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+      RobotInstructionStateComponent robotInstructionStateComponent = Components.RobotInstructionState.get(myRobotEntity);
+      messages.dispatchMessage(robotInstructionStateComponent, null, TelegramEvents.StartRobot.ordinal());
+    }
 
   }
 

@@ -25,9 +25,10 @@ public abstract class BaseFSMComponent<S extends State<Entity>> implements Compo
    * @param messages
    * @return
    */
-  public BaseFSMComponent init(Entity entity, Messages messages, S globalState) {
+  public BaseFSMComponent init(Entity entity, Messages messages, S globalState, S initialState) {
     stateMachine = new DefaultStateMachine<Entity, S>(entity);
     stateMachine.setGlobalState(globalState);
+    stateMachine.setInitialState(initialState);
     this.messages  = messages;
     return this;
   }

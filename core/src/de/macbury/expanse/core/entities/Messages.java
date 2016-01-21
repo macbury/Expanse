@@ -30,6 +30,13 @@ public class Messages extends MessageDispatcher {
     }
   }
 
+  @Override
+  public void update() {
+    synchronized (this) {
+      super.update();
+    }
+  }
+
   /**
    * Alias to {@link MessageDispatcher#addListener(Telegraph, int)}
    * @param listener

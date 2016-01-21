@@ -24,6 +24,14 @@ public enum TelegramEvents {
   MotorTurnStop,
 
   /**
+   * Starts robot script, Triggered by player clicking on ui
+   */
+  StartRobot,
+  /**
+   * Stops robot script, Triggered by player clicking on ui
+   */
+  StopRobot,
+  /**
    * Make robot turn, payload is int with degrees
    */
   InstructionTurn,

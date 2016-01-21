@@ -50,6 +50,7 @@ public class RobotScriptComponent implements Component, Pool.Poolable {
   }
 
   public void resume(Object result) {
-    this.scriptRunner.resume(result);
+    if (this.scriptRunner != null)
+      this.scriptRunner.resume(result);
   }
 }

@@ -5,6 +5,8 @@ import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.core.TelegramEvents;
 import de.macbury.expanse.core.entities.Components;
@@ -22,18 +24,29 @@ import org.mozilla.javascript.ContinuationPending;
  * {@link RobotInstructionStateComponent}
  * {@link RobotScriptComponent}
  */
-public class RobotManagerSystem extends IteratingSystem implements Disposable, EntityListener, ScriptRunnerListener {
+public class RobotManagerSystem extends IteratingSystem implements Disposable, EntityListener, ScriptRunnerListener, Telegraph {
   private static final String TAG = "RobotManagerSystem";
   private Messages messages;
 
   public RobotManagerSystem(Messages messages) {
     super(Family.all(RobotInstructionStateComponent.class, RobotScriptComponent.class).get());
     this.messages = messages;
+
+    messages.addListener(this, TelegramEvents.StartRobot);
+    messages.addListener(this, TelegramEvents.StopRobot);
   }
 
   @Override
   protected void processEntity(Entity entity, float deltaTime) {
     Components.RobotInstructionState.get(entity).update();
+  }
+
+  /**
+   * Stops script in entity
+   */
+  private void stopScript(Entity entity) {
+    RobotScriptComponent robotScriptComponent = Components.RobotScript.get(entity);
+    robotScriptComponent.stop();
   }
 
   /**
@@ -95,6 +108,8 @@ public class RobotManagerSystem extends IteratingSystem implements Disposable, E
 
   @Override
   public void dispose() {
+    messages.removeListener(this, TelegramEvents.StartRobot);
+    messages.removeListener(this, TelegramEvents.StopRobot);
     messages = null;
   }
 
@@ -127,5 +142,21 @@ public class RobotManagerSystem extends IteratingSystem implements Disposable, E
   public void onScriptFinish(ScriptRunner scriptRunner) {
     Entity entity = (Entity)scriptRunner.getOwner();
     messages.dispatchInNextFrame(entity, TelegramEvents.ScriptStop, null);
+  }
+
+  @Override
+  public boolean handleMessage(Telegram msg) {
+    RobotInstructionStateComponent robotInstructionStateComponent = (RobotInstructionStateComponent)msg.sender;
+    Entity targetEntity                                           = robotInstructionStateComponent.getEntity();
+
+    if (TelegramEvents.StartRobot.is(msg)) {
+      reprogram(targetEntity);
+      return true;
+    } else if (TelegramEvents.StopRobot.is(msg)) {
+      stopScript(targetEntity);
+      return true;
+    }
+
+    return false;
   }
 }

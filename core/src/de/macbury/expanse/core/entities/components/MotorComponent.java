@@ -55,4 +55,9 @@ public class MotorComponent extends BaseFSMComponent<RobotMotorState> {
   public boolean finishedRotation() {
     return rotationAlpha >= 1.0;
   }
+
+  public void finishAlpha() {
+    moveAlpha     = 1.0f;
+    rotationAlpha = 1.0f;
+  }
 }
