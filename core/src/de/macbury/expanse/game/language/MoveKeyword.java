@@ -14,6 +14,6 @@ public class MoveKeyword extends BaseKeyword {
   }
 
   public void move(int meters) {
-    messages.dispatchInNextFrame(entity, TelegramEvents.InstructionMove, meters);
+    dispatchInNextFrame(entity, TelegramEvents.InstructionMove, meters);
   }
 }

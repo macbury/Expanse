@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import de.macbury.expanse.core.entities.EntityManager;
 import de.macbury.expanse.core.entities.components.*;
 import de.macbury.expanse.core.entities.states.RobotInstructionState;
@@ -40,9 +41,17 @@ public class TestScreen extends ScreenBase {
     this.entities    = new EntityManager(camera, messages);
     this.fpsLogger   = new FPSLogger();
 
-    //Gdx.audio.newSound(Gdx.files.internal("sound/electric_motor.ogg")).loop();
+    createRobot(new Vector3(250, 0, 250), Gdx.files.internal("scripts/robot1.js").readString());
 
-    Entity robotEntity                  = entities.createEntity();
+    createRobot(new Vector3(550, 0, 350), Gdx.files.internal("scripts/robot2.js").readString());
+
+    for (int i = 0; i < 10; i++) {
+      createRobot(new Vector3(400, 0, 400), Gdx.files.internal("scripts/random_robot_mov_test.js").readString());
+    }
+  }
+
+  public void createRobot(Vector3 position, String source) {
+    Entity robotEntity                            = entities.createEntity();
 
     MotorComponent motorComponent                 = entities.createComponent(MotorComponent.class);
     motorComponent.init(robotEntity, messages, null);
@@ -54,11 +63,11 @@ public class TestScreen extends ScreenBase {
     robotInstructionStateComponent.changeState(RobotInstructionState.WaitForInstruction);
 
     RobotScriptComponent robotScriptComponent = entities.createComponent(RobotScriptComponent.class);
-    robotScriptComponent.setSource(Gdx.files.internal("scripts/move_test.js").readString());
+    robotScriptComponent.setSource(source);
 
     //setScriptRunner(new ScriptRunner(, globalObjectFunctions, true));
     PositionComponent positionComponent = entities.createComponent(PositionComponent.class);
-    positionComponent.set(250, 0, 250);
+    positionComponent.set(position);
 
     SpriteComponent spriteComponent     = entities.createComponent(SpriteComponent.class);
     spriteComponent.setSize(texture.getWidth(), texture.getHeight());
@@ -74,12 +83,6 @@ public class TestScreen extends ScreenBase {
     robotEntity.add(motorComponent);
 
     entities.addEntity(robotEntity);
-
-    //this.scriptRunner = new ScriptRunner(Gdx.files.internal("scripts/move.js").readString(), globalObjectFunctions, true);
-    //long startAt      = System.currentTimeMillis();
-    //scriptRunner.start();
-    //Gdx.app.log(TAG, "Speed of script: " + (System.currentTimeMillis() - startAt) + " miliseconds!");
-
   }
 
   @Override

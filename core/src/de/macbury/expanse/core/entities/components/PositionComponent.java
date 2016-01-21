@@ -8,10 +8,11 @@ import com.badlogic.gdx.utils.Pool;
  */
 public class PositionComponent extends Vector3 implements Component, Pool.Poolable {
   private boolean isVisible;
-
+  public float rotationDeg;
 
   @Override
   public void reset() {
     setZero();
+    rotationDeg = 0;
   }
 }

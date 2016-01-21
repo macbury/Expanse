@@ -14,6 +14,6 @@ public class WaitKeyword extends BaseKeyword {
   }
 
   public void wait(float waitInSeconds) {
-    messages.dispatchInNextFrame(entity, TelegramEvents.InstructionWait, waitInSeconds);
+    dispatchInNextFrame(entity, TelegramEvents.InstructionWait, waitInSeconds);
   }
 }

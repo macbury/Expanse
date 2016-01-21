@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import de.macbury.expanse.core.TelegramEvents;
+import de.macbury.expanse.core.entities.components.RobotInstructionStateComponent;
 
 /**
  * Message dispatcher with nicer helper methods to send information
@@ -12,12 +13,21 @@ import de.macbury.expanse.core.TelegramEvents;
 public class Messages extends MessageDispatcher {
 
   /**
-   * Dispatch message in two frames
+   * Dispatch message in two frames to sender
    * @param event
    * @param payload
    */
   public void dispatchInNextFrame(Entity sender, TelegramEvents event, Object payload) {
-    dispatchMessage(Gdx.graphics.getDeltaTime(), Components.RobotState.get(sender), event.ordinal(), payload);
+    synchronized (this) {
+      RobotInstructionStateComponent robotInstructionStateComponent = Components.RobotInstructionState.get(sender);
+      dispatchMessage(
+        Gdx.graphics.getDeltaTime(),
+        robotInstructionStateComponent,
+        robotInstructionStateComponent,
+        event.ordinal(),
+        payload
+      );
+    }
   }
 
   /**

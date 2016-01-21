@@ -5,9 +5,6 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import de.macbury.expanse.core.TelegramEvents;
 import de.macbury.expanse.core.entities.Components;
-import de.macbury.expanse.core.entities.components.MotorComponent;
-import de.macbury.expanse.core.entities.components.PositionComponent;
-import de.macbury.expanse.core.entities.components.RobotScriptComponent;
 
 /**
  * This enum contains all states that robot motor can be in.
@@ -15,18 +12,37 @@ import de.macbury.expanse.core.entities.components.RobotScriptComponent;
 public enum RobotMotorState implements State<Entity> {
   Idle,
 
+  /**
+   * Triggers on enter {@link TelegramEvents#MotorTurnStart}
+   * and on exit {@link TelegramEvents#MotorTurnStop}. If finished rotateBy change state to idle
+   */
   Turn {
+    @Override
+    public void enter(Entity entity) {
+      Components.Motor.get(entity).dispatchMessage(TelegramEvents.MotorTurnStart);
+    }
 
+    @Override
+    public void update(Entity entity) {
+      if (Components.Motor.get(entity).finishedRotation()) {
+        Components.Motor.get(entity).changeState(Idle);
+      }
+    }
+
+    @Override
+    public void exit(Entity entity) {
+      Components.Motor.get(entity).dispatchMessage(TelegramEvents.MotorTurnStop);
+    }
   },
 
   /**
-   * Triggers on enter {@link TelegramEvents#MotorStart}
-   * and on exit {@link TelegramEvents#MotorStop}. If finished moving change state
+   * Triggers on enter {@link TelegramEvents#MotorMovementStart}
+   * and on exit {@link TelegramEvents#MotorMovementStop}. If finished moving change state to idle
    */
   Moving {
     @Override
     public void enter(Entity entity) {
-      Components.Motor.get(entity).dispatchMessage(TelegramEvents.MotorStart);
+      Components.Motor.get(entity).dispatchMessage(TelegramEvents.MotorMovementStart);
     }
 
     @Override
@@ -38,7 +54,7 @@ public enum RobotMotorState implements State<Entity> {
 
     @Override
     public void exit(Entity entity) {
-      Components.Motor.get(entity).dispatchMessage(TelegramEvents.MotorStop);
+      Components.Motor.get(entity).dispatchMessage(TelegramEvents.MotorMovementStop);
     }
   }
   ;

@@ -17,21 +17,29 @@ public enum TelegramEvents {
    * Here are events triggered by {@link de.macbury.expanse.core.entities.states.RobotMotorState}.
    * They can be used for starting and stoping sound/animation etc
    */
-  MotorStart,
-  MotorStop,
+  MotorMovementStart,
+  MotorMovementStop,
 
+  MotorTurnStart,
+  MotorTurnStop,
+
+  /**
+   * Make robot turn, payload is int with degrees
+   */
+  InstructionTurn,
   /**
    * Make robot wait, payload is float with seconds
    */
   InstructionWait,
   /**
-   * Start robot moving
+   * Start robot moving, payload is int with distance
    */
   InstructionMove;
 
-  public static TelegramEvents RobotActionEvents[] = {
+  public static TelegramEvents RobotInstructionEvents[] = {
     InstructionMove,
-    InstructionWait
+    InstructionWait,
+    InstructionTurn
   };
 
   /**

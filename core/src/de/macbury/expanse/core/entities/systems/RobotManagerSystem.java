@@ -17,7 +17,7 @@ import de.macbury.expanse.game.Keywords;
 import org.mozilla.javascript.ContinuationPending;
 
 /**
- * This system updates state machine, redirect telegrams for {@link TelegramEvents#RobotActionEvents} to each {@link Entity} and handles robot script controlling.
+ * This system updates state machine, redirect telegrams for {@link TelegramEvents#RobotInstructionEvents} to each {@link Entity} and handles robot script controlling.
  * To control robot you need two components:
  * {@link RobotInstructionStateComponent}
  * {@link RobotScriptComponent}
@@ -33,7 +33,7 @@ public class RobotManagerSystem extends IteratingSystem implements Disposable, E
 
   @Override
   protected void processEntity(Entity entity, float deltaTime) {
-    Components.RobotState.get(entity).update();
+    Components.RobotInstructionState.get(entity).update();
   }
 
   /**
@@ -50,25 +50,25 @@ public class RobotManagerSystem extends IteratingSystem implements Disposable, E
   }
 
   /**
-   * Register all robot {@link TelegramEvents#RobotActionEvents} for {@link de.macbury.expanse.Expanse#messages}
+   * Register all robot {@link TelegramEvents#RobotInstructionEvents} for {@link de.macbury.expanse.Expanse#messages}
    * @param entity
    */
   private void registerListenersForEntity(Entity entity) {
-    RobotInstructionStateComponent robotState = Components.RobotState.get(entity);
+    RobotInstructionStateComponent robotState = Components.RobotInstructionState.get(entity);
 
-    for (TelegramEvents event : TelegramEvents.RobotActionEvents) {
+    for (TelegramEvents event : TelegramEvents.RobotInstructionEvents) {
       messages.addListener(robotState, event.ordinal());
     }
   }
 
   /**
-   * Remove all robot {@link TelegramEvents#RobotActionEvents} from {@link de.macbury.expanse.Expanse#messages}
+   * Remove all robot {@link TelegramEvents#RobotInstructionEvents} from {@link de.macbury.expanse.Expanse#messages}
    * @param entity
    */
   private void unregisterListenersForEntity(Entity entity) {
-    RobotInstructionStateComponent robotState = Components.RobotState.get(entity);
+    RobotInstructionStateComponent robotState = Components.RobotInstructionState.get(entity);
 
-    for (TelegramEvents event : TelegramEvents.RobotActionEvents) {
+    for (TelegramEvents event : TelegramEvents.RobotInstructionEvents) {
       messages.removeListener(robotState, event.ordinal());
     }
   }

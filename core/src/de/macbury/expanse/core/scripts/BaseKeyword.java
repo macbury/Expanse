@@ -4,7 +4,10 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
+import de.macbury.expanse.core.TelegramEvents;
+import de.macbury.expanse.core.entities.Components;
 import de.macbury.expanse.core.entities.Messages;
+import de.macbury.expanse.core.entities.components.RobotInstructionStateComponent;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeFunction;
 import org.mozilla.javascript.ScriptableObject;
@@ -30,6 +33,16 @@ public abstract class BaseKeyword implements Disposable {
     this.entity    = entity;
     this.namespace = namespace;
     this.fileName  = fileName;
+  }
+
+  /**
+   * Dispatch message in next frame alias to {@link Messages#dispatchInNextFrame(Entity, TelegramEvents, Object)} but with synchronization!!!!
+   * Without synchronization messages pool returns sometime null!
+   * @param event
+   * @param payload
+   */
+  protected void dispatchInNextFrame(Entity sender, TelegramEvents event, Object payload) {
+    messages.dispatchInNextFrame(sender, event, payload);
   }
 
   /**

@@ -6,6 +6,8 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import de.macbury.expanse.core.TelegramEvents;
 import de.macbury.expanse.core.entities.Components;
+import de.macbury.expanse.core.entities.components.BaseFSMComponent;
+import de.macbury.expanse.core.entities.components.RobotInstructionStateComponent;
 import de.macbury.expanse.core.entities.components.TimerComponent;
 
 /**
@@ -20,32 +22,40 @@ public enum RobotInstructionState implements State<Entity> {
   Living {
     @Override
     public boolean onMessage(Entity entity, Telegram telegram) {
-      Gdx.app.log("RobotInstructionState", "Ignore telegram...");
+      //Gdx.app.log("RobotInstructionState", "Ignore telegram: " + TelegramEvents.values()[telegram.message]);
       return false;
     }
   },
 
   /**
-   * InstructionWait for {@link Telegram} with is one of {@link TelegramEvents#RobotActionEvents}. Then change to required state
+   * InstructionWait for {@link Telegram} with is one of {@link TelegramEvents#RobotInstructionEvents}. Then change to required state
    */
   WaitForInstruction {
     @Override
-    public boolean onMessage(Entity entity, Telegram telegram) {
+    public boolean onMessage(Entity reciverEntity, Telegram telegram) {
       switch (TelegramEvents.values()[telegram.message]) {
         /**
-         * Get telegram payload that contains how long should it wait and change state to InstructionWait
+         * Get telegram payload that contains how long should it wait and change state to Wait
          */
         case InstructionWait:
-          Components.Timer.get(entity).setWaitFor((Float)telegram.extraInfo);
-          Components.RobotState.get(entity).changeState(RobotInstructionState.Wait);
+          Components.Timer.get(reciverEntity).setWaitFor((Float)telegram.extraInfo);
+          Components.RobotInstructionState.get(reciverEntity).changeState(RobotInstructionState.Wait);
           return true;
 
         /**
-         * Get telegram payload that contains distance and change state to InstructionMove
+         * Get telegram payload that contains distance and change state to Move
          */
         case InstructionMove:
-          Components.Motor.get(entity).distance = (Integer)telegram.extraInfo;
-          Components.RobotState.get(entity).changeState(RobotInstructionState.Move);
+          Components.Motor.get(reciverEntity).distance = (Integer)telegram.extraInfo;
+          Components.RobotInstructionState.get(reciverEntity).changeState(RobotInstructionState.Move);
+          return true;
+
+        /**
+         * Get telegram payload that contains distance and change state to Turn
+         */
+        case InstructionTurn:
+          Components.Motor.get(reciverEntity).rotateBy = (Integer)telegram.extraInfo;
+          Components.RobotInstructionState.get(reciverEntity).changeState(RobotInstructionState.Turn);
           return true;
 
         default:
@@ -67,15 +77,15 @@ public enum RobotInstructionState implements State<Entity> {
     @Override
     public void update(Entity entity) {
       if (Components.Motor.get(entity).finishedMoving()) {
-        Components.RobotState.get(entity).changeState(RobotInstructionState.WaitForInstruction);
+        Components.RobotInstructionState.get(entity).changeState(RobotInstructionState.WaitForInstruction);
       } else {
         Components.Motor.get(entity).update();
       }
     }
 
     @Override
-    public boolean onMessage(Entity entity, Telegram telegram) {
-      return Components.Motor.get(entity).handleMessage(telegram);
+    public boolean onMessage(Entity reciverEntity, Telegram telegram) {
+      return Components.Motor.get(reciverEntity).handleMessage(telegram);
     }
 
     @Override
@@ -84,7 +94,34 @@ public enum RobotInstructionState implements State<Entity> {
     }
   },
 
-  Turn,
+  /**
+   * Uses {@link de.macbury.expanse.core.entities.components.MotorComponent} internal state machine to update rotateBy of {@link de.macbury.expanse.core.entities.components.PositionComponent}
+   */
+  Turn {
+    @Override
+    public void enter(Entity entity) {
+      Components.Motor.get(entity).changeState(RobotMotorState.Turn);
+    }
+
+    @Override
+    public void update(Entity entity) {
+      if (Components.Motor.get(entity).finishedRotation()) {
+        Components.RobotInstructionState.get(entity).changeState(RobotInstructionState.WaitForInstruction);
+      } else {
+        Components.Motor.get(entity).update();
+      }
+    }
+
+    @Override
+    public void exit(Entity entity) {
+      Components.RobotScript.get(entity).resume(null);
+    }
+
+    @Override
+    public boolean onMessage(Entity reciverEntity, Telegram telegram) {
+      return Components.Motor.get(reciverEntity).handleMessage(telegram);
+    }
+  },
 
   /**
    * Waits until {@link TimerComponent#haveFinishingWaiting()} then return to {@link RobotInstructionState#WaitForInstruction}
@@ -94,7 +131,7 @@ public enum RobotInstructionState implements State<Entity> {
     @Override
     public void update(Entity entity) {
       if (Components.Timer.get(entity).haveFinishingWaiting()) {
-        Components.RobotState.get(entity).changeState(RobotInstructionState.WaitForInstruction);
+        Components.RobotInstructionState.get(entity).changeState(RobotInstructionState.WaitForInstruction);
       }
     }
 

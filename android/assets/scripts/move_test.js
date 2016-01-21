@@ -1,7 +1,3 @@
-message("Started moving!");
-move(100);
-move(-50);
-message("Finished moving starting turn!");
+wait(parseInt(Math.random() * 4));
+move(50);
 turn(90);
-message("Finished turn");
-wait(1);
