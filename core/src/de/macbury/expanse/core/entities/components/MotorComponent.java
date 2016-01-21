@@ -12,7 +12,7 @@ public class MotorComponent extends BaseFSMComponent<RobotMotorState> {
   /**
    * Progress of movement
    */
-  public float alpha;
+  public float alpha = 1.0f;
   /**
    * Speed of motor
    */
@@ -26,14 +26,8 @@ public class MotorComponent extends BaseFSMComponent<RobotMotorState> {
   public void reset() {
     startPosition.setZero();
     targetPosition.setZero();
-    alpha = 0.0f;
+    alpha = 1.0f;
     speed = 0;
-  }
-
-  public void calculateTarget(Vector3 startPosition) {
-    this.startPosition.set(startPosition);
-    this.targetPosition.set(startPosition).add(0, 0, distance); //TODO change this
-    alpha = 0.0f;
   }
 
   public boolean finishedMoving() {

@@ -20,16 +20,13 @@ public enum RobotMotorState implements State<Entity> {
   },
 
   /**
-   * on enter calculate target position that motor should go; Triggers on enter {@link TelegramEvents#MotorStart}
-   * and on exit {@link TelegramEvents#MotorStop}
+   * Triggers on enter {@link TelegramEvents#MotorStart}
+   * and on exit {@link TelegramEvents#MotorStop}. If finished moving change state
    */
   Moving {
     @Override
     public void enter(Entity entity) {
-      MotorComponent motorComponent       = Components.Motor.get(entity);
-      PositionComponent positionComponent = Components.Position.get(entity);
-      motorComponent.calculateTarget(positionComponent);
-      motorComponent.dispatchMessage(TelegramEvents.MotorStart);
+      Components.Motor.get(entity).dispatchMessage(TelegramEvents.MotorStart);
     }
 
     @Override

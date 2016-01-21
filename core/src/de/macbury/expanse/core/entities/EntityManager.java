@@ -24,7 +24,7 @@ public class EntityManager extends PooledEngine implements Disposable {
     this.timerSystem           = new TimerSystem();
     this.spriteRenderingSystem = new SpriteRenderingSystem(renderingCamera);
     this.robotManagerSystem    = new RobotManagerSystem(messages);
-    this.motorSystem           = new MotorSystem();
+    this.motorSystem           = new MotorSystem(messages);
     addEntityListener(robotManagerSystem);
     addSystem(spriteRenderingSystem);
     addSystem(robotManagerSystem);
