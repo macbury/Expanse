@@ -16,7 +16,7 @@ public class Messages extends MessageDispatcher {
    * @param payload
    */
   public void dispatchInNextFrame(Entity sender, TelegramEvents event, Object payload) {
-    dispatchMessage(Gdx.graphics.getDeltaTime() * 2, Components.RobotState.get(sender), event.ordinal(), payload);
+    dispatchMessage(Gdx.graphics.getDeltaTime(), Components.RobotState.get(sender), event.ordinal(), payload);
   }
 
 }

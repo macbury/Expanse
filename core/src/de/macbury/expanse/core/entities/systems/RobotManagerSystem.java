@@ -5,25 +5,21 @@ import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.core.TelegramEvents;
 import de.macbury.expanse.core.entities.Components;
 import de.macbury.expanse.core.entities.Messages;
 import de.macbury.expanse.core.entities.components.RobotScriptComponent;
-import de.macbury.expanse.core.entities.components.RobotStateComponent;
+import de.macbury.expanse.core.entities.components.RobotInstructionStateComponent;
 import de.macbury.expanse.core.scripts.ScriptRunner;
 import de.macbury.expanse.core.scripts.ScriptRunnerListener;
-import de.macbury.expanse.core.scripts.BaseKeyword;
-import de.macbury.expanse.game.language.Keywords;
-import de.macbury.expanse.game.language.MessageKeyword;
-import de.macbury.expanse.game.language.WaitKeyword;
+import de.macbury.expanse.game.Keywords;
 import org.mozilla.javascript.ContinuationPending;
 
 /**
  * This system updates state machine, redirect telegrams for {@link TelegramEvents#RobotActionEvents} to each {@link Entity} and handles robot script controlling.
  * To control robot you need two components:
- * {@link RobotStateComponent}
+ * {@link RobotInstructionStateComponent}
  * {@link RobotScriptComponent}
  */
 public class RobotManagerSystem extends IteratingSystem implements Disposable, EntityListener, ScriptRunnerListener {
@@ -31,7 +27,7 @@ public class RobotManagerSystem extends IteratingSystem implements Disposable, E
   private Messages messages;
 
   public RobotManagerSystem(Messages messages) {
-    super(Family.all(RobotStateComponent.class, RobotScriptComponent.class).get());
+    super(Family.all(RobotInstructionStateComponent.class, RobotScriptComponent.class).get());
     this.messages = messages;
   }
 
@@ -58,7 +54,7 @@ public class RobotManagerSystem extends IteratingSystem implements Disposable, E
    * @param entity
    */
   private void registerListenersForEntity(Entity entity) {
-    RobotStateComponent robotState = Components.RobotState.get(entity);
+    RobotInstructionStateComponent robotState = Components.RobotState.get(entity);
 
     for (TelegramEvents event : TelegramEvents.RobotActionEvents) {
       messages.addListener(robotState, event.ordinal());
@@ -70,7 +66,7 @@ public class RobotManagerSystem extends IteratingSystem implements Disposable, E
    * @param entity
    */
   private void unregisterListenersForEntity(Entity entity) {
-    RobotStateComponent robotState = Components.RobotState.get(entity);
+    RobotInstructionStateComponent robotState = Components.RobotState.get(entity);
 
     for (TelegramEvents event : TelegramEvents.RobotActionEvents) {
       messages.removeListener(robotState, event.ordinal());

@@ -9,6 +9,7 @@ import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.utils.Pool;
+import de.macbury.expanse.core.TelegramEvents;
 import de.macbury.expanse.core.entities.Messages;
 
 /**
@@ -24,10 +25,19 @@ public abstract class BaseFSMComponent<S extends State<Entity>> implements Compo
    * @param messages
    * @return
    */
-  public BaseFSMComponent init(Entity entity, Messages messages) {
+  public BaseFSMComponent init(Entity entity, Messages messages, S globalState) {
     stateMachine = new DefaultStateMachine<Entity, S>(entity);
+    stateMachine.setGlobalState(globalState);
     this.messages  = messages;
     return this;
+  }
+
+  /**
+   * Alias for {@link Messages#dispatchMessage(Telegraph, int)} where telegraph is current component
+   * @param msg
+   */
+  public void dispatchMessage(TelegramEvents msg) {
+    getMessages().dispatchMessage(this, msg.ordinal());
   }
 
   /**
@@ -39,6 +49,14 @@ public abstract class BaseFSMComponent<S extends State<Entity>> implements Compo
 
   public void changeState (S state) {
     stateMachine.changeState(state);
+  }
+
+  public S getState() {
+    return stateMachine.getCurrentState();
+  }
+
+  public boolean is(S state) {
+    return getState() == state;
   }
 
   public StateMachine<Entity, S> getStateMachine () {

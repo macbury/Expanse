@@ -6,7 +6,7 @@ import de.macbury.expanse.core.entities.Messages;
 import de.macbury.expanse.core.scripts.BaseKeyword;
 
 /**
- * Created on 20.01.16.
+ * Gives standard methods from {@link BaseKeyword} under core namespace and additionaly wait method
  */
 public class WaitKeyword extends BaseKeyword {
   public WaitKeyword(Messages messages, Entity entity) {
@@ -14,6 +14,6 @@ public class WaitKeyword extends BaseKeyword {
   }
 
   public void wait(float waitInSeconds) {
-    messages.dispatchInNextFrame(entity, TelegramEvents.Wait, waitInSeconds);
+    messages.dispatchInNextFrame(entity, TelegramEvents.InstructionWait, waitInSeconds);
   }
 }
