@@ -14,6 +14,7 @@ import de.macbury.expanse.core.entities.Components;
 import de.macbury.expanse.core.entities.Messages;
 import de.macbury.expanse.core.entities.components.MotorComponent;
 import de.macbury.expanse.core.entities.components.PositionComponent;
+import de.macbury.expanse.core.entities.components.RobotInstructionStateComponent;
 
 /**
  * Updates {@link PositionComponent} with information from {@link MotorComponent}
@@ -31,6 +32,7 @@ public class MotorSystem extends IteratingSystem implements Disposable, Telegrap
     messages.addListener(this, TelegramEvents.MotorMovementStop);
     messages.addListener(this, TelegramEvents.MotorTurnStart);
     messages.addListener(this, TelegramEvents.MotorTurnStop);
+    messages.addListener(this, TelegramEvents.StopRobot);
   }
 
   @Override
@@ -110,6 +112,7 @@ public class MotorSystem extends IteratingSystem implements Disposable, Telegrap
     messages.removeListener(this, TelegramEvents.MotorMovementStop);
     messages.removeListener(this, TelegramEvents.MotorTurnStart);
     messages.removeListener(this, TelegramEvents.MotorTurnStop);
+    messages.removeListener(this, TelegramEvents.StopRobot);
     messages = null;
   }
 
@@ -122,6 +125,12 @@ public class MotorSystem extends IteratingSystem implements Disposable, Telegrap
     } else if (TelegramEvents.MotorTurnStart.is(msg)) {
       MotorComponent motorComponent = (MotorComponent)msg.sender;
       return calculateRotation(motorComponent.getEntity());
+    } else if (TelegramEvents.StopRobot.is(msg)) {
+      RobotInstructionStateComponent robotInstructionStateComponent = (RobotInstructionStateComponent)msg.sender;
+      MotorComponent motorComponent = Components.Motor.get(robotInstructionStateComponent.getEntity());
+      motorComponent.finishedMoving();
+      motorComponent.finishedRotation();
+      return true;
     }
     return false;
   }

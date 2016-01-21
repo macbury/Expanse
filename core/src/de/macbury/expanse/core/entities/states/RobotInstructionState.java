@@ -18,12 +18,12 @@ public enum RobotInstructionState implements State<Entity> {
    */
   Living {
     @Override
-    public boolean onMessage(Entity reciverEntity, Telegram telegram) {
-      if (TelegramEvents.StartRobot.is(telegram)) {
-        Components.RobotInstructionState.get(reciverEntity).changeState(RobotInstructionState.WaitForInstruction);
+    public boolean onMessage(Entity receiverEntity, Telegram telegram) {
+      if (TelegramEvents.ScriptStart.is(telegram)) {
+        Components.RobotInstructionState.get(receiverEntity).changeState(RobotInstructionState.WaitForInstruction);
         return true;
-      } else if (TelegramEvents.StopRobot.is(telegram)) {
-        Components.RobotInstructionState.get(reciverEntity).changeState(RobotInstructionState.Stopped);
+      } else if (TelegramEvents.ScriptStop.is(telegram)) {
+        Components.RobotInstructionState.get(receiverEntity).changeState(RobotInstructionState.Stopped);
         return true;
       }
       return false;
@@ -98,7 +98,7 @@ public enum RobotInstructionState implements State<Entity> {
 
     @Override
     public void exit(Entity entity) {
-      Components.Motor.get(entity).finishAlpha();
+      //Components.Motor.get(entity).finishAlpha();
       Components.RobotScript.get(entity).resume(null);
     }
   },
@@ -123,7 +123,7 @@ public enum RobotInstructionState implements State<Entity> {
 
     @Override
     public void exit(Entity entity) {
-      Components.Motor.get(entity).finishAlpha();
+      //Components.Motor.get(entity).finishAlpha();
       Components.RobotScript.get(entity).resume(null);
     }
 
@@ -147,6 +147,7 @@ public enum RobotInstructionState implements State<Entity> {
 
     @Override
     public void exit(Entity entity) {
+      //Components.Timer.get(entity).finishWaiting();
       Components.RobotScript.get(entity).resume(null);
     }
   },

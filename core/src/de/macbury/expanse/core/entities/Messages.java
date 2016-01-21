@@ -55,4 +55,21 @@ public class Messages extends MessageDispatcher {
     removeListener(listener, event.ordinal());
   }
 
+  /**
+   * Sends {@link TelegramEvents#StartRobot}
+   * @param senderEntity
+   */
+  public void dispatchStartRobot(Entity senderEntity) {
+    RobotInstructionStateComponent robotInstructionStateComponent = Components.RobotInstructionState.get(senderEntity);
+    dispatchMessage(robotInstructionStateComponent, null, TelegramEvents.StartRobot.ordinal());
+  }
+
+  /**
+   * Sends {@link TelegramEvents#StopRobot}
+   * @param senderEntity
+   */
+  public void dispatchStopRobot(Entity senderEntity) {
+    RobotInstructionStateComponent robotInstructionStateComponent = Components.RobotInstructionState.get(senderEntity);
+    dispatchMessage(robotInstructionStateComponent, null, TelegramEvents.StopRobot.ordinal());
+  }
 }

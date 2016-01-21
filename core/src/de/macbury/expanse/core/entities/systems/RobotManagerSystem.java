@@ -87,14 +87,14 @@ public class RobotManagerSystem extends IteratingSystem implements Disposable, E
   }
 
   /**
-   * Add all required telegram listeners and reprogram robot
+   * Add all required telegram listeners and send message to reprogram robot!
    * @param entity
    */
   @Override
   public void entityAdded(Entity entity) {
     if (getFamily().matches(entity)) {
       registerListenersForEntity(entity);
-      reprogram(entity);
+      messages.dispatchStartRobot(entity);
     }
   }
 
@@ -102,7 +102,7 @@ public class RobotManagerSystem extends IteratingSystem implements Disposable, E
   public void entityRemoved(Entity entity) {
     if (getFamily().matches(entity)) {
       unregisterListenersForEntity(entity);
-      Components.RobotScript.get(entity).stop();
+      messages.dispatchStopRobot(entity);
     }
   }
 

@@ -1,9 +1,8 @@
 message("Start!");
 
 while(true) {
-  
-  move(30);
+  move(400);
   message("done move!");
-  turn(45);
+  turn(90);
   message("Done turn!");
 }

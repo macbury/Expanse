@@ -49,15 +49,15 @@ public class TestScreen extends ScreenBase {
     this.entities    = new EntityManager(camera, messages, octree);
     this.fpsLogger   = new FPSLogger();
 
-    createRobot(new Vector3(250, 0, 250), Gdx.files.internal("scripts/robot1.js").readString());
+    //createRobot(new Vector3(250, 0, 250), Gdx.files.internal("scripts/robot1.js").readString());
 
-    createRobot(new Vector3(550, 0, 350), Gdx.files.internal("scripts/robot2.js").readString());
+    //createRobot(new Vector3(550, 0, 350), Gdx.files.internal("scripts/robot2.js").readString());
 
-    for (int i = 0; i < 10; i++) {
-      createRobot(new Vector3(400, 0, 400), Gdx.files.internal("scripts/random_robot_mov_test.js").readString());
-    }
+    //for (int i = 0; i < 10; i++) {
+    //  createRobot(new Vector3(400, 0, 400), Gdx.files.internal("scripts/random_robot_mov_test.js").readString());
+    //}
 
-    this.myRobotEntity = createRobot(new Vector3(20, 0, 20), Gdx.files.internal("scripts/my_robot.js").readString());
+    this.myRobotEntity = createRobot(new Vector3(500, 0, 500), Gdx.files.internal("scripts/my_robot.js").readString());
   }
 
   public Entity createRobot(Vector3 position, String source) {
@@ -108,6 +108,7 @@ public class TestScreen extends ScreenBase {
       entities.update(delta);
     }
 
+    frameNo++;
 
     fpsLogger.log();
     //scriptRunner.resume("random result");
@@ -116,13 +117,12 @@ public class TestScreen extends ScreenBase {
     }
 
     if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
-      RobotInstructionStateComponent robotInstructionStateComponent = Components.RobotInstructionState.get(myRobotEntity);
-      messages.dispatchMessage(robotInstructionStateComponent, null, TelegramEvents.StopRobot.ordinal());
+      messages.dispatchStopRobot(myRobotEntity);
     }
 
     if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
-      RobotInstructionStateComponent robotInstructionStateComponent = Components.RobotInstructionState.get(myRobotEntity);
-      messages.dispatchMessage(robotInstructionStateComponent, null, TelegramEvents.StartRobot.ordinal());
+
+      messages.dispatchStartRobot(myRobotEntity);
     }
 
   }

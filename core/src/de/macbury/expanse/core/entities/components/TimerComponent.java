@@ -29,4 +29,11 @@ public class TimerComponent implements Pool.Poolable, Component {
   public boolean haveFinishingWaiting() {
     return waitFor <= 0;
   }
+
+  /**
+   * Just reset wait for variable to zero
+   */
+  public void finishWaiting() {
+    waitFor = 0;
+  }
 }

@@ -20,7 +20,7 @@ public class EntityManager extends PooledEngine implements Disposable {
   public EntityManager(Camera renderingCamera, Messages messages, WorldOctree octree) {
     super();
 
-    this.timerSystem           = new TimerSystem();
+    this.timerSystem           = new TimerSystem(messages);
     this.spriteRenderingSystem = new SpriteRenderingSystem(renderingCamera);
     this.robotManagerSystem    = new RobotManagerSystem(messages);
     this.motorSystem           = new MotorSystem(messages);
@@ -37,6 +37,8 @@ public class EntityManager extends PooledEngine implements Disposable {
 
   @Override
   public void dispose() {
+    timerSystem.dispose();
+
     spriteRenderingSystem.dispose();
     spriteRenderingSystem = null;
 
