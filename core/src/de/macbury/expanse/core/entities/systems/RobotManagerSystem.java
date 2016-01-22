@@ -55,7 +55,7 @@ public class RobotManagerSystem extends IteratingSystem implements Disposable, E
    */
   private void reprogram(Entity entity) {
     RobotScriptComponent robotScriptComponent = Components.RobotScript.get(entity);
-    ScriptRunner robotScriptRunner            = new ScriptRunner(robotScriptComponent.getSource(), new Keywords(entity, messages), true);
+    ScriptRunner robotScriptRunner            = new ScriptRunner(robotScriptComponent.getSource(), new Keywords(entity, messages), false);
     robotScriptRunner.addListener(this);
     robotScriptRunner.setOwner(entity);
     robotScriptComponent.setScriptRunner(robotScriptRunner);
