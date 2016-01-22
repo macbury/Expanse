@@ -61,7 +61,7 @@ public class TestScreen extends ScreenBase {
     this.spriteBatch = new SpriteBatch();
     this.octree      = new WorldOctree();
 
-    octree.setBounds(new BoundingBox(new Vector3(-60, 0, -60), new Vector3(60, 10, 60))); // in pixels
+    octree.setBounds(new BoundingBox(new Vector3(-60, -2, -60), new Vector3(60, 10, 60))); // in pixels
     this.entities    = new EntityManager(camera, messages, octree);
     this.fpsLogger   = new FPSLogger();
 
@@ -75,7 +75,7 @@ public class TestScreen extends ScreenBase {
 
     //createRobot(new Vector3(550, 0, 350), Gdx.files.internal("scripts/robot2.js").readString());
 
-    for (int i = 0; i < 400; i++) {
+    for (int i = 0; i < 800; i++) {
       createRobot(new Vector3(
         (float) (Math.random() * 60)-30f,
         0,

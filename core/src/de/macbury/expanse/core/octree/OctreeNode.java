@@ -1,6 +1,5 @@
 package de.macbury.expanse.core.octree;
 
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Frustum;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -16,11 +15,11 @@ public class OctreeNode<E extends OctreeObject> implements Pool.Poolable, Dispos
   /**
    * The maximum number of levels to break down to.
    */
-  public final static int MAX_LEVELS    = 12;
+  public final static int MAX_LEVELS    = 8;
   /**
    * The maximum number of objects per node.
    */
-  protected int maxObjects;
+  public final static int MAX_OBJECTS   = 10;
   /**
    * The current level.
    */
@@ -53,15 +52,24 @@ public class OctreeNode<E extends OctreeObject> implements Pool.Poolable, Dispos
     this.nodes    = new Array<OctreeNode>();
     this.bounds   = new BoundingBox();
     this.parent   = null;
-    this.maxObjects = 10;
     clear();
   }
 
+  /**
+   * Determine which node the object belongs to.
+   * @param object The object in which to check.
+   * @return Index of the subnode (0-7), or -1 if rect cannot completely fit within a subnode and is part of the parent node.
+   */
   public int getIndex(E object) {
     object.getBoundingBox(tempBox);
     return getIndex(tempBox);
   }
 
+  /**
+   * Determine which node the vector belongs to.
+   * @param point The bounds in which to check.
+   * @return Index of the subnode (0-7), or -1 if rect cannot completely fit within a subnode and is part of the parent node.
+   */
   private int getIndex(Vector3 point) {
     int index = -1;
     if (haveNodes()) {
@@ -76,32 +84,30 @@ public class OctreeNode<E extends OctreeObject> implements Pool.Poolable, Dispos
     return index;
   }
 
+  /**
+   * Determine which node the bounding box belongs to.
+   * @param pRect The bounds in which to check.
+   * @return Index of the subnode (0-7), or -1 if rect cannot completely fit within a subnode and is part of the parent node.
+   */
   public int getIndex(BoundingBox pRect) {
     int index = -1;
-    if (haveNodes()) {
-      for (int i = 0; i < nodes.size; i++) {
-        OctreeNode node = nodes.get(i);
-        if (node.contains(pRect)) {
-          index = i;
-          break;
-        }
+    for (int i = 0; i < nodes.size; i++) {
+      OctreeNode node = nodes.get(i);
+      if (node.contains(pRect)) {
+        index = i;
+        break;
       }
     }
     return index;
   }
 
+  /**
+   * Is the rect in bounds of current node
+   * @param pRect
+   * @return
+   */
   public boolean contains(BoundingBox pRect) {
     return bounds.contains(pRect);
-  }
-
-  private void insertIntoProperNode(E objectToInsert) {
-    int index = getIndex(objectToInsert);
-    if (index != -1) {
-      nodes.get(index).insert(objectToInsert);
-      return;
-    } else {
-      objects.add(objectToInsert);
-    }
   }
 
   public void insert(Array<E> objectsToInsert) {
@@ -116,27 +122,33 @@ public class OctreeNode<E extends OctreeObject> implements Pool.Poolable, Dispos
    */
   public void insert(E objectToInsert) {
     if (haveNodes()) {
-      insertIntoProperNode(objectToInsert);
-    } else {
-      objects.add(objectToInsert);
-      objectToInsert.setOctreeParent(this);
-      if (objects.size > maxObjects && level < MAX_LEVELS) {
-        if (!haveNodes())
-          split();
+      int index = getIndex(objectToInsert);
+      if (index != -1) {
+        nodes.get(index).insert(objectToInsert);
+        return;
+      }
+    }
 
-        int i = 0;
-        while (i < objects.size) {
-          E currentObject            = objects.get(i);
-          int index                  = getIndex(currentObject);
-          if (index != -1) {
-            objects.removeValue(currentObject, false);
-            nodes.get(index).insert(currentObject);
-          } else {
-            i++;
-          }
+    objects.add(objectToInsert);
+    objectToInsert.setOctreeParent(this);
+
+    if (objects.size > MAX_OBJECTS && level < MAX_LEVELS) {
+      if (!haveNodes())
+        split();
+
+      int i = 0;
+      while (i < objects.size) {
+        E currentObject            = objects.get(i);
+        int index                  = getIndex(currentObject);
+        if (index != -1) {
+          objects.removeValue(currentObject, false);
+          nodes.get(index).insert(currentObject);
+        } else {
+          i++;
         }
       }
     }
+
   }
 
   public boolean remove(E object) {
@@ -175,7 +187,6 @@ public class OctreeNode<E extends OctreeObject> implements Pool.Poolable, Dispos
     tempBox.set(min, max);
     OctreeNode nodeQuadrant = OctreeNode.node(level, tempBox);
     nodeQuadrant.setParent(this);
-    nodeQuadrant.setMaxObjects(maxObjects);
     nodes.add(nodeQuadrant);
   }
 
@@ -343,9 +354,6 @@ public class OctreeNode<E extends OctreeObject> implements Pool.Poolable, Dispos
     retrieve(returnObjects, tempBox);
   }
 
-  public void setMaxObjects(int maxObjects) {
-    this.maxObjects = maxObjects;
-  }
 
   public void retrieve(Array<E> returnObjects, OctreeQuery query) {
     if (haveNodes()) {
