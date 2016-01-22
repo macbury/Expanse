@@ -16,7 +16,9 @@ import de.macbury.expanse.core.octree.WorldOctree;
  */
 public class WorldOctreeSystem extends IteratingSystem implements Disposable {
   private WorldOctree octree;
-  private Vector3 tempVec = new Vector3();
+  private Vector3 halfDimenTemp = new Vector3();
+  private Vector3 minVecTemp    = new Vector3();
+  private Vector3 maxVecTemp    = new Vector3();
   public WorldOctreeSystem(WorldOctree octree) {
     super(Family.all(PositionComponent.class, BodyComponent.class).get());
     this.octree = octree;
@@ -33,11 +35,21 @@ public class WorldOctreeSystem extends IteratingSystem implements Disposable {
     super.update(deltaTime);
   }
 
+  /**
+   * For every {@link Entity} place centered bounding box at its position
+   * @param entity
+   * @param deltaTime
+   */
   @Override
   protected void processEntity(Entity entity, float deltaTime) {
     PositionComponent positionComponent = Components.Position.get(entity);
     BodyComponent bodyComponent         = Components.Body.get(entity);
-    bodyComponent.set(positionComponent, tempVec.set(positionComponent).add(bodyComponent.dimensions));
+
+    halfDimenTemp.set(bodyComponent.dimensions).scl(0.5f);
+    minVecTemp.set(positionComponent).sub(halfDimenTemp);
+    maxVecTemp.set(positionComponent).add(halfDimenTemp);
+
+    bodyComponent.set(minVecTemp, maxVecTemp);
 
     octree.insert(bodyComponent);
   }

@@ -13,9 +13,17 @@ import de.macbury.expanse.core.octree.query.OctreeQuery;
  * This is octree will be used for collision detection and frustrum culling
  */
 public class OctreeNode<E extends OctreeObject> implements Pool.Poolable, Disposable {
-  public static int MAX_LEVELS  = 6;
-  private int maxObjects        = 20;
-
+  /**
+   * The maximum number of levels to break down to.
+   */
+  public final static int MAX_LEVELS    = 12;
+  /**
+   * The maximum number of objects per node.
+   */
+  protected int maxObjects;
+  /**
+   * The current level.
+   */
   private int                 level;
   private Array<E>            objects;
   private Array<OctreeNode>   nodes;
@@ -45,7 +53,7 @@ public class OctreeNode<E extends OctreeObject> implements Pool.Poolable, Dispos
     this.nodes    = new Array<OctreeNode>();
     this.bounds   = new BoundingBox();
     this.parent   = null;
-    this.maxObjects = 24;
+    this.maxObjects = 10;
     clear();
   }
 
@@ -102,6 +110,10 @@ public class OctreeNode<E extends OctreeObject> implements Pool.Poolable, Dispos
     }
   }
 
+  /**
+   * Insert the object into the node. If the node exceeds the capacity, it will split and add all objects to their corresponding subnodes.
+   * @param objectToInsert The Body object to insert into the octree
+   */
   public void insert(E objectToInsert) {
     if (haveNodes()) {
       insertIntoProperNode(objectToInsert);
@@ -140,6 +152,9 @@ public class OctreeNode<E extends OctreeObject> implements Pool.Poolable, Dispos
     return nodes.get(part.getIndex());
   }
 
+  /**
+   * Split the node into 8 subnodes
+   */
   private void split() {
     center = bounds.getCenter(center);
     bounds.getMin(min);
