@@ -10,7 +10,7 @@ import de.macbury.expanse.core.octree.OctreeObject;
 /**
  * Created by macbury on 29.10.14.
  */
-public class FrustrumOctreeQuery extends OctreeQuery {
+public class FrustrumOctreeQuery implements OctreeQuery {
   private Frustum frustum;
   private BoundingBox tempBox = new BoundingBox();
   private Vector3 tmpV = new Vector3();

@@ -6,7 +6,7 @@ import de.macbury.expanse.core.octree.OctreeObject;
 /**
  * Created by macbury on 29.10.14.
  */
-public abstract class OctreeQuery {
+public interface OctreeQuery<E extends OctreeObject> {
   public abstract boolean checkNode(OctreeNode node);
-  public abstract boolean checkObject(OctreeObject object);
+  public abstract boolean checkObject(E object);
 }

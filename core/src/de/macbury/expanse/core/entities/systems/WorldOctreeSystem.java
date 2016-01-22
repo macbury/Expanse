@@ -48,7 +48,7 @@ public class WorldOctreeSystem extends IteratingSystem implements Disposable {
     halfDimenTemp.set(bodyComponent.dimensions).scl(0.5f);
     minVecTemp.set(positionComponent).sub(halfDimenTemp);
     maxVecTemp.set(positionComponent).add(halfDimenTemp);
-
+    bodyComponent.setEntity(entity);
     bodyComponent.set(minVecTemp, maxVecTemp);
 
     octree.insert(bodyComponent);

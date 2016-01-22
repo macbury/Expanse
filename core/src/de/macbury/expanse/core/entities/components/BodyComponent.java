@@ -1,6 +1,7 @@
 package de.macbury.expanse.core.entities.components;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Pool;
@@ -14,6 +15,7 @@ import de.macbury.expanse.core.octree.OctreeObject;
 public class BodyComponent extends BoundingBox implements Component, Pool.Poolable, OctreeObject {
   public Vector3 dimensions = new Vector3();
   public OctreeNode parent;
+  public Entity entity;
 
   @Override
   public void getBoundingBox(BoundingBox outBox) {
@@ -27,7 +29,12 @@ public class BodyComponent extends BoundingBox implements Component, Pool.Poolab
 
   @Override
   public void reset() {
+    entity = null;
     dimensions.setZero();
     setOctreeParent(null);
+  }
+
+  public void setEntity(Entity entity) {
+    this.entity = entity;
   }
 }

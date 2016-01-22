@@ -9,23 +9,29 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.core.entities.Components;
+import de.macbury.expanse.core.entities.OctreeIteratingSystem;
+import de.macbury.expanse.core.entities.components.BodyComponent;
 import de.macbury.expanse.core.entities.components.PositionComponent;
 import de.macbury.expanse.core.entities.components.RenderableComponent;
+import de.macbury.expanse.core.octree.OctreeNode;
+import de.macbury.expanse.core.octree.WorldOctree;
 
 /**
  * This system finds all {@link Entity} with components {@link de.macbury.expanse.core.entities.components.RenderableComponent} and {@link de.macbury.expanse.core.entities.components.PositionComponent}
  * and adds it to {@link com.badlogic.gdx.graphics.g3d.ModelBatch}
  */
 //TODO separate systems for rendering in color, reflection and glow batch, We can use components to make it use diffrent systems
-public class RenderableSystem extends IteratingSystem implements Disposable {
+public class RenderableSystem extends OctreeIteratingSystem implements Disposable {
   private final Environment env;
   private ModelBatch modelBatch;
   private Camera camera;
+  private BoundingBox tempBox = new BoundingBox();
 
-  public RenderableSystem(Camera camera, ModelBatch modelBatch) {
-    super(Family.all(PositionComponent.class, RenderableComponent.class).get());
+  public RenderableSystem(WorldOctree octree, Camera camera, ModelBatch modelBatch) {
+    super(octree, Family.all(PositionComponent.class, RenderableComponent.class, BodyComponent.class).get());
     this.camera     = camera;
     this.modelBatch = modelBatch;
     this.env        = new Environment();// TODO move this to provider or something, else, this should not be initialized here
@@ -57,7 +63,29 @@ public class RenderableSystem extends IteratingSystem implements Disposable {
 
   @Override
   public void dispose() {
+    super.dispose();
     modelBatch = null;
     camera     = null;
+  }
+
+  /**
+   * Now we check if {@link Entity} {@link BodyComponent} is in frustrum
+   * @param entity enity to check
+   * @return
+   */
+  @Override
+  public boolean checkEntity(Entity entity) {
+    Components.Body.get(entity).getBoundingBox(tempBox);
+    return camera.frustum.boundsInFrustum(tempBox);
+  }
+
+  /**
+   * First we check if node is in frustrum
+   * @param node
+   * @return
+   */
+  @Override
+  public boolean checkNode(OctreeNode node) {
+    return camera.frustum.boundsInFrustum(node.getBounds());
   }
 }

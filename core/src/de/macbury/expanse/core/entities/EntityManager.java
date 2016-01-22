@@ -27,7 +27,7 @@ public class EntityManager extends PooledEngine implements Disposable {
     this.robotManagerSystem    = new RobotManagerSystem(messages);
     this.motorSystem           = new MotorSystem(messages);
     this.worldOctreeSystem     = new WorldOctreeSystem(octree);
-    this.renderableSystem      = new RenderableSystem(renderingCamera, new ModelBatch()); //TODO move initialization of model batch elswhere
+    this.renderableSystem      = new RenderableSystem(octree, renderingCamera, new ModelBatch()); //TODO move initialization of model batch elswhere
     addEntityListener(robotManagerSystem);
 
     addSystem(robotManagerSystem);
