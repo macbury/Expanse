@@ -7,6 +7,7 @@ import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import de.macbury.expanse.core.assets.Assets;
 import de.macbury.expanse.core.entities.Messages;
+import de.macbury.expanse.core.input.InputManager;
 import de.macbury.expanse.core.screens.ScreenManager;
 import de.macbury.expanse.core.scripts.RobotScriptContextFactory;
 import de.macbury.expanse.test.TestScreen;
@@ -14,7 +15,10 @@ import de.macbury.expanse.test.TestScreen;
 public class Expanse extends ApplicationAdapter {
   public final static String VERSION = "0.0.3";
   private static final String TAG    = "Expanse";
-
+  /**
+   * This class helps with input managment
+   */
+  public InputManager input;
   /**
    * Message comunication class used by EntityManager
    */
@@ -34,11 +38,14 @@ public class Expanse extends ApplicationAdapter {
     Gdx.app.log(TAG, "Init...");
     RobotScriptContextFactory.init();
 
+    this.input      = new InputManager();
     this.assets     = new Assets();
     this.messages   = new Messages();
     this.screens    = new ScreenManager(this);
 
     screens.set(new TestScreen());
+
+    Gdx.input.setInputProcessor(input);
   }
 
   @Override

@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import de.macbury.expanse.core.TelegramEvents;
 import de.macbury.expanse.core.entities.Components;
@@ -20,6 +21,8 @@ import de.macbury.expanse.core.entities.components.*;
 import de.macbury.expanse.core.entities.states.RobotInstructionState;
 import de.macbury.expanse.core.entities.states.RobotMotorState;
 import de.macbury.expanse.core.graphics.DebugShape;
+import de.macbury.expanse.core.graphics.camera.Overlay;
+import de.macbury.expanse.core.graphics.camera.RTSCameraController;
 import de.macbury.expanse.core.octree.WorldOctree;
 import de.macbury.expanse.core.screens.ScreenBase;
 import de.macbury.expanse.core.scripts.ScriptRunner;
@@ -43,6 +46,9 @@ public class TestScreen extends ScreenBase {
   private Array<Entity> tempEntities = new Array<Entity>();
   private CameraInputController cameraController;
   private Model robotModel;
+  private Overlay overlay;
+  private RTSCameraController rtsCameraController;
+  private Stage stage;
 
   @Override
   public void preload() {
@@ -51,12 +57,19 @@ public class TestScreen extends ScreenBase {
 
   @Override
   public void create() {
+    this.stage         = new Stage();
+    this.overlay       = new Overlay();
     this.shapeRenderer = new ShapeRenderer();
     this.camera      = new PerspectiveCamera(70, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-    camera.far = 1980;
+    this.rtsCameraController = new RTSCameraController(input);
+
+    camera.far = 300;
     camera.near = 1;
-    camera.position.set(0, 10, -10);
-    camera.lookAt(0,0,0);
+
+    rtsCameraController.setCenter(0, 0);
+    rtsCameraController.setCamera(camera);
+    rtsCameraController.setOverlay(overlay);
+
     this.texture     = this.assets.get("textures:bot.png", Texture.class);
     this.spriteBatch = new SpriteBatch();
     this.octree      = new WorldOctree();
@@ -75,10 +88,10 @@ public class TestScreen extends ScreenBase {
 
     //createRobot(new Vector3(550, 0, 350), Gdx.files.internal("scripts/robot2.js").readString());
 
-    for (int i = 0; i < 800; i++) {
+    for (int i = 0; i < 100; i++) {
       createRobot(new Vector3(
         (float) (Math.random() * 60)-30f,
-        0,
+        0.5f,
         (float) (Math.random() * 60)-30f
       ), Gdx.files.internal("scripts/random_robot_mov_test.js").readString());
     }
@@ -87,8 +100,9 @@ public class TestScreen extends ScreenBase {
       createRobot(new Vector3(500, 0, 500), Gdx.files.internal("scripts/my_robot.js").readString());
     }*/
 
-    this.myRobotEntity = createRobot(new Vector3(0, 0, 0), Gdx.files.internal("scripts/my_robot.js").readString());
-    Gdx.input.setInputProcessor(cameraController);
+    input.addProcessor(stage);
+    this.myRobotEntity = createRobot(new Vector3(0, 0.5f, 0), Gdx.files.internal("scripts/my_robot.js").readString());
+    stage.addActor(overlay);
   }
 
   public Entity createRobot(Vector3 position, String source) {
@@ -138,7 +152,9 @@ public class TestScreen extends ScreenBase {
   public void render(float delta) {
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
     camera.update();
-    cameraController.update();
+
+
+    rtsCameraController.update(delta);
     if (!entityPause) {
       entities.update(delta);
     }
@@ -174,11 +190,14 @@ public class TestScreen extends ScreenBase {
       }
     } shapeRenderer.end();
 
+    stage.act(delta);
+    stage.draw();
   }
 
   @Override
   public void resize(int width, int height) {
     //camera.setToOrtho(false, width, height);
+    overlay.invalidate();
   }
 
   @Override
@@ -191,5 +210,7 @@ public class TestScreen extends ScreenBase {
     spriteBatch.dispose();
     scriptRunner.dispose();
     entities.dispose();
+    stage.dispose();
+    input.removeProcessor(stage);
   }
 }

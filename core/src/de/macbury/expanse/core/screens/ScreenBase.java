@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.Expanse;
 import de.macbury.expanse.core.assets.Assets;
 import de.macbury.expanse.core.entities.Messages;
+import de.macbury.expanse.core.input.InputManager;
 
 /** <p>
  * Represents one of many application screens, such as a main menu, a settings menu, the game screen and so on.
@@ -18,6 +19,7 @@ public abstract class ScreenBase implements Disposable {
   protected Assets assets;
   protected ScreenManager screens;
   protected Messages messages;
+  protected InputManager input;
 
   /**
    * Links references to current {@link Expanse}
@@ -29,6 +31,7 @@ public abstract class ScreenBase implements Disposable {
     this.assets   = game.assets;
     this.screens  = game.screens;
     this.messages = game.messages;
+    this.input    = game.input;
   }
 
   /**
@@ -39,6 +42,7 @@ public abstract class ScreenBase implements Disposable {
     this.assets   = null;
     this.screens  = null;
     this.messages = null;
+    this.input    = null;
   }
 
   /**
