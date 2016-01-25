@@ -30,8 +30,8 @@ import de.macbury.expanse.core.scripts.ScriptRunner;
 /**
  * Created on 18.01.16.
  */
-public class TestScreen extends ScreenBase {
-  private static final String TAG = "TestScreen";
+public class RobotTestScreen extends ScreenBase {
+  private static final String TAG = "RobotTestScreen";
   private Texture texture;
   private SpriteBatch spriteBatch;
   private PerspectiveCamera camera;

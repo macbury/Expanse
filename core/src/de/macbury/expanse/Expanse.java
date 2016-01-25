@@ -4,14 +4,13 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.GdxAI;
-import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import de.macbury.expanse.core.assets.Assets;
 import de.macbury.expanse.core.entities.Messages;
 import de.macbury.expanse.core.input.InputManager;
 import de.macbury.expanse.core.screens.ScreenManager;
 import de.macbury.expanse.core.scripts.RobotScriptContextFactory;
+import de.macbury.expanse.test.RobotTestScreen;
 import de.macbury.expanse.test.TerrainTest;
-import de.macbury.expanse.test.TestScreen;
 
 public class Expanse extends ApplicationAdapter {
   public final static String VERSION = "0.0.3";

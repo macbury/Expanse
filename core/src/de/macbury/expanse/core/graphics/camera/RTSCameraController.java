@@ -6,6 +6,7 @@ package de.macbury.expanse.core.graphics.camera;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -24,7 +25,7 @@ public class RTSCameraController implements Disposable {
   public static final int MAX_ZOOM = 200;
   private static int CAMERA_MOVE_PADDING = 16;
   private InputManager input;
-  private PerspectiveCamera cam;
+  private Camera cam;
 
   private float currentZoom;
   private float maxZoom;
@@ -202,7 +203,7 @@ public class RTSCameraController implements Disposable {
     this.keyboardEnabled = keyboardEnabled;
   }
 
-  public void setCamera(PerspectiveCamera camera) {
+  public void setCamera(Camera camera) {
     this.cam = camera;
   }
 
@@ -299,7 +300,7 @@ public class RTSCameraController implements Disposable {
 
   }
 
-  public PerspectiveCamera getCamera() {
+  public Camera getCamera() {
     return cam;
   }
 
