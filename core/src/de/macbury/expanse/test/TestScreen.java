@@ -57,10 +57,11 @@ public class TestScreen extends ScreenBase {
 
   @Override
   public void create() {
-    this.stage         = new Stage();
-    this.overlay       = new Overlay();
-    this.shapeRenderer = new ShapeRenderer();
-    this.camera      = new PerspectiveCamera(70, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+    this.shapeRenderer  = new ShapeRenderer();
+    this.camera         = new PerspectiveCamera(70, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    this.stage          = new Stage();
+    this.overlay        = new Overlay();
     this.rtsCameraController = new RTSCameraController(input);
 
     camera.far = 300;
@@ -69,12 +70,14 @@ public class TestScreen extends ScreenBase {
     rtsCameraController.setCenter(0, 0);
     rtsCameraController.setCamera(camera);
     rtsCameraController.setOverlay(overlay);
+    input.addProcessor(stage);
+    stage.addActor(overlay);
 
     this.texture     = this.assets.get("textures:bot.png", Texture.class);
     this.spriteBatch = new SpriteBatch();
     this.octree      = new WorldOctree();
 
-    octree.setBounds(new BoundingBox(new Vector3(-60, -2, -60), new Vector3(60, 10, 60))); // in pixels
+    octree.setBounds(new BoundingBox(new Vector3(-500, -2, -500), new Vector3(500, 100, 500))); // in pixels
     this.entities    = new EntityManager(camera, messages, octree);
     this.fpsLogger   = new FPSLogger();
 
@@ -88,11 +91,11 @@ public class TestScreen extends ScreenBase {
 
     //createRobot(new Vector3(550, 0, 350), Gdx.files.internal("scripts/robot2.js").readString());
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 800; i++) {
       createRobot(new Vector3(
-        (float) (Math.random() * 60)-30f,
+        (float) (Math.random() * 800)-400,
         0.5f,
-        (float) (Math.random() * 60)-30f
+        (float) (Math.random() * 800)-400
       ), Gdx.files.internal("scripts/random_robot_mov_test.js").readString());
     }
 
@@ -100,9 +103,9 @@ public class TestScreen extends ScreenBase {
       createRobot(new Vector3(500, 0, 500), Gdx.files.internal("scripts/my_robot.js").readString());
     }*/
 
-    input.addProcessor(stage);
+
     this.myRobotEntity = createRobot(new Vector3(0, 0.5f, 0), Gdx.files.internal("scripts/my_robot.js").readString());
-    stage.addActor(overlay);
+
   }
 
   public Entity createRobot(Vector3 position, String source) {

@@ -10,6 +10,7 @@ import de.macbury.expanse.core.entities.Messages;
 import de.macbury.expanse.core.input.InputManager;
 import de.macbury.expanse.core.screens.ScreenManager;
 import de.macbury.expanse.core.scripts.RobotScriptContextFactory;
+import de.macbury.expanse.test.TerrainTest;
 import de.macbury.expanse.test.TestScreen;
 
 public class Expanse extends ApplicationAdapter {
@@ -43,7 +44,7 @@ public class Expanse extends ApplicationAdapter {
     this.messages   = new Messages();
     this.screens    = new ScreenManager(this);
 
-    screens.set(new TestScreen());
+    screens.set(new TerrainTest());
 
     Gdx.input.setInputProcessor(input);
   }
