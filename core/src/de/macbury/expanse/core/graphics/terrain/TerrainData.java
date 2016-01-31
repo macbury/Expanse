@@ -3,6 +3,9 @@ package de.macbury.expanse.core.graphics.terrain;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.core.procedular.BrownianNoise;
 import de.macbury.expanse.core.procedular.BrownianNoise3D;
@@ -40,7 +43,7 @@ public class TerrainData implements Disposable {
   public float getElevation(int x, int z) {
     //return (float)brownianNoise.noise(x/4, 0, z/4) * 20f;
     //perlinNoise.noise();
-    return tempColor.set(heightmap.getPixel(x,z)).r * 20;
+    return tempColor.set(heightmap.getPixel(x,z)).r * getMaxElevation();
   }
 
   public int getWidth() {
@@ -52,14 +55,29 @@ public class TerrainData implements Disposable {
   }
 
   public Color getColor(int x, int z) {
-    if (getElevation(x,z) >= 19) {
-      return snowColor;
-    } else if (getElevation(x,z) >= 4) {
-      return rockColor;
-    } else if (getElevation(x,z) >= 3) {
-      return Color.FOREST;
-    } else {
-      return groundColor;
-    }
+    return groundColor;
+  }
+
+  /**
+   * Calculates bounding box and returns it
+   * @return
+   */
+  public BoundingBox getBoundingBox() {
+    return new BoundingBox(
+      new Vector3(0,-1,0),
+      new Vector3(getWidth(), getMaxElevation(), getHeight())
+    );
+  }
+
+  private float getMaxElevation() {
+    return 20;
+  }
+
+  /**
+   * Creates a new vector with center of terrain
+   * @return
+   */
+  public Vector2 getCenter() {
+    return new Vector2(getWidth()/2, getHeight()/2);
   }
 }

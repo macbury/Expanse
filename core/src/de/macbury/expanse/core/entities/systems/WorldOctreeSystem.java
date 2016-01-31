@@ -3,6 +3,7 @@ package de.macbury.expanse.core.entities.systems;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.core.entities.Components;
@@ -45,7 +46,7 @@ public class WorldOctreeSystem extends IteratingSystem implements Disposable {
     PositionComponent positionComponent = Components.Position.get(entity);
     BodyComponent bodyComponent         = Components.Body.get(entity);
 
-    halfDimenTemp.set(bodyComponent.dimensions).scl(0.5f);
+    bodyComponent.getDimensions(halfDimenTemp).scl(0.5f);
     minVecTemp.set(positionComponent).sub(halfDimenTemp);
     maxVecTemp.set(positionComponent).add(halfDimenTemp);
     bodyComponent.setEntity(entity);

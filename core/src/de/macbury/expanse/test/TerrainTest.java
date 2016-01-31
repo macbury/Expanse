@@ -1,13 +1,12 @@
 package de.macbury.expanse.test;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -18,9 +17,13 @@ import de.macbury.expanse.core.entities.Components;
 import de.macbury.expanse.core.graphics.DebugShape;
 import de.macbury.expanse.core.graphics.camera.Overlay;
 import de.macbury.expanse.core.graphics.camera.RTSCameraController;
+import de.macbury.expanse.core.graphics.framebuffer.Fbo;
+import de.macbury.expanse.core.graphics.framebuffer.FullScreenFrameBufferResult;
+import de.macbury.expanse.core.graphics.gbuffer.GBuffer;
 import de.macbury.expanse.core.graphics.terrain.TerrainAssembler;
 import de.macbury.expanse.core.graphics.terrain.TerrainData;
 import de.macbury.expanse.core.screens.ScreenBase;
+
 
 /**
  * https://www.reddit.com/r/gamedev/comments/1g4eae/need_help_generating_an_island_using_perlin_noise/
@@ -48,6 +51,8 @@ public class TerrainTest extends ScreenBase {
   private TerrainData terrainData;
   private TerrainAssembler terrainAssembler;
   private ShapeRenderer shapeRenderer;
+  private GBuffer gbuffer;
+  private RenderContext renderContext;
 
   @Override
   public void preload() {
@@ -56,6 +61,7 @@ public class TerrainTest extends ScreenBase {
 
   @Override
   public void create() {
+    this.gbuffer        = new GBuffer();
     this.terrainData    = new TerrainData();
     this.terrainAssembler = new TerrainAssembler(terrainData, GL20.GL_TRIANGLES);
     this.camera         = new PerspectiveCamera(74, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -74,9 +80,9 @@ public class TerrainTest extends ScreenBase {
     rtsCameraController.setOverlay(overlay);
 
     input.addProcessor(stage);
-    stage.addActor(overlay);
 
-    this.modelBatch  = new ModelBatch();
+
+    this.modelBatch  = new ModelBatch(renderContext);
     this.meshBuilder = new MeshBuilder();
 
 
@@ -146,32 +152,34 @@ public class TerrainTest extends ScreenBase {
 
 
     input.addProcessor(stage);
+
+    stage.addActor(new FullScreenFrameBufferResult(Fbo.MainColor, fb));
+    stage.addActor(overlay);
   }
 
   @Override
   public void render(float delta) {
-    Gdx.gl.glClearColor(1,1,1,1);
-    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
     camera.update();
     rtsCameraController.update(delta);
 
-    modelBatch.begin(camera); {
-      //modelBatch.render(tileRenderable);
-      modelBatch.render(terrainAssembler, env);
-    } modelBatch.end();
+    fb.begin(Fbo.MainColor); {
+      Gdx.gl.glClearColor(1,1,1,1);
+      Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-    /**shapeRenderer.setProjectionMatrix(camera.combined);
-    shapeRenderer.begin(ShapeRenderer.ShapeType.Line); {
-      shapeRenderer.setColor(Color.RED);
-      for (int i = 0; i < terrainAssembler.renderables.size; i++) {
-        terrainAssembler.renderables.get(i).meshPart.mesh.calculateBoundingBox(bounds);
-        DebugShape.draw(shapeRenderer, bounds);
-      }
-    } shapeRenderer.end();
-**/
+      modelBatch.begin(camera); {
+        modelBatch.render(terrainAssembler, env);
+      } modelBatch.end();
+    } fb.end();
 
+
+    Gdx.gl.glClearColor(1,1,1,1);
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     stage.act(delta);
     stage.draw();
+
+    if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+      fb.saveAsPng(Fbo.MainColor);
+    }
   }
 
   @Override
@@ -186,6 +194,6 @@ public class TerrainTest extends ScreenBase {
 
   @Override
   public void dispose() {
-
+    stage.dispose();
   }
 }

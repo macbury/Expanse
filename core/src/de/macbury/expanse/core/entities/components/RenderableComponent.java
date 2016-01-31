@@ -11,18 +11,6 @@ import com.badlogic.gdx.utils.Pool;
 /**
  * This component wraps {@link ModelInstance}
  */
-public class RenderableComponent implements Component, Pool.Poolable, RenderableProvider {
-  public ModelInstance modelInstance;
+public abstract class RenderableComponent implements Component, Pool.Poolable, RenderableProvider {
 
-  @Override
-  public void reset() {
-    modelInstance = null;
-  }
-
-  @Override
-  public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
-    if (modelInstance != null) {
-      modelInstance.getRenderables(renderables, pool);
-    }
-  }
 }

@@ -87,7 +87,7 @@ public class RobotManagerSystem extends IteratingSystem implements Disposable, E
   }
 
   /**
-   * Add all required telegram listeners and send message to reprogram robot!
+   * Build all required telegram listeners and send message to reprogram robot!
    * @param entity
    */
   @Override

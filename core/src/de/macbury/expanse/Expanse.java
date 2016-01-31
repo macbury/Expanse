@@ -6,10 +6,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.GdxAI;
 import de.macbury.expanse.core.assets.Assets;
 import de.macbury.expanse.core.entities.Messages;
+import de.macbury.expanse.core.graphics.framebuffer.FrameBufferManager;
 import de.macbury.expanse.core.input.InputManager;
 import de.macbury.expanse.core.screens.ScreenManager;
 import de.macbury.expanse.core.scripts.RobotScriptContextFactory;
+import de.macbury.expanse.test.HudTest;
 import de.macbury.expanse.test.RobotTestScreen;
+import de.macbury.expanse.test.TerrainEntitiesTest;
 import de.macbury.expanse.test.TerrainTest;
 
 public class Expanse extends ApplicationAdapter {
@@ -31,7 +34,10 @@ public class Expanse extends ApplicationAdapter {
    * Manage in game screens
    */
   public ScreenManager screens;
-
+  /**
+   * Manage framebuffers
+   */
+  public FrameBufferManager fb;
   @Override
   public void create () {
     Gdx.app.setLogLevel(Application.LOG_DEBUG);
@@ -42,10 +48,17 @@ public class Expanse extends ApplicationAdapter {
     this.assets     = new Assets();
     this.messages   = new Messages();
     this.screens    = new ScreenManager(this);
+    this.fb         = new FrameBufferManager();
 
-    screens.set(new TerrainTest());
+    screens.set(new TerrainEntitiesTest());
 
     Gdx.input.setInputProcessor(input);
+  }
+
+  @Override
+  public void resize(int width, int height) {
+    fb.resize(width, height, true);
+    super.resize(width, height);
   }
 
   @Override
@@ -61,5 +74,6 @@ public class Expanse extends ApplicationAdapter {
     assets.dispose();
     messages.clear();
     messages.clearListeners();
+    fb.dispose();
   }
 }

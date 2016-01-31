@@ -13,9 +13,9 @@ import de.macbury.expanse.core.octree.OctreeObject;
  * This component describe entity size and position in world
  */
 public class BodyComponent extends BoundingBox implements Component, Pool.Poolable, OctreeObject {
-  public Vector3 dimensions = new Vector3();
   public OctreeNode parent;
   public Entity entity;
+  public Vector3 dimension = new Vector3();
 
   @Override
   public void getBoundingBox(BoundingBox outBox) {
@@ -30,7 +30,6 @@ public class BodyComponent extends BoundingBox implements Component, Pool.Poolab
   @Override
   public void reset() {
     entity = null;
-    dimensions.setZero();
     setOctreeParent(null);
   }
 

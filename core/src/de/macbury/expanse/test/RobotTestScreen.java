@@ -111,11 +111,11 @@ public class RobotTestScreen extends ScreenBase {
   public Entity createRobot(Vector3 position, String source) {
     Entity robotEntity                            = entities.createEntity();
 
-    RenderableComponent renderableComponent       = entities.createComponent(RenderableComponent.class);
-    renderableComponent.modelInstance             = new ModelInstance(robotModel);
+    ModelComponent modelComponent                 = entities.createComponent(ModelComponent.class);
+    modelComponent.modelInstance                  = new ModelInstance(robotModel);
 
     BodyComponent bodyComponent                   = entities.createComponent(BodyComponent.class);
-    bodyComponent.dimensions.set(1, 1, 1.5f);
+    //bodyComponent.dimensions.set(1, 1, 1.5f); //TODO fix this
 
     MotorComponent motorComponent                 = entities.createComponent(MotorComponent.class);
     motorComponent.init(robotEntity, messages, null, null);
@@ -141,10 +141,10 @@ public class RobotTestScreen extends ScreenBase {
     robotEntity.add(robotInstructionStateComponent);
     robotEntity.add(robotScriptComponent);
     robotEntity.add(positionComponent);
-    //robotEntity.add(spriteComponent);
+    //robotEntity.build(spriteComponent);
     robotEntity.add(motorComponent);
     robotEntity.add(bodyComponent);
-    robotEntity.add(renderableComponent);
+    robotEntity.add(modelComponent);
 
     entities.addEntity(robotEntity);
     tempEntities.add(robotEntity);

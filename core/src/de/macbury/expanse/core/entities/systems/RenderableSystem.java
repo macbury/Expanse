@@ -13,9 +13,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.core.entities.Components;
 import de.macbury.expanse.core.entities.OctreeIteratingSystem;
-import de.macbury.expanse.core.entities.components.BodyComponent;
-import de.macbury.expanse.core.entities.components.PositionComponent;
-import de.macbury.expanse.core.entities.components.RenderableComponent;
+import de.macbury.expanse.core.entities.components.*;
 import de.macbury.expanse.core.octree.OctreeNode;
 import de.macbury.expanse.core.octree.WorldOctree;
 
@@ -31,7 +29,13 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
   private BoundingBox tempBox = new BoundingBox();
 
   public RenderableSystem(WorldOctree octree, Camera camera, ModelBatch modelBatch) {
-    super(octree, Family.all(PositionComponent.class, RenderableComponent.class, BodyComponent.class).get());
+    super(octree, Family.all(
+      PositionComponent.class,
+      BodyComponent.class
+    ).one(
+      ModelComponent.class,
+      TerrainRenderableComponent.class
+    ).get());
     this.camera     = camera;
     this.modelBatch = modelBatch;
     this.env        = new Environment();// TODO move this to provider or something, else, this should not be initialized here
@@ -41,6 +45,7 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
 
   @Override
   public void update(float deltaTime) {
+
     modelBatch.begin(camera); {
       super.update(deltaTime);
     } modelBatch.end();
@@ -54,11 +59,19 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
   @Override
   protected void processEntity(Entity entity, float deltaTime) {
     PositionComponent positionComponent     = Components.Position.get(entity);
-    RenderableComponent renderableComponent = Components.Renderable.get(entity);
-    renderableComponent.modelInstance.transform.idt().rotate(Vector3.Y, positionComponent.rotationDeg).trn(
-      positionComponent
-    );
-    modelBatch.render(renderableComponent, env);
+
+    if (Components.Model.has(entity)) {
+      ModelComponent modelComponent = Components.Model.get(entity);
+      modelComponent.modelInstance.transform.idt().rotate(Vector3.Y, positionComponent.rotationDeg).trn(
+        positionComponent
+      );
+
+      modelBatch.render(modelComponent, env);
+    }
+
+    if (Components.TerrainRenderable.has(entity)) {
+      modelBatch.render(Components.TerrainRenderable.get(entity), env);
+    }
   }
 
   @Override

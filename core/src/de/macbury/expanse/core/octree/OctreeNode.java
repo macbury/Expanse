@@ -117,7 +117,7 @@ public class OctreeNode<E extends OctreeObject> implements Pool.Poolable, Dispos
   }
 
   /**
-   * Insert the object into the node. If the node exceeds the capacity, it will split and add all objects to their corresponding subnodes.
+   * Insert the object into the node. If the node exceeds the capacity, it will split and build all objects to their corresponding subnodes.
    * @param objectToInsert The Body object to insert into the octree
    */
   public void insert(E objectToInsert) {

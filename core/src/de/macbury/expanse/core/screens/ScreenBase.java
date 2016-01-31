@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.Expanse;
 import de.macbury.expanse.core.assets.Assets;
 import de.macbury.expanse.core.entities.Messages;
+import de.macbury.expanse.core.graphics.framebuffer.FrameBufferManager;
 import de.macbury.expanse.core.input.InputManager;
 
 /** <p>
@@ -20,6 +21,7 @@ public abstract class ScreenBase implements Disposable {
   protected ScreenManager screens;
   protected Messages messages;
   protected InputManager input;
+  protected FrameBufferManager fb;
 
   /**
    * Links references to current {@link Expanse}
@@ -32,12 +34,14 @@ public abstract class ScreenBase implements Disposable {
     this.screens  = game.screens;
     this.messages = game.messages;
     this.input    = game.input;
+    this.fb       = game.fb;
   }
 
   /**
    * Unlink references to current {@link Expanse}
    */
   public void unlink() {
+    this.fb       = null;
     this.game     = null;
     this.assets   = null;
     this.screens  = null;
@@ -46,7 +50,7 @@ public abstract class ScreenBase implements Disposable {
   }
 
   /**
-   * Called before {@link ScreenBase#create()}. You can add assets to load here. If there are assets to load it shows loading screen
+   * Called before {@link ScreenBase#create()}. You can build assets to load here. If there are assets to load it shows loading screen
    */
   public abstract void preload();
   /**

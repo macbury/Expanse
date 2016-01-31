@@ -1,5 +1,6 @@
 package de.macbury.expanse.core.graphics.terrain;
 
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -9,11 +10,16 @@ import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.model.MeshPart;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
+import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pool;
+import de.macbury.expanse.core.entities.EntityManager;
+import de.macbury.expanse.core.entities.components.BodyComponent;
+import de.macbury.expanse.core.entities.components.PositionComponent;
+import de.macbury.expanse.core.entities.components.TerrainRenderableComponent;
 
 /**
  * This class uses {@link TerrainData} to create {@link com.badlogic.gdx.graphics.g3d.Renderable} for each terrain tile. It manages and disposes all meshes
@@ -35,6 +41,7 @@ public class TerrainAssembler implements Disposable, RenderableProvider {
   public final Array<Renderable> renderables;
   private final static int TILE_SIZE = 20;
   private int primitiveType;
+  private Array<Entity> entities;
 
   public TerrainAssembler(TerrainData terrainData, int primitiveType) {
     this.meshBuilder = new MeshBuilder();
@@ -42,7 +49,7 @@ public class TerrainAssembler implements Disposable, RenderableProvider {
     this.renderables = new Array<Renderable>();
     this.material    = new Material();
     this.primitiveType = primitiveType;
-
+    this.entities      = new Array<Entity>();
 
     this.bottomRightVertexInfo = new MeshPartBuilder.VertexInfo();
     this.bottomLeftVertexInfo  = new MeshPartBuilder.VertexInfo();
@@ -178,6 +185,8 @@ public class TerrainAssembler implements Disposable, RenderableProvider {
     renderables.clear();
     terrainData = null;
     meshBuilder.clear();
+    entities.clear();
+    entities = null;
     meshBuilder = null;
     material    = null;
   }
@@ -185,5 +194,35 @@ public class TerrainAssembler implements Disposable, RenderableProvider {
   @Override
   public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
     renderables.addAll(this.renderables);
+  }
+
+  /**
+   * For each tile renderable create entity and add it to {@link EntityManager}
+   * @param entityManager
+   */
+  public void addTo(EntityManager entityManager) {
+    entities.clear();
+    for(Renderable tileRenderable : renderables) {
+      BodyComponent bodyComponent = entityManager.createComponent(BodyComponent.class);
+      tileRenderable.meshPart.mesh.calculateBoundingBox(bodyComponent);
+
+      PositionComponent positionComponent = entityManager.createComponent(PositionComponent.class);
+      bodyComponent.getMin(positionComponent);
+
+      TerrainRenderableComponent terrainRenderableComponent = entityManager.createComponent(TerrainRenderableComponent.class);
+      terrainRenderableComponent.terrainTile                = tileRenderable;
+
+      Entity tileEntity = entityManager.createEntity();
+      tileEntity.add(bodyComponent);
+      tileEntity.add(terrainRenderableComponent);
+      tileEntity.add(positionComponent);
+
+      entityManager.addEntity(tileEntity);
+      entities.add(tileEntity);
+    }
+  }
+
+  public Array<Entity> getEntities() {
+    return entities;
   }
 }
