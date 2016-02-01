@@ -78,6 +78,7 @@ public class ScreenManager implements Disposable {
       @Override
       public void update(ScreenManager manager) {
         if (manager.assets.update()) {
+          Gdx.app.log(TAG, "Loading assets: " + manager.assets.getProgress());
           manager.stateMachine.changeState(ScreenManagerState.Show);
         } else {
           Gdx.app.log(TAG, "Loading assets: " + manager.assets.getProgress());

@@ -15,19 +15,17 @@ import de.macbury.expanse.core.procedular.PerlinNoise;
  * This class contains all information about terrain like height and colors
  */
 public class TerrainData implements Disposable {
-
   private final Pixmap heightmap;
   private final Color tempColor;
-  private final PerlinNoise perlinNoise;
-  private final BrownianNoise3D brownianNoise;
   private final Color groundColor;
   private final Color snowColor;
   private final Color rockColor;
+  private final int maxElevation;
 
-  public TerrainData() {
-    this.perlinNoise    = new PerlinNoise(System.currentTimeMillis());
-    this.brownianNoise  = new BrownianNoise3D(perlinNoise, 4);
-    this.heightmap      = new Pixmap(Gdx.files.internal("textures/Heightmap-mini.PNG"));
+
+  public TerrainData(Pixmap heightMap, int maxElevation) {
+    this.maxElevation   = maxElevation;
+    this.heightmap      = heightMap;
     this.tempColor      = new Color();
 
     this.rockColor      = new Color(Color.DARK_GRAY);
@@ -37,13 +35,11 @@ public class TerrainData implements Disposable {
 
   @Override
   public void dispose() {
-    heightmap.dispose();
+
   }
 
   public float getElevation(int x, int z) {
-    //return (float)brownianNoise.noise(x/4, 0, z/4) * 20f;
-    //perlinNoise.noise();
-    return tempColor.set(heightmap.getPixel(x,z)).r * getMaxElevation();
+    return tempColor.set(heightmap.getPixel(x,z)).a * getMaxElevation();
   }
 
   public int getWidth() {
@@ -69,8 +65,8 @@ public class TerrainData implements Disposable {
     );
   }
 
-  private float getMaxElevation() {
-    return 20;
+  float getMaxElevation() {
+    return maxElevation;
   }
 
   /**
@@ -80,4 +76,5 @@ public class TerrainData implements Disposable {
   public Vector2 getCenter() {
     return new Vector2(getWidth()/2, getHeight()/2);
   }
+
 }

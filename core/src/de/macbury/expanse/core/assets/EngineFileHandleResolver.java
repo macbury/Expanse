@@ -19,9 +19,9 @@ public class EngineFileHandleResolver implements FileHandleResolver {
   }
 
   private void configureMappings() {
-    putMapping("textures", "textures/");
+    putMapping("texture", "textures/");
     putMapping("maps", "maps/");
-    putMapping("charsets", "charsets/");
+    putMapping("terrain", "terrains/");
   }
 
   private String applyMapping(String path) {

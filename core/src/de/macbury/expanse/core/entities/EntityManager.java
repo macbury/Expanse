@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.core.entities.systems.*;
+import de.macbury.expanse.core.graphics.LodModelBatch;
+import de.macbury.expanse.core.graphics.camera.GameCamera;
 import de.macbury.expanse.core.octree.WorldOctree;
 
 /**
@@ -19,7 +21,7 @@ public class EntityManager extends PooledEngine implements Disposable {
   private RobotManagerSystem robotManagerSystem;
   private SpriteRenderingSystem spriteRenderingSystem;
 
-  public EntityManager(Camera renderingCamera, Messages messages, WorldOctree octree) {
+  public EntityManager(GameCamera renderingCamera, Messages messages, WorldOctree octree) {
     super();
 
     this.timerSystem           = new TimerSystem(messages);
@@ -27,7 +29,7 @@ public class EntityManager extends PooledEngine implements Disposable {
     this.robotManagerSystem    = new RobotManagerSystem(messages);
     this.motorSystem           = new MotorSystem(messages);
     this.worldOctreeSystem     = new WorldOctreeSystem(octree);
-    this.renderableSystem      = new RenderableSystem(octree, renderingCamera, new ModelBatch()); //TODO move initialization of model batch elswhere
+    this.renderableSystem      = new RenderableSystem(octree, renderingCamera, new LodModelBatch()); //TODO move initialization of model batch elswhere
     addEntityListener(robotManagerSystem);
 
     addSystem(robotManagerSystem);

@@ -21,7 +21,7 @@ public class WorldOctreeSystem extends IteratingSystem implements Disposable {
   private Vector3 minVecTemp    = new Vector3();
   private Vector3 maxVecTemp    = new Vector3();
   public WorldOctreeSystem(WorldOctree octree) {
-    super(Family.all(PositionComponent.class, BodyComponent.class).get());
+    super(Family.all(PositionComponent.class).get());
     this.octree = octree;
   }
 
@@ -44,14 +44,13 @@ public class WorldOctreeSystem extends IteratingSystem implements Disposable {
   @Override
   protected void processEntity(Entity entity, float deltaTime) {
     PositionComponent positionComponent = Components.Position.get(entity);
-    BodyComponent bodyComponent         = Components.Body.get(entity);
 
-    bodyComponent.getDimensions(halfDimenTemp).scl(0.5f);
+    halfDimenTemp.set(positionComponent.dimension).scl(0.5f);
     minVecTemp.set(positionComponent).sub(halfDimenTemp);
     maxVecTemp.set(positionComponent).add(halfDimenTemp);
-    bodyComponent.setEntity(entity);
-    bodyComponent.set(minVecTemp, maxVecTemp);
+    positionComponent.entity = entity;
+    positionComponent.boundingBox.set(minVecTemp, maxVecTemp);
 
-    octree.insert(bodyComponent);
+    octree.insert(positionComponent);
   }
 }

@@ -7,10 +7,11 @@ import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
+import de.macbury.expanse.core.graphics.LodRenderableProvider;
 
 /**
  * This component wraps {@link ModelInstance}
  */
-public abstract class RenderableComponent implements Component, Pool.Poolable, RenderableProvider {
+public abstract class RenderableComponent implements Component, Pool.Poolable, LodRenderableProvider {
 
 }

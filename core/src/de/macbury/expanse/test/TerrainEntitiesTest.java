@@ -2,6 +2,7 @@ package de.macbury.expanse.test;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
@@ -15,6 +16,7 @@ import de.macbury.expanse.core.entities.EntityManager;
 import de.macbury.expanse.core.graphics.DebugShape;
 import de.macbury.expanse.core.graphics.camera.GameCamera;
 import de.macbury.expanse.core.graphics.camera.RTSCameraController;
+import de.macbury.expanse.core.graphics.terrain.Terrain;
 import de.macbury.expanse.core.graphics.terrain.TerrainAssembler;
 import de.macbury.expanse.core.graphics.terrain.TerrainData;
 import de.macbury.expanse.core.octree.WorldOctree;
@@ -31,17 +33,17 @@ public class TerrainEntitiesTest extends ScreenBase {
   private WorldOctree octree;
   private EntityManager entities;
   private FPSLogger fpsLogger;
-  private TerrainData terrainData;
-  private TerrainAssembler terrainAssembler;
   private ShapeRenderer shapeRenderer;
+  private Terrain terrain;
 
   @Override
   public void preload() {
-
+    assets.load("terrain:playground.json", Terrain.class);
   }
 
   @Override
   public void create() {
+    this.terrain              = assets.get("terrain:playground.json");
     this.shapeRenderer        = new ShapeRenderer();
     this.camera               = new GameCamera();
     this.hud                  = new Hud(input, assets);
@@ -53,16 +55,15 @@ public class TerrainEntitiesTest extends ScreenBase {
     rtsCameraController.setCamera(camera);
     rtsCameraController.setOverlay(hud.getOverlay());
 
-    this.octree      = new WorldOctree();
+    this.octree           = new WorldOctree();
 
-    this.entities    = new EntityManager(camera, messages, octree);
-    this.fpsLogger   = new FPSLogger();
+    this.entities         = new EntityManager(camera, messages, octree);
+    terrain.addToEntityManager(entities);
+    this.fpsLogger        = new FPSLogger();
 
-    this.terrainData      = new TerrainData();
-    this.terrainAssembler = new TerrainAssembler(terrainData, GL20.GL_TRIANGLES);
-    terrainAssembler.addTo(entities);
-    rtsCameraController.setCenter(terrainData.getCenter());
-    octree.setBounds(terrainData.getBoundingBox());
+
+    rtsCameraController.setCenter(terrain.getCenter());
+    octree.setBounds(terrain.getBoundingBox());
 
     Button button = new Button(hud.getSkin());
     button.setPosition(20, 20);
@@ -72,23 +73,28 @@ public class TerrainEntitiesTest extends ScreenBase {
 
   @Override
   public void render(float delta) {
+    Gdx.gl.glClearColor(1,1,1,1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
     rtsCameraController.update(delta);
     entities.update(delta);
     fpsLogger.log();
-
+/*
     shapeRenderer.setProjectionMatrix(camera.combined);
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line); {
       shapeRenderer.setColor(Color.WHITE);
-      shapeRenderer.box(1,1,1,1,1,1);
+      //shapeRenderer.box(1,1,1,1,1,1);
       DebugShape.octree(shapeRenderer, octree);
 
       shapeRenderer.setColor(Color.FOREST);
 
       for (Entity tileEntity : terrainAssembler.getEntities()) {
-        DebugShape.draw(shapeRenderer, Components.Body.get(tileEntity));
+        DebugShape.draw(shapeRenderer, Components.Position.get(tileEntity).boundingBox);
       }
-    } shapeRenderer.end();
+    } shapeRenderer.end();*/
+
+    if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
+      camera.saveDebugFrustrum();
+    }
 
     hud.act(delta);
     hud.draw();
@@ -101,7 +107,7 @@ public class TerrainEntitiesTest extends ScreenBase {
 
   @Override
   public void unload() {
-
+    assets.unload("terrain:playground.json");
   }
 
   @Override

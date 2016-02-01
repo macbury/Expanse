@@ -78,7 +78,7 @@ public class RobotTestScreen extends ScreenBase {
     this.octree      = new WorldOctree();
 
     octree.setBounds(new BoundingBox(new Vector3(-500, -2, -500), new Vector3(500, 100, 500))); // in pixels
-    this.entities    = new EntityManager(camera, messages, octree);
+    //this.entities    = new EntityManager(camera, messages, octree);
     this.fpsLogger   = new FPSLogger();
 
     this.cameraController = new CameraInputController(camera);

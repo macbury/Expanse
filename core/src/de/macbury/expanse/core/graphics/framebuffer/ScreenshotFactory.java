@@ -25,7 +25,7 @@ public class ScreenshotFactory {
     final Pixmap pixmap = ScreenUtils.getFrameBufferPixmap(x, y, w, h);
 
     if (yDown) {
-      // Flip the pixmap upside down
+      // Flip the heightMap upside down
       ByteBuffer pixels = pixmap.getPixels();
       int numBytes = w * h * 4;
       byte[] lines = new byte[numBytes];

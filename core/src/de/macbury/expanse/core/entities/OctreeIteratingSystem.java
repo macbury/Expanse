@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.core.entities.components.BodyComponent;
+import de.macbury.expanse.core.entities.components.PositionComponent;
 import de.macbury.expanse.core.octree.OctreeNode;
 import de.macbury.expanse.core.octree.OctreeObject;
 import de.macbury.expanse.core.octree.WorldOctree;
@@ -16,15 +17,15 @@ import de.macbury.expanse.core.octree.query.OctreeQuery;
  * This system iterates over each {@link Entity} which is in {@link Family} and {@link OctreeIteratingSystem#checkObject(OctreeObject)} with {@link OctreeIteratingSystem#checkEntity(Entity)} return true.
  * This system is ideally for frustrum culling and collision detection
  */
-public abstract class OctreeIteratingSystem extends EntitySystem implements Disposable, OctreeQuery<BodyComponent> {
+public abstract class OctreeIteratingSystem extends EntitySystem implements Disposable, OctreeQuery<PositionComponent> {
   protected Family family;
   protected WorldOctree octree;
-  private Array<BodyComponent> treeObjects;
+  private Array<PositionComponent> treeObjects;
 
   public OctreeIteratingSystem(WorldOctree octree, Family family) {
     this.family       = family;
     this.octree       = octree;
-    this.treeObjects  = new Array<BodyComponent>();
+    this.treeObjects  = new Array<PositionComponent>();
   }
 
   @Override
@@ -50,7 +51,7 @@ public abstract class OctreeIteratingSystem extends EntitySystem implements Disp
    * @return
    */
   @Override
-  public boolean checkObject(BodyComponent object) {
+  public boolean checkObject(PositionComponent object) {
     return object.entity != null && family.matches(object.entity) && checkEntity(object.entity);
   }
 

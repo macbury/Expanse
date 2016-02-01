@@ -13,8 +13,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Pool;
-import de.macbury.expanse.core.entities.Components;
-import de.macbury.expanse.core.graphics.DebugShape;
 import de.macbury.expanse.core.graphics.camera.Overlay;
 import de.macbury.expanse.core.graphics.camera.RTSCameraController;
 import de.macbury.expanse.core.graphics.framebuffer.Fbo;
@@ -62,8 +60,6 @@ public class TerrainTest extends ScreenBase {
   @Override
   public void create() {
     this.gbuffer        = new GBuffer();
-    this.terrainData    = new TerrainData();
-    this.terrainAssembler = new TerrainAssembler(terrainData, GL20.GL_TRIANGLES);
     this.camera         = new PerspectiveCamera(74, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     //this.camera         = new OrthographicCamera(70, 40);
 
@@ -167,7 +163,7 @@ public class TerrainTest extends ScreenBase {
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
       modelBatch.begin(camera); {
-        modelBatch.render(terrainAssembler, env);
+        //modelBatch.render(terrainAssembler, env);
       } modelBatch.end();
     } fb.end();
 

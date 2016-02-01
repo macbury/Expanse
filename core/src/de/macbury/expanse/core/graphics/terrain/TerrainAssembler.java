@@ -1,30 +1,26 @@
 package de.macbury.expanse.core.graphics.terrain;
 
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Renderable;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.graphics.g3d.model.MeshPart;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
-import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Pool;
 import de.macbury.expanse.core.entities.EntityManager;
-import de.macbury.expanse.core.entities.components.BodyComponent;
 import de.macbury.expanse.core.entities.components.PositionComponent;
 import de.macbury.expanse.core.entities.components.TerrainRenderableComponent;
+import de.macbury.expanse.core.graphics.Lod;
 
 /**
  * This class uses {@link TerrainData} to create {@link com.badlogic.gdx.graphics.g3d.Renderable} for each terrain tile. It manages and disposes all meshes
  */
-public class TerrainAssembler implements Disposable, RenderableProvider {
+public class TerrainAssembler implements Disposable {
   private final static Pool<MeshPartBuilder.VertexInfo> VertexInfoPool = new Pool<MeshPartBuilder.VertexInfo>() {
     @Override
     protected MeshPartBuilder.VertexInfo newObject() {
@@ -38,18 +34,25 @@ public class TerrainAssembler implements Disposable, RenderableProvider {
   private Material material;
   private MeshBuilder meshBuilder;
   private TerrainData terrainData;
-  public final Array<Renderable> renderables;
-  private final static int TILE_SIZE = 20;
+  private ObjectMap<Lod, Array<Renderable>> lodRenderables;
+  public final static int TILE_SIZE = 64;
   private int primitiveType;
-  private Array<Entity> entities;
+  private BoundingBox tempBoundingBox = new BoundingBox();
+  private Array<TerrainRenderableComponent> terrainRenderableComponents;
 
   public TerrainAssembler(TerrainData terrainData, int primitiveType) {
     this.meshBuilder = new MeshBuilder();
     this.terrainData = terrainData;
-    this.renderables = new Array<Renderable>();
+    this.lodRenderables = new ObjectMap<Lod, Array<Renderable>>();
+
+    for (Lod lod : Lod.values()) {
+      lodRenderables.put(lod, new Array<Renderable>());
+    }
+
     this.material    = new Material();
     this.primitiveType = primitiveType;
-    this.entities      = new Array<Entity>();
+
+    terrainRenderableComponents = new Array<TerrainRenderableComponent>();
 
     this.bottomRightVertexInfo = new MeshPartBuilder.VertexInfo();
     this.bottomLeftVertexInfo  = new MeshPartBuilder.VertexInfo();
@@ -67,10 +70,21 @@ public class TerrainAssembler implements Disposable, RenderableProvider {
 
     for (int tileX = 0; tileX < tileCountX; tileX++) {
       for (int tileY = 0; tileY < tileCountY; tileY++) {
-        build(tileX, tileY);
+        TerrainRenderableComponent terrainRenderableComponent = new TerrainRenderableComponent();
+
+        for (Lod lod : Lod.values()) {
+          terrainRenderableComponent.lodTiles.put(
+            lod,
+            build(tileX, tileY, lod)
+          );
+        }
+
+        terrainRenderableComponents.add(terrainRenderableComponent);
+        //buildTileEntityBase(terrainRenderableComponent);
       }
     }
   }
+
 
   private Vector3 tempNormal = new Vector3();
   private void calcNormal(MeshPartBuilder.VertexInfo p1, MeshPartBuilder.VertexInfo p2, MeshPartBuilder.VertexInfo p3) {
@@ -105,7 +119,7 @@ public class TerrainAssembler implements Disposable, RenderableProvider {
    * @param tileX
    * @param tileY
    */
-  private void build(int tileX, int tileY) {
+  private Renderable build(int tileX, int tileY, Lod lod) {
     Renderable tileRenderable = new Renderable();
     tileRenderable.material   = material;
 
@@ -113,11 +127,12 @@ public class TerrainAssembler implements Disposable, RenderableProvider {
     int startY = tileY * TILE_SIZE;
     int endX   = startX + TILE_SIZE;
     int endY   = startY + TILE_SIZE;
-
+    int resolution = lod.resolution;
     meshBuilder.begin(VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked); {
       meshBuilder.part("tile"+tileX+"x"+tileY, primitiveType, tileRenderable.meshPart);
-      for (int x = startX; x < endX; x++) {
-        for (int z = startY; z < endY; z++) {
+      for (int x = startX; x < endX; x+=resolution) {
+        for (int z = startY; z < endY; z+=resolution) {
+
           bottomLeftVertexInfo.setPos(
             x,
             terrainData.getElevation(x,z),
@@ -125,22 +140,22 @@ public class TerrainAssembler implements Disposable, RenderableProvider {
           ).setCol(terrainData.getColor(x,z));
 
           bottomRightVertexInfo.setPos(
-            x+1,
-            terrainData.getElevation(x+1,z),
+            x+resolution,
+            terrainData.getElevation(x+resolution,z),
             z
-          ).setCol(terrainData.getColor(x+1,z));
+          ).setCol(terrainData.getColor(x+resolution,z));
 
           topLeftVertexInfo.setPos(
             x,
-            terrainData.getElevation(x,z+1),
-            z+1
-          ).setCol(terrainData.getColor(x,z+1));
+            terrainData.getElevation(x,z+resolution),
+            z+resolution
+          ).setCol(terrainData.getColor(x,z+resolution));
 
           topRightVertexInfo.setPos(
-            x + 1,
-            terrainData.getElevation(x + 1, z + 1),
-            z + 1
-          ).setCol(terrainData.getColor(x+1,z+1));
+            x + resolution,
+            terrainData.getElevation(x + resolution, z + resolution),
+            z + resolution
+          ).setCol(terrainData.getColor(x+resolution,z+resolution));
 
           calcNormal(
             bottomLeftVertexInfo,
@@ -169,60 +184,34 @@ public class TerrainAssembler implements Disposable, RenderableProvider {
       }
     } meshBuilder.end();
 
-    renderables.add(tileRenderable);
+    lodRenderables.get(lod).add(tileRenderable);
+    tileRenderable.meshPart.mesh.setAutoBind(true);
+    return tileRenderable;
   }
 
   @Override
   public void dispose() {
-    for (Renderable renderable : renderables) {
-      renderable.environment = null;
-      renderable.material    = null;
-      renderable.shader      = null;
-      renderable.userData    = null;
-      renderable.bones       = null;
-      renderable.meshPart.mesh.dispose();
+    for (Lod lod : Lod.values()) {
+      for (Renderable renderable : lodRenderables.get(lod)) {
+        renderable.environment = null;
+        renderable.material    = null;
+        renderable.shader      = null;
+        renderable.userData    = null;
+        renderable.bones       = null;
+        renderable.meshPart.mesh.dispose();
+      }
     }
-    renderables.clear();
+
+    lodRenderables.clear();
     terrainData = null;
     meshBuilder.clear();
-    entities.clear();
-    entities = null;
     meshBuilder = null;
     material    = null;
+    terrainRenderableComponents.clear();
   }
 
-  @Override
-  public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
-    renderables.addAll(this.renderables);
-  }
 
-  /**
-   * For each tile renderable create entity and add it to {@link EntityManager}
-   * @param entityManager
-   */
-  public void addTo(EntityManager entityManager) {
-    entities.clear();
-    for(Renderable tileRenderable : renderables) {
-      BodyComponent bodyComponent = entityManager.createComponent(BodyComponent.class);
-      tileRenderable.meshPart.mesh.calculateBoundingBox(bodyComponent);
-
-      PositionComponent positionComponent = entityManager.createComponent(PositionComponent.class);
-      bodyComponent.getMin(positionComponent);
-
-      TerrainRenderableComponent terrainRenderableComponent = entityManager.createComponent(TerrainRenderableComponent.class);
-      terrainRenderableComponent.terrainTile                = tileRenderable;
-
-      Entity tileEntity = entityManager.createEntity();
-      tileEntity.add(bodyComponent);
-      tileEntity.add(terrainRenderableComponent);
-      tileEntity.add(positionComponent);
-
-      entityManager.addEntity(tileEntity);
-      entities.add(tileEntity);
-    }
-  }
-
-  public Array<Entity> getEntities() {
-    return entities;
+  public Array<TerrainRenderableComponent> getComponents() {
+    return terrainRenderableComponents;
   }
 }
