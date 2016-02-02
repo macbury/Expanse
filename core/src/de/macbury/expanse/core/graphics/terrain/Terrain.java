@@ -81,10 +81,14 @@ public class Terrain implements Disposable, RTSCameraListener {
    * @return
    */
   public float getElevation(float x, float z) {
-    int tx =  MathUtils.floor(x / TerrainAssembler.TRIANGLE_SIZE);
-    int tz =  MathUtils.floor(z / TerrainAssembler.TRIANGLE_SIZE);
-    Gdx.app.log("DATA", "x=" + (x / TerrainAssembler.TRIANGLE_SIZE) + " z=" + (z / TerrainAssembler.TRIANGLE_SIZE));
-    return terrainData.getElevation(tx, tz);
+    int terrainX = MathUtils.floor(x / TerrainAssembler.TRIANGLE_SIZE);
+    int terrainZ = MathUtils.floor(z / TerrainAssembler.TRIANGLE_SIZE);
+
+    float xCoord = (terrainX % TerrainAssembler.TRIANGLE_SIZE) / TerrainAssembler.TRIANGLE_SIZE;
+    float zCoord = (terrainZ % TerrainAssembler.TRIANGLE_SIZE) / TerrainAssembler.TRIANGLE_SIZE;
+    //int tileX    =
+   // Gdx.app.log("DATA", "x=" + (x / TerrainAssembler.TRIANGLE_SIZE) + " z=" + (z / TerrainAssembler.TRIANGLE_SIZE));
+    return terrainData.getElevation(terrainX, terrainZ);
   }
 
   @Override

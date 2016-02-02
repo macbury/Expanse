@@ -98,7 +98,7 @@ public class TerrainData implements Disposable {
   }
 
   public Color getColor(int x, int z) {
-
+/*
     if (elevation[x][z] >= getMaxElevation() * 0.67f) {
       tempColor.set(snowColor);
     } else if (elevation[x][z] >= getMaxElevation() * 0.47f) {
@@ -106,7 +106,8 @@ public class TerrainData implements Disposable {
     } else {
       tempColor.set(groundColor);
     }
-
+*/
+    tempColor.set(groundColor);
     float f = shadeFactor[x][z];
     tempColor.sub(f, f, f,0);
 

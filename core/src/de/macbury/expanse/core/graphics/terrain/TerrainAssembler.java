@@ -37,7 +37,7 @@ public class TerrainAssembler implements Disposable {
   private TerrainData terrainData;
   private ObjectMap<Lod, Array<Renderable>> lodRenderables;
   public final static int TILE_SIZE = 32;
-  public final static int TRIANGLE_SIZE = 4;
+  public final static int TRIANGLE_SIZE = 1;
   private int primitiveType;
   private BoundingBox tempBoundingBox = new BoundingBox();
   private Array<TerrainRenderableComponent> terrainRenderableComponents;
@@ -146,66 +146,86 @@ public class TerrainAssembler implements Disposable {
     return tileRenderable;
   }
 
+  /**
+   * Triangle first
+   * (0,0) ----- (1,0)
+   *   |          / |
+   *   |         /  |
+   *   |        /   |
+   *   |   A   /    |
+   *   |      /     |
+   *   |     /      |
+   *   |    /    B  |
+   *   |   /        |
+   *   |  /         |
+   *  (0,1)-------(1,1)
+   *        Triangle last
+   * @param x
+   * @param z
+   * @param resolution
+   */
   private void buildQuad(int x, int z, int resolution) {
     Color colorA = terrainData.getColor(x, z);
-    bottomLeftVertexInfo.setPos(
+    topLeftVertexInfo.setPos(
       x * TRIANGLE_SIZE,
       terrainData.getElevation(x, z),
       z * TRIANGLE_SIZE
     );
 
-    bottomRightVertexInfo.setPos(
+    topRightVertexInfo.setPos(
       (x + resolution) * TRIANGLE_SIZE,
       terrainData.getElevation(x + resolution, z),
       z * TRIANGLE_SIZE
     );
 
-    topLeftVertexInfo.setPos(
+    bottomLeftVertexInfo.setPos(
       x * TRIANGLE_SIZE,
       terrainData.getElevation(x, z + resolution),
       (z + resolution) * TRIANGLE_SIZE
     );
 
-    topRightVertexInfo.setPos(
+    bottomRightVertexInfo.setPos(
       (x + resolution) * TRIANGLE_SIZE,
       terrainData.getElevation(x + resolution, z + resolution),
       (z + resolution) * TRIANGLE_SIZE
     );
 
 
-    bottomLeftVertexInfo.setCol(colorA);
     topLeftVertexInfo.setCol(colorA);
-    bottomRightVertexInfo.setCol(colorA);
+    topRightVertexInfo.setCol(colorA);
+    bottomLeftVertexInfo.setCol(colorA);
 
     calcNormal(
       bottomLeftVertexInfo,
-      topLeftVertexInfo,
-      bottomRightVertexInfo
+      topRightVertexInfo,
+      topLeftVertexInfo
     );
 
 
     meshBuilder.triangle(
       bottomLeftVertexInfo,
-      topLeftVertexInfo,
-      bottomRightVertexInfo
-    );
-
-    calcNormal(
-      topLeftVertexInfo,
       topRightVertexInfo,
-      bottomRightVertexInfo
-    );
+      topLeftVertexInfo
 
+
+    );
 
     Color colorB = terrainData.getColor(x+1, z+1);
 
-    topLeftVertexInfo.setCol(colorB);
+    calcNormal(
+      bottomLeftVertexInfo,
+      bottomRightVertexInfo,
+      topRightVertexInfo
+    );
+
     topRightVertexInfo.setCol(colorB);
     bottomRightVertexInfo.setCol(colorB);
+    bottomLeftVertexInfo.setCol(colorB);
+
     meshBuilder.triangle(
-      topLeftVertexInfo,
-      topRightVertexInfo,
-      bottomRightVertexInfo
+      bottomLeftVertexInfo,
+      bottomRightVertexInfo,
+      topRightVertexInfo
     );
   }
 
