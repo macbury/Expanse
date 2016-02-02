@@ -36,7 +36,8 @@ public class TerrainAssembler implements Disposable {
   private MeshBuilder meshBuilder;
   private TerrainData terrainData;
   private ObjectMap<Lod, Array<Renderable>> lodRenderables;
-  public final static int TILE_SIZE = 64;
+  public final static int TILE_SIZE = 32;
+  public final static int TRIANGLE_SIZE = 4;
   private int primitiveType;
   private BoundingBox tempBoundingBox = new BoundingBox();
   private Array<TerrainRenderableComponent> terrainRenderableComponents;
@@ -147,29 +148,28 @@ public class TerrainAssembler implements Disposable {
 
   private void buildQuad(int x, int z, int resolution) {
     Color colorA = terrainData.getColor(x, z);
-
     bottomLeftVertexInfo.setPos(
-      x,
+      x * TRIANGLE_SIZE,
       terrainData.getElevation(x, z),
-      z
+      z * TRIANGLE_SIZE
     );
 
     bottomRightVertexInfo.setPos(
-      x + resolution,
+      (x + resolution) * TRIANGLE_SIZE,
       terrainData.getElevation(x + resolution, z),
-      z
+      z * TRIANGLE_SIZE
     );
 
     topLeftVertexInfo.setPos(
-      x,
+      x * TRIANGLE_SIZE,
       terrainData.getElevation(x, z + resolution),
-      z + resolution
+      (z + resolution) * TRIANGLE_SIZE
     );
 
     topRightVertexInfo.setPos(
-      x + resolution,
+      (x + resolution) * TRIANGLE_SIZE,
       terrainData.getElevation(x + resolution, z + resolution),
-      z + resolution
+      (z + resolution) * TRIANGLE_SIZE
     );
 
 

@@ -15,6 +15,7 @@ import de.macbury.expanse.core.entities.Messages;
 import de.macbury.expanse.core.entities.components.MotorComponent;
 import de.macbury.expanse.core.entities.components.PositionComponent;
 import de.macbury.expanse.core.entities.components.RobotInstructionStateComponent;
+import de.macbury.expanse.core.graphics.terrain.Terrain;
 
 /**
  * Updates {@link PositionComponent} with information from {@link MotorComponent}
@@ -50,6 +51,7 @@ public class MotorSystem extends IteratingSystem implements Disposable, Telegrap
         motorComponent.targetPosition,
         motorComponent.moveAlpha
       );
+
     } else if (!motorComponent.finishedRotation()) {
       motorComponent.rotationAlpha += motorComponent.speed * deltaTime;
       if (motorComponent.rotationAlpha > 1.0){

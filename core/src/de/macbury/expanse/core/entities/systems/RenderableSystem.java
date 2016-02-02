@@ -71,8 +71,8 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
         positionComponent
       );
 
-      throw new GdxRuntimeException("Fix this!");
-      //modelBatch.render(modelComponent, env);
+      //throw new GdxRuntimeException("Fix this!");
+      modelBatch.render(modelComponent.modelInstance, env);
     }
 
     if (Components.TerrainRenderable.has(entity)) {

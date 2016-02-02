@@ -13,6 +13,7 @@ import de.macbury.expanse.core.octree.OctreeObject;
  * This component describe entity size and position in world
  */
 public class BodyComponent extends BoundingBox implements Component, Pool.Poolable, OctreeObject {
+  public boolean isStatic;
   public OctreeNode parent;
   public Entity entity;
   public Vector3 dimension = new Vector3();

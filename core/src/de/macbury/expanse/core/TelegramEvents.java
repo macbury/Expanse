@@ -14,6 +14,11 @@ public enum TelegramEvents {
   Test,//TODO remove
 
   /**
+   * This event is triggered when entity have collided with terrain!
+   */
+  CollidedWithTerrain,
+
+  /**
    * Here are events triggered by {@link de.macbury.expanse.core.entities.states.RobotMotorState}.
    * They can be used for starting and stoping sound/animation etc
    */

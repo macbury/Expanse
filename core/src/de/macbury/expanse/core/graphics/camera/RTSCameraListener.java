@@ -1,10 +1,12 @@
 package de.macbury.expanse.core.graphics.camera;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.collision.BoundingBox;
 
 /**
  * Created by macbury on 20.10.14.
  */
 public interface RTSCameraListener {
-  public BoundingBox getCameraBounds();
+  public BoundingBox getCameraBounds(BoundingBox out);
+  public float getCameraElevation(RTSCameraController cameraController, Camera camera);
 }

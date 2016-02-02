@@ -3,6 +3,7 @@ package de.macbury.expanse.core.graphics.terrain;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -30,6 +31,8 @@ public class TerrainData implements Disposable {
   private float[][] elevation;
   private float[][] shadeFactor;
   private Array<Vector3> islandCenters;
+
+
   public TerrainData(Blueprint blueprint) {
     this.width          = blueprint.width;
     this.height         = blueprint.height;
@@ -41,9 +44,9 @@ public class TerrainData implements Disposable {
     this.groundColor    = new Color(165f/255f, 121f/255f, 74f/255f, 1f);
     this.snowColor      = new Color(Color.WHITE);
     this.islandCenters  = new Array<Vector3>();
-    islandCenters.add(new Vector3(width/2, height/2, 150));
-    islandCenters.add(new Vector3(width/3, height/3, 55));
-    islandCenters.add(new Vector3(100, 200, 40));
+    islandCenters.add(new Vector3(width/2, height/2, 50));
+    islandCenters.add(new Vector3(width/3, height/3, 25));
+    islandCenters.add(new Vector3(100, 200, 30));
     buildElevation();
   }
 
@@ -57,7 +60,7 @@ public class TerrainData implements Disposable {
     for (int x = 0; x < getWidth(); x++) {
       for (int z = 0; z < getHeight(); z++) {
 
-        float total = 0.1f;
+        float total = 0.0f;
         for (int i = 0; i < islandCenters.size; i++) {
           Vector3 islandVector   = islandCenters.get(i);
           float distanceToCenter = vectorCursor.set(x, z).dst(islandVector.x, islandVector.y);
@@ -65,12 +68,10 @@ public class TerrainData implements Disposable {
             total += (islandVector.z - distanceToCenter) / islandVector.z;
           }
         }
-        total = Math.min(total, 1f);
+        total = MathUtils.clamp(total, 0.1f, 1.0f);
 
-        elevation[x][z]   = noise.terrainNoise(x,z, total * getMaxElevation(), 4, 1.3f);
+        elevation[x][z]   = MathUtils.clamp(noise.terrainNoise(x,z, 20, 6, 0.9f), 0, 20); //MathUtils.clamp((total - noise.terrainNoise(x,z, 1.0f, 6, 0.9f)), -1f, 1f) * getMaxElevation();
         shadeFactor[x][z] = noise.interpolatedNoise(x,z) * 0.1f;
-        //elevation[x][z] = total * getMaxElevation();
-        //elevation[x][z] = 0;
       }
     }
   }
@@ -81,7 +82,11 @@ public class TerrainData implements Disposable {
   }
 
   public float getElevation(int x, int z) {
-    return elevation[x][z];
+    if (x <= 0 || z <= 0 || z >= getHeight() || x >= getWidth()) {
+      return 1;
+    } else {
+      return elevation[x][z];
+    }
   }
 
   public int getWidth() {
@@ -108,16 +113,7 @@ public class TerrainData implements Disposable {
     return tempColor;
   }
 
-  /**
-   * Calculates bounding box and returns it
-   * @return
-   */
-  public BoundingBox getBoundingBox() {
-    return new BoundingBox(
-      new Vector3(0,-1,0),
-      new Vector3(getWidth(), getMaxElevation()+5, getHeight())
-    );
-  }
+
 
   float getMaxElevation() {
     return maxElevation;

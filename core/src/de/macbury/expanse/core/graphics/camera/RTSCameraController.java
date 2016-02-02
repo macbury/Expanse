@@ -74,6 +74,7 @@ public class RTSCameraController implements Disposable {
 
   private RTSCameraListener listener;
   private Overlay overlay;
+  private BoundingBox tempBoundingBox = new BoundingBox();
 
   public RTSCameraController(InputManager inputManager) {
     super();
@@ -267,18 +268,17 @@ public class RTSCameraController implements Disposable {
     center.x += offX * Math.cos(-rotation) + offY * Math.sin(rotation);
     center.z += offX * Math.sin(-rotation) + offY * Math.cos(rotation);
 
+    if (listener != null) {
+      center.y = listener.getCameraElevation(this, cam);
+      listener.getCameraBounds(tempBoundingBox);
+      if (!tempBoundingBox.contains(center)) {
+        center.set(oldCenter);
+      }
+    }
+
     position.x = center.x + (float) (currentZoom * Math.cos(tilt) * Math.sin(rotation));
     position.y = center.y + (float) (currentZoom * Math.sin(tilt));
     position.z = center.z + (float) (currentZoom * Math.cos(tilt) * Math.cos(rotation));
-
-    if (listener != null) {
-      BoundingBox box = listener.getCameraBounds();
-      if (!box.contains(center)) {
-        center.set(oldCenter);
-        return;
-      }
-
-    }
 
     if (!position.equals(oldPosition)) {
       oldPosition.set(position);

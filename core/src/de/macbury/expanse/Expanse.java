@@ -10,10 +10,7 @@ import de.macbury.expanse.core.graphics.framebuffer.FrameBufferManager;
 import de.macbury.expanse.core.input.InputManager;
 import de.macbury.expanse.core.screens.ScreenManager;
 import de.macbury.expanse.core.scripts.RobotScriptContextFactory;
-import de.macbury.expanse.test.HudTest;
-import de.macbury.expanse.test.RobotTestScreen;
-import de.macbury.expanse.test.TerrainEntitiesTest;
-import de.macbury.expanse.test.TerrainTest;
+import de.macbury.expanse.test.GameTestScreen;
 
 public class Expanse extends ApplicationAdapter {
   public final static String VERSION = "0.0.4";
@@ -50,7 +47,7 @@ public class Expanse extends ApplicationAdapter {
     this.screens    = new ScreenManager(this);
     this.fb         = new FrameBufferManager();
 
-    screens.set(new TerrainEntitiesTest());
+    screens.set(new GameTestScreen());
 
     Gdx.input.setInputProcessor(input);
   }
