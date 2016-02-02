@@ -9,7 +9,8 @@ import de.macbury.expanse.core.graphics.camera.GameCamera;
  */
 public enum Lod {
   High(1),
-  Low(2)
+  //Medium(2),
+  Low(4)
   ;
   private final static Vector3 tempPos = new Vector3();
   public final int resolution;
@@ -26,8 +27,10 @@ public enum Lod {
   public static Lod by(GameCamera camera, Vector3 position) {
     float distance = tempPos.set(camera.normalOrDebugPosition()).dst(position) / camera.far;
 
-    if (distance >= 0.6f) {
+    if (distance >= 0.7f) {
       return Low;
+   // } else if (distance >= 0.5f) {
+  //    return Medium;
     } else {
       return High;
     }

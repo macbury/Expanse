@@ -1,6 +1,7 @@
 package de.macbury.expanse.core.graphics.terrain;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Renderable;
@@ -128,65 +129,84 @@ public class TerrainAssembler implements Disposable {
     int endX   = startX + TILE_SIZE;
     int endY   = startY + TILE_SIZE;
     int resolution = lod.resolution;
+    int patchSize  = lod == Lod.High ? 0 : lod.resolution;
     meshBuilder.begin(VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked); {
       meshBuilder.part("tile"+tileX+"x"+tileY, primitiveType, tileRenderable.meshPart);
       for (int x = startX; x < endX; x+=resolution) {
         for (int z = startY; z < endY; z+=resolution) {
-
-          bottomLeftVertexInfo.setPos(
-            x,
-            terrainData.getElevation(x,z),
-            z
-          ).setCol(terrainData.getColor(x,z));
-
-          bottomRightVertexInfo.setPos(
-            x+resolution,
-            terrainData.getElevation(x+resolution,z),
-            z
-          ).setCol(terrainData.getColor(x+resolution,z));
-
-          topLeftVertexInfo.setPos(
-            x,
-            terrainData.getElevation(x,z+resolution),
-            z+resolution
-          ).setCol(terrainData.getColor(x,z+resolution));
-
-          topRightVertexInfo.setPos(
-            x + resolution,
-            terrainData.getElevation(x + resolution, z + resolution),
-            z + resolution
-          ).setCol(terrainData.getColor(x+resolution,z+resolution));
-
-          calcNormal(
-            bottomLeftVertexInfo,
-            topLeftVertexInfo,
-            bottomRightVertexInfo
-          );
-
-          meshBuilder.triangle(
-            bottomLeftVertexInfo,
-            topLeftVertexInfo,
-            bottomRightVertexInfo
-          );
-
-          calcNormal(
-            topLeftVertexInfo,
-            topRightVertexInfo,
-            bottomRightVertexInfo
-          );
-
-          meshBuilder.triangle(
-            topLeftVertexInfo,
-            topRightVertexInfo,
-            bottomRightVertexInfo
-          );
+          buildQuad(x,z, resolution);
         }
       }
+
     } meshBuilder.end();
 
     lodRenderables.get(lod).add(tileRenderable);
     tileRenderable.meshPart.mesh.setAutoBind(true);
     return tileRenderable;
+  }
+
+  private void buildQuad(int x, int z, int resolution) {
+    Color colorA = terrainData.getColor(x, z);
+
+    bottomLeftVertexInfo.setPos(
+      x,
+      terrainData.getElevation(x, z),
+      z
+    );
+
+    bottomRightVertexInfo.setPos(
+      x + resolution,
+      terrainData.getElevation(x + resolution, z),
+      z
+    );
+
+    topLeftVertexInfo.setPos(
+      x,
+      terrainData.getElevation(x, z + resolution),
+      z + resolution
+    );
+
+    topRightVertexInfo.setPos(
+      x + resolution,
+      terrainData.getElevation(x + resolution, z + resolution),
+      z + resolution
+    );
+
+
+    bottomLeftVertexInfo.setCol(colorA);
+    topLeftVertexInfo.setCol(colorA);
+    bottomRightVertexInfo.setCol(colorA);
+
+    calcNormal(
+      bottomLeftVertexInfo,
+      topLeftVertexInfo,
+      bottomRightVertexInfo
+    );
+
+
+    meshBuilder.triangle(
+      bottomLeftVertexInfo,
+      topLeftVertexInfo,
+      bottomRightVertexInfo
+    );
+
+    calcNormal(
+      topLeftVertexInfo,
+      topRightVertexInfo,
+      bottomRightVertexInfo
+    );
+
+
+    Color colorB = terrainData.getColor(x+1, z+1);
+
+    topLeftVertexInfo.setCol(colorB);
+    topRightVertexInfo.setCol(colorB);
+    bottomRightVertexInfo.setCol(colorB);
+    meshBuilder.triangle(
+      topLeftVertexInfo,
+      topRightVertexInfo,
+      bottomRightVertexInfo
+    );
   }
 
   @Override

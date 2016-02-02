@@ -94,7 +94,7 @@ public class RTSCameraController implements Disposable {
     maxZoom = MAX_ZOOM;
     scrollSpeed = 200.0f;
 
-    minTilt = 0.001f;
+    minTilt = 0.6f;
     maxTilt = (float) (Math.PI / 2) - 0.006f;
 
     currentZoom = 10;

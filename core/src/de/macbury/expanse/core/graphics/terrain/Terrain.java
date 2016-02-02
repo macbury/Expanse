@@ -18,8 +18,8 @@ public class Terrain implements Disposable {
   private TerrainData terrainData;
   private TerrainAssembler terrainAssembler;
 
-  public Terrain(Blueprint blueprint) {
-    this.terrainData      = new TerrainData(blueprint.heightMap, blueprint.maxElevation);
+  public Terrain(TerrainData terrainData) {
+    this.terrainData      = terrainData;
     this.terrainAssembler = new TerrainAssembler(terrainData, GL20.GL_TRIANGLES);
   }
 
@@ -58,8 +58,5 @@ public class Terrain implements Disposable {
     return terrainData.getBoundingBox();
   }
 
-  public static class Blueprint {
-    public int maxElevation;
-    public Pixmap heightMap;
-  }
+
 }

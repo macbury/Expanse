@@ -44,8 +44,8 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
     this.camera     = camera;
     this.modelBatch = modelBatch;
     this.env        = new Environment();// TODO move this to provider or something, else, this should not be initialized here
-    env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
-    env.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+    env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.5f, 1f));
+    env.add(new DirectionalLight().set(0.6f, 0.6f, 0.5f, -1f, -0.8f, -0.2f));
     env.set(new ColorAttribute(ColorAttribute.Fog,1f,1f,1f,1f));
   }
 
@@ -79,7 +79,7 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
       modelBatch.render(
         Components.TerrainRenderable.get(entity),
         env,
-        Lod.by(camera, positionComponent)
+        Lod.High
       );
     }
   }
