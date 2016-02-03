@@ -268,17 +268,18 @@ public class RTSCameraController implements Disposable {
     center.x += offX * Math.cos(-rotation) + offY * Math.sin(rotation);
     center.z += offX * Math.sin(-rotation) + offY * Math.cos(rotation);
 
+    position.x = center.x + (float) (currentZoom * Math.cos(tilt) * Math.sin(rotation));
+    position.y = center.y + (float) (currentZoom * Math.sin(tilt));
+    position.z = center.z + (float) (currentZoom * Math.cos(tilt) * Math.cos(rotation));
+
+
     if (listener != null) {
-      center.y = listener.getCameraElevation(this, cam);
+      position.y = Math.max(listener.getCameraElevation(this, position), position.y);
       listener.getCameraBounds(tempBoundingBox);
       if (!tempBoundingBox.contains(center)) {
         center.set(oldCenter);
       }
     }
-
-    position.x = center.x + (float) (currentZoom * Math.cos(tilt) * Math.sin(rotation));
-    position.y = center.y + (float) (currentZoom * Math.sin(tilt));
-    position.z = center.z + (float) (currentZoom * Math.cos(tilt) * Math.cos(rotation));
 
     if (!position.equals(oldPosition)) {
       oldPosition.set(position);

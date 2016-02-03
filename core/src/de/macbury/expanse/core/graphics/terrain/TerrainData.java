@@ -70,7 +70,7 @@ public class TerrainData implements Disposable {
         }
         total = MathUtils.clamp(total, 0.1f, 1.0f);
 
-        elevation[x][z]   = MathUtils.clamp(noise.terrainNoise(x,z, 20, 6, 0.9f), 0, 20); //MathUtils.clamp((total - noise.terrainNoise(x,z, 1.0f, 6, 0.9f)), -1f, 1f) * getMaxElevation();
+        elevation[x][z]   = 10 + noise.terrainNoise(x,z, 10, 6, 0.9f); //MathUtils.clamp((total - noise.terrainNoise(x,z, 1.0f, 6, 0.9f)), -1f, 1f) * getMaxElevation();
         shadeFactor[x][z] = noise.interpolatedNoise(x,z) * 0.1f;
       }
     }

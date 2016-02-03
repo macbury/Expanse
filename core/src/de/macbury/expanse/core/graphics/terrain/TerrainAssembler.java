@@ -37,7 +37,7 @@ public class TerrainAssembler implements Disposable {
   private TerrainData terrainData;
   private ObjectMap<Lod, Array<Renderable>> lodRenderables;
   public final static int TILE_SIZE = 32;
-  public final static int TRIANGLE_SIZE = 1;
+  public final static float TRIANGLE_SIZE = 2;
   private int primitiveType;
   private BoundingBox tempBoundingBox = new BoundingBox();
   private Array<TerrainRenderableComponent> terrainRenderableComponents;
@@ -206,8 +206,6 @@ public class TerrainAssembler implements Disposable {
       bottomLeftVertexInfo,
       topRightVertexInfo,
       topLeftVertexInfo
-
-
     );
 
     Color colorB = terrainData.getColor(x+1, z+1);

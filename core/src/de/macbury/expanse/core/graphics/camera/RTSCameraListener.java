@@ -1,6 +1,7 @@
 package de.macbury.expanse.core.graphics.camera;
 
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 
 /**
@@ -8,5 +9,5 @@ import com.badlogic.gdx.math.collision.BoundingBox;
  */
 public interface RTSCameraListener {
   public BoundingBox getCameraBounds(BoundingBox out);
-  public float getCameraElevation(RTSCameraController cameraController, Camera camera);
+  public float getCameraElevation(RTSCameraController cameraController, Vector3 cameraPosition);
 }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.math.GeometryUtils;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -21,6 +22,10 @@ import de.macbury.expanse.core.graphics.camera.RTSCameraListener;
  * This class wraps all stuff for terrain manipulation
  */
 public class Terrain implements Disposable, RTSCameraListener {
+  private static final String TAG = "Terrain";
+  private static final float MIN_CAMERA_DISTANCE_TO_TERRAIN = 5;
+  private BoundingBox cameraBoundingBox;
+  private ElevationHelper elevation;
   private Vector3 tempVecA = new Vector3();
   private Vector3 tempVecB = new Vector3();
   private TerrainData terrainData;
@@ -29,6 +34,20 @@ public class Terrain implements Disposable, RTSCameraListener {
   public Terrain(TerrainData terrainData) {
     this.terrainData      = terrainData;
     this.terrainAssembler = new TerrainAssembler(terrainData, GL20.GL_TRIANGLES);
+    this.elevation        = new ElevationHelper(terrainData);
+    calculateCameraBoundingBox();
+  }
+
+  private void calculateCameraBoundingBox() {
+    cameraBoundingBox = new BoundingBox();
+    float cameraMaxOffset = 10 * TerrainAssembler.TRIANGLE_SIZE;
+    tempVecA.set(-cameraMaxOffset, -1, -cameraMaxOffset);
+    tempVecB.set(
+      terrainData.getWidth() * TerrainAssembler.TRIANGLE_SIZE + cameraMaxOffset,
+      terrainData.getMaxElevation() * TerrainAssembler.TRIANGLE_SIZE + cameraMaxOffset,
+      terrainData.getHeight() * TerrainAssembler.TRIANGLE_SIZE + cameraMaxOffset
+    );
+    cameraBoundingBox.set(tempVecA, tempVecB);
   }
 
   /**
@@ -41,7 +60,7 @@ public class Terrain implements Disposable, RTSCameraListener {
 
       PositionComponent positionComponent = entityManager.createComponent(PositionComponent.class);
       tempBoundingBox.getCenter(positionComponent);
-      positionComponent.dimension.set(TerrainAssembler.TILE_SIZE * TerrainAssembler.TRIANGLE_SIZE, terrainData.getMaxElevation(), TerrainAssembler.TILE_SIZE * TerrainAssembler.TRIANGLE_SIZE);
+      positionComponent.dimension.set(TerrainAssembler.TILE_SIZE * TerrainAssembler.TRIANGLE_SIZE, terrainData.getMaxElevation()* TerrainAssembler.TRIANGLE_SIZE, TerrainAssembler.TILE_SIZE * TerrainAssembler.TRIANGLE_SIZE);
 
       Entity tileEntity = entityManager.createEntity();
       tileEntity.add(terrainRenderableComponent);
@@ -56,6 +75,7 @@ public class Terrain implements Disposable, RTSCameraListener {
   public void dispose() {
     terrainData.dispose();
     terrainAssembler.dispose();
+    elevation.dispose();
   }
 
   public Vector2 getCenter() {
@@ -70,9 +90,10 @@ public class Terrain implements Disposable, RTSCameraListener {
   public BoundingBox getBoundingBox(BoundingBox out) {
     return out.set(
       tempVecA.set(0, -1, 0),
-      tempVecB.set(terrainData.getWidth() * TerrainAssembler.TRIANGLE_SIZE, terrainData.getMaxElevation() + 5, terrainData.getHeight() * TerrainAssembler.TRIANGLE_SIZE)
+      tempVecB.set(terrainData.getWidth() * TerrainAssembler.TRIANGLE_SIZE, terrainData.getMaxElevation() * TerrainAssembler.TRIANGLE_SIZE + 5, terrainData.getHeight() * TerrainAssembler.TRIANGLE_SIZE)
     );
   }
+
 
   /**
    * Returns elevation for this world cordinates
@@ -81,23 +102,17 @@ public class Terrain implements Disposable, RTSCameraListener {
    * @return
    */
   public float getElevation(float x, float z) {
-    int terrainX = MathUtils.floor(x / TerrainAssembler.TRIANGLE_SIZE);
-    int terrainZ = MathUtils.floor(z / TerrainAssembler.TRIANGLE_SIZE);
-
-    float xCoord = (terrainX % TerrainAssembler.TRIANGLE_SIZE) / TerrainAssembler.TRIANGLE_SIZE;
-    float zCoord = (terrainZ % TerrainAssembler.TRIANGLE_SIZE) / TerrainAssembler.TRIANGLE_SIZE;
-    //int tileX    =
-   // Gdx.app.log("DATA", "x=" + (x / TerrainAssembler.TRIANGLE_SIZE) + " z=" + (z / TerrainAssembler.TRIANGLE_SIZE));
-    return terrainData.getElevation(terrainX, terrainZ);
+    return elevation.get(x,z);
   }
 
   @Override
   public BoundingBox getCameraBounds(BoundingBox out) {
-    return getBoundingBox(out);
+    return out.set(cameraBoundingBox);
   }
 
   @Override
-  public float getCameraElevation(RTSCameraController cameraController, Camera camera) {
-    return getElevation(camera.position.x, camera.position.z);
+  public float getCameraElevation(RTSCameraController cameraController, Vector3 cameraPosition) {
+    return getElevation(cameraPosition.x, cameraPosition.z) + MIN_CAMERA_DISTANCE_TO_TERRAIN;
   }
+
 }

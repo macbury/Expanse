@@ -13,7 +13,7 @@ import de.macbury.expanse.core.scripts.RobotScriptContextFactory;
 import de.macbury.expanse.test.GameTestScreen;
 
 public class Expanse extends ApplicationAdapter {
-  public final static String VERSION = "0.0.4";
+  public final static String VERSION = "0.0.5";
   private static final String TAG    = "Expanse";
   /**
    * This class helps with input managment

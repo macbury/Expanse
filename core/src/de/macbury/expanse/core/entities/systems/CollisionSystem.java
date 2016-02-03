@@ -1,6 +1,7 @@
 package de.macbury.expanse.core.entities.systems;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
@@ -14,7 +15,7 @@ import de.macbury.expanse.core.octree.WorldOctree;
 /**
  * This system checks each {@link Entity} with {@link PositionComponent} and {@link BodyComponent}
  */
-public class CollisionSystem extends IteratingSystem implements Disposable {
+public class CollisionSystem extends IteratingSystem implements Disposable, EntityListener {
   private WorldOctree octree;
   private Terrain terrain;
 
@@ -27,6 +28,13 @@ public class CollisionSystem extends IteratingSystem implements Disposable {
 
   @Override
   protected void processEntity(Entity entity, float deltaTime) {
+    if (Components.Body.get(entity).isStatic)
+      return;
+
+    snapEntityToTerrain(entity);
+  }
+
+  private void snapEntityToTerrain(Entity entity) {
     PositionComponent position = Components.Position.get(entity);
     position.y                 = terrain.getElevation(position.x, position.z);
   }
@@ -36,5 +44,19 @@ public class CollisionSystem extends IteratingSystem implements Disposable {
   public void dispose() {
     this.terrain = null;
     this.octree  = null;
+  }
+
+  /**
+   * Snap {@link Entity} to terrain on start
+   */
+  @Override
+  public void entityAdded(Entity entity) {
+    PositionComponent position = Components.Position.get(entity);
+    position.y = terrain.getElevation(position.x, position.z);
+  }
+
+  @Override
+  public void entityRemoved(Entity entity) {
+
   }
 }

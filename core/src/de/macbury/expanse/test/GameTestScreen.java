@@ -58,7 +58,7 @@ public class GameTestScreen extends ScreenBase {
     this.rtsCameraController  = new RTSCameraController(input);
 
     camera.far = 300;
-    camera.near = 1;
+    camera.near = 0.1f;
 
     rtsCameraController.setCamera(camera);
     rtsCameraController.setOverlay(hud.getOverlay());
