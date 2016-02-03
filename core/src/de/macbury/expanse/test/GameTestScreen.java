@@ -118,7 +118,7 @@ public class GameTestScreen extends ScreenBase {
     motorComponent.speed                          = 1;
 
     RobotInstructionStateComponent robotInstructionStateComponent = entities.createComponent(RobotInstructionStateComponent.class);
-    robotInstructionStateComponent.init(robotEntity, messages, RobotInstructionState.Living, RobotInstructionState.WaitForInstruction);
+    robotInstructionStateComponent.init(robotEntity, messages, RobotInstructionState.Living, RobotInstructionState.WaitForInstruction);//TODO entity manager should do this
 
     RobotScriptComponent robotScriptComponent = entities.createComponent(RobotScriptComponent.class);
     robotScriptComponent.setSource(source);

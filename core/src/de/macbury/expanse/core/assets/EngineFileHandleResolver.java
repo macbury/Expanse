@@ -21,6 +21,7 @@ public class EngineFileHandleResolver implements FileHandleResolver {
   private void configureMappings() {
     putMapping("texture", "textures/");
     putMapping("model", "models/");
+    putMapping("entity", "entities/");
     putMapping("terrain", "terrains/");
   }
 

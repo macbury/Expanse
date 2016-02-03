@@ -11,6 +11,7 @@ import de.macbury.expanse.core.graphics.framebuffer.FrameBufferManager;
 import de.macbury.expanse.core.input.InputManager;
 import de.macbury.expanse.core.screens.ScreenManager;
 import de.macbury.expanse.core.scripts.RobotScriptContextFactory;
+import de.macbury.expanse.test.EntitiesBlueprintsScreen;
 import de.macbury.expanse.test.GameTestScreen;
 
 public class Expanse extends ApplicationAdapter {
@@ -51,7 +52,7 @@ public class Expanse extends ApplicationAdapter {
     this.screens    = new ScreenManager(this);
     this.fb         = new FrameBufferManager();
 
-    screens.set(new GameTestScreen());
+    screens.set(new EntitiesBlueprintsScreen());
 
     Gdx.input.setInputProcessor(input);
   }
