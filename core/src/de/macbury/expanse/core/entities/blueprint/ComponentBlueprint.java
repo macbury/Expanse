@@ -1,5 +1,6 @@
 package de.macbury.expanse.core.entities.blueprint;
 
+import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
@@ -10,6 +11,7 @@ import de.macbury.expanse.core.assets.Assets;
  * This class is used as model for blueprints
  */
 public abstract class ComponentBlueprint implements Disposable {
+  public Class<? extends Component> componentKlass;
   /**
    * Pass all dependencies that are needed to be loaded by {@link de.macbury.expanse.core.assets.Assets}
    * @return

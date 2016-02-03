@@ -1,5 +1,6 @@
 package de.macbury.expanse.core.entities.blueprint;
 
+import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
@@ -23,6 +24,11 @@ public class EntityBlueprint implements Disposable {
    */
   public Entity create(EntityManager entityManager) {
     Entity entity = entityManager.createEntity();
+    for (ComponentBlueprint blueprint : componentBlueprints) {
+      BlueprintConsumer component  = (BlueprintConsumer)entityManager.createComponent(blueprint.componentKlass);
+      component.consume(blueprint);
+      entity.add((Component) component);
+    }
     return entity;
   }
 

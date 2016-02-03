@@ -1,5 +1,6 @@
 package de.macbury.expanse.core.assets.loader;
 
+import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
@@ -51,15 +52,22 @@ public class EntityBlueprintLoader extends SynchronousAssetLoader<EntityBlueprin
     for (JsonValue jsonBlueprint : blueprintRoot) {
       String componentSimpleNamePart = jsonBlueprint.name();
       try {
-        Class<ComponentBlueprint> blueprintKlassToLoad = (Class<ComponentBlueprint>)Class.forName("de.macbury.expanse.core.entities.components." + componentSimpleNamePart + "Component$Blueprint");
-        ComponentBlueprint blueprint = (ComponentBlueprint) json.readValue(blueprintKlassToLoad, jsonBlueprint);
+        Class<ComponentBlueprint> blueprintKlassToLoad = (Class<ComponentBlueprint>)Class.forName(getComponentKlassName(componentSimpleNamePart) + "$Blueprint");
+        Class<Component> componentKlass                = (Class<Component>)Class.forName(getComponentKlassName(componentSimpleNamePart));
+        ComponentBlueprint blueprint                   = json.readValue(blueprintKlassToLoad, jsonBlueprint);
+        blueprint.componentKlass                       = componentKlass;
         blueprint.prepareDependencies(deps);
+
         componentBlueprints.add(blueprint);
       } catch (ClassNotFoundException e) {
         e.printStackTrace();
       }
     }
     return deps;
+  }
+
+  private String getComponentKlassName(String simpleName) {
+    return "de.macbury.expanse.core.entities.components." + simpleName + "Component";
   }
 
   static public class BlueprintParameter extends AssetLoaderParameters<EntityBlueprint> {
