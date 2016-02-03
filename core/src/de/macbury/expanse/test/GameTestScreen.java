@@ -45,6 +45,7 @@ public class GameTestScreen extends ScreenBase {
 
   @Override
   public void preload() {
+    assets.load("model:rock.g3dj", Model.class);
     assets.load("model:cube.g3dj", Model.class);
     assets.load("terrain:playground.json", Terrain.class);
   }
@@ -57,8 +58,6 @@ public class GameTestScreen extends ScreenBase {
     this.hud                  = new Hud(input, assets);
     this.rtsCameraController  = new RTSCameraController(input);
 
-    camera.far = 300;
-    camera.near = 0.1f;
 
     rtsCameraController.setCamera(camera);
     rtsCameraController.setOverlay(hud.getOverlay());
@@ -147,6 +146,7 @@ public class GameTestScreen extends ScreenBase {
 
   @Override
   public void unload() {
+    assets.unload("model:rock.g3dj");
     assets.unload("model:cube.g3dj");
     assets.unload("terrain:playground.json");
   }

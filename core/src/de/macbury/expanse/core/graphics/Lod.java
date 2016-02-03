@@ -29,9 +29,9 @@ public enum Lod {
   public static Lod by(GameCamera camera, Vector3 position) {
     float distance = tempPos.set(camera.normalOrDebugPosition()).dst(position) / camera.far;
 
-    if (distance >= 0.7f) {
+    if (distance >= 0.70f) {
       return Low;
-    } else if (distance >= 0.5f) {
+    } else if (distance >= 0.55f) {
       return Medium;
     } else {
       return High;

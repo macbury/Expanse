@@ -23,7 +23,7 @@ import de.macbury.expanse.core.graphics.camera.RTSCameraListener;
  */
 public class Terrain implements Disposable, RTSCameraListener {
   private static final String TAG = "Terrain";
-  private static final float MIN_CAMERA_DISTANCE_TO_TERRAIN = 5;
+  private static final float MIN_CAMERA_DISTANCE_TO_TERRAIN = 15;
   private BoundingBox cameraBoundingBox;
   private ElevationHelper elevation;
   private Vector3 tempVecA = new Vector3();
