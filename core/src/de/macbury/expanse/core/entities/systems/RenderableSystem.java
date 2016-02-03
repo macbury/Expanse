@@ -79,7 +79,7 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
       modelBatch.render(
         Components.TerrainRenderable.get(entity),
         env,
-        Lod.High
+        Lod.by(camera, positionComponent)
       );
     }
   }

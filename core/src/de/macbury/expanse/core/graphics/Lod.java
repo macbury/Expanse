@@ -1,5 +1,7 @@
 package de.macbury.expanse.core.graphics;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector3;
 import de.macbury.expanse.core.entities.components.PositionComponent;
 import de.macbury.expanse.core.graphics.camera.GameCamera;
@@ -9,7 +11,7 @@ import de.macbury.expanse.core.graphics.camera.GameCamera;
  */
 public enum Lod {
   High(1),
-  //Medium(2),
+  Medium(2),
   Low(4)
   ;
   private final static Vector3 tempPos = new Vector3();
@@ -29,10 +31,14 @@ public enum Lod {
 
     if (distance >= 0.7f) {
       return Low;
-   // } else if (distance >= 0.5f) {
-  //    return Medium;
+    } else if (distance >= 0.5f) {
+      return Medium;
     } else {
       return High;
     }
+  }
+
+  public static Lod byDebugButton() {
+    return Gdx.input.isKeyPressed(Input.Keys.L) ? Low : High;
   }
 }

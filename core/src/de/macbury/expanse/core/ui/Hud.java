@@ -2,8 +2,8 @@ package de.macbury.expanse.core.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import de.macbury.expanse.core.assets.Assets;
@@ -36,6 +36,11 @@ public class Hud extends Stage {
 
     this.overlay        = new Overlay();
     addActor(overlay);
+
+    DebugLabel debugLabel = new DebugLabel(skin);
+    debugLabel.setAlignment(Align.right);
+    debugLabel.setPosition(Gdx.graphics.getWidth() - 20, 60);
+    addActor(debugLabel);
   }
 
   public Overlay getOverlay() {

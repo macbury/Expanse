@@ -20,6 +20,7 @@ import java.util.ArrayList;
  * This class contains all information about terrain like height and colors
  */
 public class TerrainData implements Disposable {
+  private static final float MAX_SHADE_FACTOR = 0.05f;
   private final Color tempColor;
   private final Color groundColor;
   private final Color snowColor;
@@ -71,7 +72,7 @@ public class TerrainData implements Disposable {
         total = MathUtils.clamp(total, 0.1f, 1.0f);
 
         elevation[x][z]   = 10 + noise.terrainNoise(x,z, 10, 6, 0.9f); //MathUtils.clamp((total - noise.terrainNoise(x,z, 1.0f, 6, 0.9f)), -1f, 1f) * getMaxElevation();
-        shadeFactor[x][z] = noise.interpolatedNoise(x,z) * 0.1f;
+        shadeFactor[x][z] = noise.interpolatedNoise(x,z) * MAX_SHADE_FACTOR;
       }
     }
   }

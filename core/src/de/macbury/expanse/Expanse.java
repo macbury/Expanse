@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.GdxAI;
+import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import de.macbury.expanse.core.assets.Assets;
 import de.macbury.expanse.core.entities.Messages;
 import de.macbury.expanse.core.graphics.framebuffer.FrameBufferManager;
@@ -37,7 +38,10 @@ public class Expanse extends ApplicationAdapter {
   public FrameBufferManager fb;
   @Override
   public void create () {
+    //TODO handle enabling this stuff by flags...
+    GLProfiler.enable();
     Gdx.app.setLogLevel(Application.LOG_DEBUG);
+
     Gdx.app.log(TAG, "Init...");
     RobotScriptContextFactory.init();
 

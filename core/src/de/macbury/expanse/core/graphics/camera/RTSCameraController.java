@@ -22,7 +22,7 @@ import de.macbury.expanse.core.input.InputManager;
  */
 public class RTSCameraController implements Disposable {
   private static final float LERP_SPEED = 15.0f;
-  public static final int MAX_ZOOM = 200;
+  public static final int MAX_ZOOM = 100;
   private static int CAMERA_MOVE_PADDING = 16;
   private InputManager input;
   private Camera cam;
