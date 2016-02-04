@@ -21,25 +21,6 @@ public class EntitiesBlueprintsScreen extends ScreenBase {
 
   @Override
   public void create() {
-    /*String source = Gdx.files.internal("entities/rock.entity").readString();
-    JsonReader jsonReader = new JsonReader();
-    Json json             = new Json();
-    JsonValue root = jsonReader.parse(Gdx.files.internal("entities/rock.entity"));
-
-    JsonValue simpleComponent = root.child();
-
-    for (JsonValue jsonBlueprint : root) {
-      String componentSimpleNamePart = jsonBlueprint.name();
-      try {
-        Class<ComponentBlueprint> blueprintKlassToLoad = (Class<ComponentBlueprint>)Class.forName("de.macbury.expanse.core.entities.components." + componentSimpleNamePart + "Component$Blueprint");
-        ComponentBlueprint blueprint = (ComponentBlueprint) json.readValue(blueprintKlassToLoad, jsonBlueprint);
-
-      } catch (ClassNotFoundException e) {
-        e.printStackTrace();
-      }
-
-    }*/
-
     Gdx.app.log(TAG, assets.get("entity:rock.json", EntityBlueprint.class).toString());
   }
 
@@ -53,13 +34,9 @@ public class EntitiesBlueprintsScreen extends ScreenBase {
 
   }
 
-  @Override
-  public void unload() {
-    assets.unload("entity:rock.json");
-  }
 
   @Override
   public void dispose() {
-
+    assets.unload("entity:rock.json");
   }
 }

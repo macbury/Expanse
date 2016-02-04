@@ -10,7 +10,6 @@ import de.macbury.expanse.core.ui.Hud;
  * Created on 27.01.16.
  */
 public class HudTest extends ScreenBase {
-  private Hud hud;
 
   @Override
   public void preload() {
@@ -19,8 +18,6 @@ public class HudTest extends ScreenBase {
 
   @Override
   public void create() {
-    this.hud = new Hud(input, assets);
-
     Button button = new Button(hud.getSkin());
     button.setPosition(20, 20);
     button.setSize(100, 100);
@@ -41,10 +38,6 @@ public class HudTest extends ScreenBase {
 
   }
 
-  @Override
-  public void unload() {
-
-  }
 
   @Override
   public void dispose() {

@@ -8,6 +8,7 @@ import de.macbury.expanse.core.assets.Assets;
 import de.macbury.expanse.core.entities.Messages;
 import de.macbury.expanse.core.graphics.framebuffer.FrameBufferManager;
 import de.macbury.expanse.core.input.InputManager;
+import de.macbury.expanse.core.ui.Hud;
 
 /** <p>
  * Represents one of many application screens, such as a main menu, a settings menu, the game screen and so on.
@@ -22,6 +23,7 @@ public abstract class ScreenBase implements Disposable {
   protected Messages messages;
   protected InputManager input;
   protected FrameBufferManager fb;
+  protected Hud hud;
 
   /**
    * Links references to current {@link Expanse}
@@ -35,6 +37,7 @@ public abstract class ScreenBase implements Disposable {
     this.messages = game.messages;
     this.input    = game.input;
     this.fb       = game.fb;
+    this.hud      = game.hud;
   }
 
   /**
@@ -47,6 +50,7 @@ public abstract class ScreenBase implements Disposable {
     this.screens  = null;
     this.messages = null;
     this.input    = null;
+    this.hud      = null;
   }
 
   /**
@@ -65,8 +69,4 @@ public abstract class ScreenBase implements Disposable {
   /** Called after screen show or game window resize */
   public abstract void resize (int width, int height);
 
-  /**
-   * Called when screen after screen is hiden
-   */
-  public abstract void unload();
 }

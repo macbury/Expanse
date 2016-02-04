@@ -4,7 +4,9 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.Pool;
 import de.macbury.expanse.core.entities.EntityManager;
+import de.macbury.expanse.core.entities.Messages;
 
 /**
  * This blueprint is used to build all entities using {@link de.macbury.expanse.core.entities.EntityManager} and all information in
@@ -22,12 +24,13 @@ public class EntityBlueprint implements Disposable {
    * @param entityManager
    * @return
    */
-  public Entity create(EntityManager entityManager) {
+  public Entity create(EntityManager entityManager, Messages messages) {
     Entity entity = entityManager.createEntity();
     for (ComponentBlueprint blueprint : componentBlueprints) {
-      BlueprintConsumer component  = (BlueprintConsumer)entityManager.createComponent(blueprint.componentKlass);
-      component.consume(blueprint);
-      entity.add((Component) component);
+      Component component  = entityManager.createComponent(blueprint.componentKlass);
+      ((Pool.Poolable)component).reset();
+      blueprint.applyTo(component, entity, messages);
+      entity.add(component);
     }
     return entity;
   }
@@ -37,8 +40,8 @@ public class EntityBlueprint implements Disposable {
    * @param entityManager
    * @return
    */
-  public Entity createAndAdd(EntityManager entityManager) {
-    Entity entity = create(entityManager);
+  public Entity createAndAdd(EntityManager entityManager, Messages messages) {
+    Entity entity = create(entityManager, messages);
     entityManager.addEntity(entity);
     return entity;
   }

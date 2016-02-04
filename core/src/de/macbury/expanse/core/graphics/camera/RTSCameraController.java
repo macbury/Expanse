@@ -24,6 +24,7 @@ public class RTSCameraController implements Disposable {
   private static final float LERP_SPEED = 15.0f;
   public static final int MAX_ZOOM = 100;
   private static int CAMERA_MOVE_PADDING = 16;
+  private final InputListener overlayInputListener;
   private InputManager input;
   private Camera cam;
 
@@ -99,11 +100,8 @@ public class RTSCameraController implements Disposable {
     maxTilt = (float) (Math.PI / 2) - 0.006f;
 
     currentZoom = 10;
-  }
 
-  public void setOverlay(Overlay overlay) {
-    this.overlay = overlay;
-    this.overlay.addCaptureListener(new InputListener() {
+    overlayInputListener = new InputListener() {
       @Override
       public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
         super.exit(event, x, y, pointer, toActor);
@@ -191,7 +189,12 @@ public class RTSCameraController implements Disposable {
         }
       }
 
-    });
+    };
+  }
+
+  public void setOverlay(Overlay overlay) {
+    this.overlay = overlay;
+    this.overlay.addCaptureListener(overlayInputListener);
 
     overlay.focus();
   }
@@ -424,6 +427,10 @@ public class RTSCameraController implements Disposable {
 
   @Override
   public void dispose() {
+    if (overlay != null)
+    this.overlay.removeCaptureListener(overlayInputListener);
     input = null;
+    overlay = null;
+    listener  = null;
   }
 }

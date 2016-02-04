@@ -11,7 +11,7 @@ import org.mozilla.javascript.*;
  */
 public class ScriptRunner implements Disposable {
   private enum State {
-    Pending, Running, Paused, Stopped
+    Pending, Running, Starting, Paused, Stopped
   }
   private static final String TAG = "ScriptRunner";
   private Array<BaseKeyword> keywords;
@@ -20,7 +20,7 @@ public class ScriptRunner implements Disposable {
   private ScriptableObject mainScope;
   private Script script;
   private State state;
-  private ScriptThread internalThread;
+  private Thread internalThread;
   private ContinuationPending continuationPending;
   private Object result; // passed to continuation pending
   private boolean loop = true;
@@ -29,16 +29,116 @@ public class ScriptRunner implements Disposable {
 
   /**
    * Initialize new script runner
-   * @param source in js script
-   * @param coreScopeMethods list of objects to get global functions
    */
   public ScriptRunner(String source, Array<BaseKeyword> keywords, boolean loop) {
     this.source             = source;
-    internalThread          = new ScriptThread();
     state                   = ScriptRunner.State.Pending;
     this.loop               = loop;
     this.keywords           = keywords;
     this.listeners          = new Array<ScriptRunnerListener>();
+
+    internalThread          = new Thread() {
+      @Override
+      public void run() {
+        ScriptRunner.this.run();
+      }
+    };
+  }
+
+  private void run() {
+    try {
+      configureContext();
+      compileScript();
+
+      state = ScriptRunner.State.Running;
+
+      for (ScriptRunnerListener listener : listeners) {
+        listener.onScriptStart(ScriptRunner.this);
+      }
+
+      /**
+       * Run forever while state is not {@link de.macbury.expanse.core.scripts.ScriptRunner.State#Stopped}
+       */
+      while(state != ScriptRunner.State.Stopped) {
+        try {
+          if (state == ScriptRunner.State.Running) {
+            /**
+             * If script is running and have pending continuation run it, otherwise run script from start
+             */
+            if (continuationPending != null) {
+
+              /**
+               * If result is exception throw it!
+               */
+              if (Exception.class.isInstance(result)) {
+
+                throw (Exception)result;
+              } else {
+                /**
+                 * Otherwise resume script from last state
+                 */
+                context.resumeContinuation(continuationPending.getContinuation(), mainScope, result);
+              }
+
+              result              = null;
+              continuationPending = null;
+            } else {
+              context.executeScriptWithContinuations(script, mainScope);
+            }
+
+            /**
+             * If nothing paused the script and is not set to loop we can now stop it
+             */
+            if (!loop)
+              state = ScriptRunner.State.Stopped;
+          } else {
+            Thread.sleep(10);
+          }
+        } catch (RobotScriptContext.ManualScriptStopException exception) {
+          /**
+           * Set state to {@link de.macbury.expanse.core.scripts.ScriptRunner.State#Stopped} if user did manualy stop script
+           */
+          Gdx.app.debug(TAG, "Script stopped by user");
+          state = ScriptRunner.State.Stopped;
+          for (ScriptRunnerListener listener : listeners) {
+            listener.onScriptAbort(ScriptRunner.this);
+          }
+        } catch (ContinuationPending continuationPending) {
+          /**
+           * Set state to {@link de.macbury.expanse.core.scripts.ScriptRunner.State#Paused} and store continuationPending
+           */
+          state = ScriptRunner.State.Paused;
+          ScriptRunner.this.continuationPending = continuationPending;
+          for (ScriptRunnerListener listener : listeners) {
+            listener.onScriptPause(ScriptRunner.this, continuationPending);
+          }
+        } catch (InterruptedException e) {
+          /**
+           * Set state to {@link de.macbury.expanse.core.scripts.ScriptRunner.State#Stopped} if antyhind did try to interput this thread
+           */
+          state = ScriptRunner.State.Stopped;
+        } catch (Exception e) {
+          state = ScriptRunner.State.Stopped;
+          for (ScriptRunnerListener listener : listeners) {
+            listener.onScriptException(ScriptRunner.this, e);
+          }
+        }
+      }
+    } finally {
+      if (listeners != null) {
+        for (ScriptRunnerListener listener : listeners) {
+          listener.onScriptFinish(ScriptRunner.this);
+        }
+      }
+      internalThread      = null;
+      continuationPending = null;
+      result              = null;
+      owner               = null;
+      state               = ScriptRunner.State.Stopped;
+      Gdx.app.debug(TAG, "Exiting script");
+      Context.exit();
+
+    }
   }
 
   /**
@@ -74,7 +174,7 @@ public class ScriptRunner implements Disposable {
    */
   public boolean start() {
     if (state == State.Pending) {
-      state = State.Running;
+      state = State.Starting;
       internalThread.start();
       return true;
     } else {
@@ -111,15 +211,12 @@ public class ScriptRunner implements Disposable {
    * @return true if script is stopped!
    */
   public boolean stop() {
-    if (state == State.Running) {
+    if (state == State.Running || State.Starting == state) {
       state = State.Stopped;
       loop  = false;
-      context.abort();
-      try {
-        internalThread.join();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+      if (context != null)
+        context.abort();
+      internalThread.interrupt();
       return true;
     } else if (state == State.Paused){
       state = State.Stopped;
@@ -135,35 +232,6 @@ public class ScriptRunner implements Disposable {
   private void compileScript() {
     this.script  = context.compileString(source, "<src>", 1, null);
   }
-  /**
-   * Loads all core functions like move, turn etc
-   */
-  /*private void loadCoreFunctions() {
-    ScriptableObject coreScope       = context.initStandardObjects();
-
-    for (int i = 0; i < coreScopeMethods.size; i++) {
-      registerFunctionsFromObject(coreScopeMethods.get(i), coreScope);
-    }
-
-    //TODO: prepare this list elswhere, mayby each funciton is in separate class
-    String coreFunctionFileNames[]   = new String[] {
-      "move",
-      "wait"
-    };
-
-    for (int i = 0; i < coreFunctionFileNames.length; i++) {
-      String functionSource       = Gdx.files.classpath("core/"+coreFunctionFileNames[i]+".js").readString();
-      NativeFunction function     = (NativeFunction)context.compileFunction(
-        coreScope,
-        functionSource,
-        coreFunctionFileNames[i],
-        0,
-        null
-      );
-
-      mainScope.put(function.getFunctionName(), mainScope, function);
-    }
-  }*/
 
   /**
    * Starts {@link RobotScriptContext} and configure main scope
@@ -179,7 +247,6 @@ public class ScriptRunner implements Disposable {
       mainScope.put(function.getFunctionName(), mainScope, function);
     }
   }
-
 
   @Override
   public void dispose() {
@@ -199,107 +266,6 @@ public class ScriptRunner implements Disposable {
     listeners.clear();
     listeners = null;
     owner = null;
-  }
-
-  /**
-   * This just helper class for handling thread and hide all thread methods
-   */
-  private class ScriptThread extends Thread {
-    @Override
-    public void run() {
-      try {
-        configureContext();
-        compileScript();
-
-        state = ScriptRunner.State.Running;
-
-        for (ScriptRunnerListener listener : listeners) {
-          listener.onScriptStart(ScriptRunner.this);
-        }
-
-        /**
-         * Run forever while state is not {@link de.macbury.expanse.core.scripts.ScriptRunner.State#Stopped}
-         */
-        while(state != ScriptRunner.State.Stopped) {
-          try {
-            if (state == ScriptRunner.State.Running) {
-              /**
-               * If script is running and have pending continuation run it, otherwise run script from start
-               */
-              if (continuationPending != null) {
-
-                /**
-                 * If result is exception throw it!
-                 */
-                if (Exception.class.isInstance(result)) {
-
-                  throw (Exception)result;
-                } else {
-                  /**
-                   * Otherwise resume script from last state
-                   */
-                  context.resumeContinuation(continuationPending.getContinuation(), mainScope, result);
-                }
-
-                result              = null;
-                continuationPending = null;
-              } else {
-                context.executeScriptWithContinuations(script, mainScope);
-              }
-
-              /**
-               * If nothing paused the script and is not set to loop we can now stop it
-               */
-              if (!loop)
-                state = ScriptRunner.State.Stopped;
-            } else {
-              Thread.sleep(10);
-            }
-          } catch (RobotScriptContext.ManualScriptStopException exception) {
-            /**
-             * Set state to {@link de.macbury.expanse.core.scripts.ScriptRunner.State#Stopped} if user did manualy stop script
-             */
-            Gdx.app.debug(TAG, "Script stopped by user");
-            state = ScriptRunner.State.Stopped;
-            for (ScriptRunnerListener listener : listeners) {
-              listener.onScriptAbort(ScriptRunner.this);
-            }
-          } catch (ContinuationPending continuationPending) {
-            /**
-             * Set state to {@link de.macbury.expanse.core.scripts.ScriptRunner.State#Paused} and store continuationPending
-             */
-            state = ScriptRunner.State.Paused;
-            ScriptRunner.this.continuationPending = continuationPending;
-            for (ScriptRunnerListener listener : listeners) {
-              listener.onScriptPause(ScriptRunner.this, continuationPending);
-            }
-          } catch (InterruptedException e) {
-            /**
-             * Set state to {@link de.macbury.expanse.core.scripts.ScriptRunner.State#Stopped} if antyhind did try to interput this thread
-             */
-            state = ScriptRunner.State.Stopped;
-          } catch (Exception e) {
-            state = ScriptRunner.State.Stopped;
-            for (ScriptRunnerListener listener : listeners) {
-              listener.onScriptException(ScriptRunner.this, e);
-            }
-          }
-        }
-      } finally {
-        if (listeners != null)
-          for (ScriptRunnerListener listener : listeners) {
-            listener.onScriptFinish(ScriptRunner.this);
-          }
-
-        continuationPending = null;
-        result              = null;
-        owner               = null;
-        state               = ScriptRunner.State.Stopped;
-        Gdx.app.debug(TAG, "Exiting script");
-        Context.exit();
-
-      }
-    }
   }
 
   public Object getOwner() {

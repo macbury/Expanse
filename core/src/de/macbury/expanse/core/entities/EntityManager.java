@@ -5,6 +5,8 @@ import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.utils.Disposable;
+import de.macbury.expanse.Expanse;
+import de.macbury.expanse.core.assets.Assets;
 import de.macbury.expanse.core.entities.systems.*;
 import de.macbury.expanse.core.graphics.LodModelBatch;
 import de.macbury.expanse.core.graphics.camera.GameCamera;
@@ -23,16 +25,16 @@ public class EntityManager extends PooledEngine implements Disposable {
   private RobotManagerSystem robotManagerSystem;
   private SpriteRenderingSystem spriteRenderingSystem;
 
-  public EntityManager(GameCamera renderingCamera, Messages messages, WorldOctree octree, Terrain terrain) {
+  public EntityManager(Expanse expanse, GameCamera renderingCamera, WorldOctree octree, Terrain terrain) {
     super();
-
-    this.timerSystem           = new TimerSystem(messages);
+    this.timerSystem           = new TimerSystem(expanse.messages);
     this.spriteRenderingSystem = new SpriteRenderingSystem(renderingCamera);
-    this.robotManagerSystem    = new RobotManagerSystem(messages);
-    this.motorSystem           = new MotorSystem(messages);
+    this.robotManagerSystem    = new RobotManagerSystem(expanse.messages);
+    this.motorSystem           = new MotorSystem(expanse.messages);
     this.collisionSystem       = new CollisionSystem(octree, terrain);
     this.worldOctreeSystem     = new WorldOctreeSystem(octree);
-    this.renderableSystem      = new RenderableSystem(octree, renderingCamera, new LodModelBatch()); //TODO move initialization of model batch elswhere
+    this.renderableSystem      = new RenderableSystem(octree, renderingCamera, new LodModelBatch(), expanse.fb); //TODO move initialization of model batch elswhere
+
     addEntityListener(robotManagerSystem);
     addEntityListener(collisionSystem);
     addSystem(robotManagerSystem);
@@ -47,6 +49,11 @@ public class EntityManager extends PooledEngine implements Disposable {
 
   @Override
   public void dispose() {
+    removeEntityListener(robotManagerSystem);
+    removeEntityListener(collisionSystem);
+    removeAllEntities();
+    clearPools();
+
     timerSystem.dispose();
     spriteRenderingSystem.dispose();
     motorSystem.dispose();
@@ -61,9 +68,5 @@ public class EntityManager extends PooledEngine implements Disposable {
     renderableSystem = null;
     timerSystem = null;
     motorSystem = null;
-
-    removeEntityListener(robotManagerSystem);
-    removeAllEntities();
-    clearPools();
   }
 }

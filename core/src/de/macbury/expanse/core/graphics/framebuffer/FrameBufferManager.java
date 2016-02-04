@@ -4,7 +4,6 @@ package de.macbury.expanse.core.graphics.framebuffer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.FloatFrameBuffer;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector3;
@@ -153,7 +152,7 @@ public class FrameBufferManager implements Disposable {
   }
 
   public void createDefaultFrameBuffers() {
-    create(Fbo.MainColor);
+    create(Fbo.FinalResult);
   }
 
 

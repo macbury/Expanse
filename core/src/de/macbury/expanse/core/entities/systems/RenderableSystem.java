@@ -2,24 +2,22 @@ package de.macbury.expanse.core.entities.systems;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import de.macbury.expanse.core.entities.Components;
 import de.macbury.expanse.core.entities.OctreeIteratingSystem;
 import de.macbury.expanse.core.entities.components.*;
 import de.macbury.expanse.core.graphics.Lod;
 import de.macbury.expanse.core.graphics.LodModelBatch;
 import de.macbury.expanse.core.graphics.camera.GameCamera;
+import de.macbury.expanse.core.graphics.framebuffer.Fbo;
+import de.macbury.expanse.core.graphics.framebuffer.FrameBufferManager;
 import de.macbury.expanse.core.octree.OctreeNode;
 import de.macbury.expanse.core.octree.WorldOctree;
 
@@ -30,17 +28,20 @@ import de.macbury.expanse.core.octree.WorldOctree;
 //TODO separate systems for rendering in color, reflection and glow batch, We can use components to make it use diffrent systems
 public class RenderableSystem extends OctreeIteratingSystem implements Disposable {
   private final Environment env;
+  private FrameBufferManager fb;
   private LodModelBatch modelBatch;
   private GameCamera camera;
   private BoundingBox tempBox = new BoundingBox();
   private Vector3 tempVec     = new Vector3();
-  public RenderableSystem(WorldOctree octree, GameCamera camera, LodModelBatch modelBatch) {
+  public RenderableSystem(WorldOctree octree, GameCamera camera, LodModelBatch modelBatch, FrameBufferManager fb) {
     super(octree, Family.all(
       PositionComponent.class
     ).one(
       ModelComponent.class,
       TerrainRenderableComponent.class
     ).get());
+
+    this.fb         = fb;
     this.camera     = camera;
     this.modelBatch = modelBatch;
     this.env        = new Environment();// TODO move this to provider or something, else, this should not be initialized here
@@ -51,9 +52,13 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
 
   @Override
   public void update(float deltaTime) {
-    modelBatch.begin(camera); {
-      super.update(deltaTime);
-    } modelBatch.end();
+    fb.begin(Fbo.FinalResult); {
+      Gdx.gl.glClearColor(1,1,1,1);
+      Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+      modelBatch.begin(camera); {
+        super.update(deltaTime);
+      } modelBatch.end();
+    } fb.end();
   }
 
   /**
@@ -89,6 +94,7 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
     super.dispose();
     modelBatch = null;
     camera     = null;
+    fb         = null;
   }
 
   /**

@@ -5,9 +5,9 @@ package de.macbury.expanse.core.graphics.framebuffer;
  */
 public enum Fbo {
   /**
-   * In this framebuffer are rendered all objects with shadows etc before blur an blooms
+   * In this framebuffer the final result of rendering that should be displayed on screen
    */
-  MainColor("expanse:main-color");
+  FinalResult("expanse:final-result");
   private final String namespace;
   Fbo(String namespace) {
     this.namespace = namespace;

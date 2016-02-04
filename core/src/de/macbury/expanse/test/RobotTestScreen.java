@@ -204,12 +204,8 @@ public class RobotTestScreen extends ScreenBase {
   }
 
   @Override
-  public void unload() {
-    this.assets.unload("textures:bot.png");
-  }
-
-  @Override
   public void dispose() {
+    this.assets.unload("textures:bot.png");
     spriteBatch.dispose();
     scriptRunner.dispose();
     entities.dispose();

@@ -35,7 +35,6 @@ import de.macbury.expanse.core.ui.Hud;
  */
 public class GameTestScreen extends ScreenBase {
   private GameCamera camera;
-  private Hud hud;
   private RTSCameraController rtsCameraController;
   private WorldOctree octree;
   private EntityManager entities;
@@ -55,18 +54,16 @@ public class GameTestScreen extends ScreenBase {
     this.terrain              = assets.get("terrain:playground.json");
     this.shapeRenderer        = new ShapeRenderer();
     this.camera               = new GameCamera();
-    this.hud                  = new Hud(input, assets);
     this.rtsCameraController  = new RTSCameraController(input);
 
+    this.octree               = new WorldOctree();
+
+    this.entities             = new EntityManager(game, camera, octree, terrain);
+    terrain.addToEntityManager(entities);
+    this.fpsLogger            = new FPSLogger();
 
     rtsCameraController.setCamera(camera);
     rtsCameraController.setOverlay(hud.getOverlay());
-    this.octree           = new WorldOctree();
-
-    this.entities         = new EntityManager(camera, messages, octree, terrain);
-    terrain.addToEntityManager(entities);
-    this.fpsLogger        = new FPSLogger();
-
     rtsCameraController.setListener(terrain);
     rtsCameraController.setCenter(terrain.getCenter());
 
@@ -79,7 +76,7 @@ public class GameTestScreen extends ScreenBase {
     button.addListener(new ClickListener() {
       @Override
       public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-        Gdx.app.log("Button", "YESt");
+        screens.set(new GameTestScreen());
         return true;
       }
     });
@@ -88,9 +85,6 @@ public class GameTestScreen extends ScreenBase {
 
   @Override
   public void render(float delta) {
-    Gdx.gl.glClearColor(1,1,1,1);
-    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
     rtsCameraController.update(delta);
     entities.update(delta);
     fpsLogger.log();
@@ -98,9 +92,6 @@ public class GameTestScreen extends ScreenBase {
     if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
       camera.saveDebugFrustrum();
     }
-
-    hud.act(delta);
-    hud.draw();
   }
 
   public Entity createRobot(Vector3 position, String source) {
@@ -144,15 +135,15 @@ public class GameTestScreen extends ScreenBase {
 
   }
 
-  @Override
-  public void unload() {
-    assets.unload("model:rock.g3dj");
-    assets.unload("model:cube.g3dj");
-    assets.unload("terrain:playground.json");
-  }
 
   @Override
   public void dispose() {
-
+    assets.unload("model:rock.g3dj");
+    assets.unload("model:cube.g3dj");
+    assets.unload("terrain:playground.json");
+    octree.dispose();
+    entities.dispose();
+    shapeRenderer.dispose();
+    rtsCameraController.dispose();
   }
 }

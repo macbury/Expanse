@@ -149,7 +149,7 @@ public class TerrainTest extends ScreenBase {
 
     input.addProcessor(stage);
 
-    stage.addActor(new FullScreenFrameBufferResult(Fbo.MainColor, fb));
+    stage.addActor(new FullScreenFrameBufferResult(Fbo.FinalResult, fb));
     stage.addActor(overlay);
   }
 
@@ -158,7 +158,7 @@ public class TerrainTest extends ScreenBase {
     camera.update();
     rtsCameraController.update(delta);
 
-    fb.begin(Fbo.MainColor); {
+    fb.begin(Fbo.FinalResult); {
       Gdx.gl.glClearColor(1,1,1,1);
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
@@ -174,7 +174,7 @@ public class TerrainTest extends ScreenBase {
     stage.draw();
 
     if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
-      fb.saveAsPng(Fbo.MainColor);
+      fb.saveAsPng(Fbo.FinalResult);
     }
   }
 
@@ -183,10 +183,6 @@ public class TerrainTest extends ScreenBase {
 
   }
 
-  @Override
-  public void unload() {
-
-  }
 
   @Override
   public void dispose() {

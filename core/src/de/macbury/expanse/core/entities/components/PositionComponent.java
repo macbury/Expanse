@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import de.macbury.expanse.core.assets.Assets;
-import de.macbury.expanse.core.entities.blueprint.BlueprintConsumer;
+import de.macbury.expanse.core.entities.Messages;
 import de.macbury.expanse.core.entities.blueprint.ComponentBlueprint;
 import de.macbury.expanse.core.octree.OctreeNode;
 import de.macbury.expanse.core.octree.OctreeObject;
@@ -15,7 +15,7 @@ import de.macbury.expanse.core.octree.OctreeObject;
 /**
  * This class contains information about entity position on Screen, and if this entity is visible on current screen;
  */
-public class PositionComponent extends Vector3 implements Component, Pool.Poolable, OctreeObject, BlueprintConsumer<PositionComponent.Blueprint> {
+public class PositionComponent extends Vector3 implements Component, Pool.Poolable, OctreeObject {
   public float rotationDeg;
   public OctreeNode parent;
   public Entity entity;
@@ -44,15 +44,8 @@ public class PositionComponent extends Vector3 implements Component, Pool.Poolab
     this.parent = parent;
   }
 
-  @Override
-  public void consume(Blueprint blueprint) {
-    reset();
-    set(blueprint.x, blueprint.y, blueprint.z);
-    rotationDeg = blueprint.rotation;
-    dimension.set(blueprint.dimension);
-  }
 
-  public static class Blueprint extends ComponentBlueprint {
+  public static class Blueprint extends ComponentBlueprint<PositionComponent> {
     public float x;
     public float y;
     public float z;
@@ -67,6 +60,13 @@ public class PositionComponent extends Vector3 implements Component, Pool.Poolab
     @Override
     public void assignDependencies(Assets assets) {
 
+    }
+
+    @Override
+    public void applyTo(PositionComponent component, Entity owner, Messages messages) {
+      component.set(x, y, z);
+      component.rotationDeg = rotation;
+      component.dimension.set(dimension);
     }
 
     @Override

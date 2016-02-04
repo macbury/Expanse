@@ -60,7 +60,7 @@ public class ScreenManager implements Disposable {
         manager.nextScreen.preload();
 
         if (manager.currentScreen != null) {
-          manager.currentScreen.unload();
+          manager.currentScreen.dispose();
           manager.currentScreen.unlink();
         }
 
@@ -69,19 +69,24 @@ public class ScreenManager implements Disposable {
 
       @Override
       public void exit(ScreenManager manager) {
-        if (manager.currentScreen != null)
-          manager.currentScreen.dispose();
         manager.currentScreen = null;
       }
     },
     Loading {
       @Override
+      public void enter(ScreenManager manager) {
+        manager.game.hud.getLoader().setVisible(true);
+      }
+
+      @Override
+      public void exit(ScreenManager manager) {
+        manager.game.hud.getLoader().setVisible(false);
+      }
+
+      @Override
       public void update(ScreenManager manager) {
         if (manager.assets.update()) {
-          Gdx.app.log(TAG, "Loading assets: " + manager.assets.getProgress());
           manager.stateMachine.changeState(ScreenManagerState.Show);
-        } else {
-          Gdx.app.log(TAG, "Loading assets: " + manager.assets.getProgress());
         }
       }
     },
