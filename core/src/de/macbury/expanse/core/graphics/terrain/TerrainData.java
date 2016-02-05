@@ -54,14 +54,16 @@ public class TerrainData implements Disposable {
 
 
   private void buildElevation() {
-    elevation   = new float[getWidth()][getHeight()];
-    shadeFactor = new float[getWidth()][getHeight()];
+    int dataWidth = getWidth() + 1;
+    int dataHeight = getHeight() + 1;
+    elevation   = new float[dataWidth][dataHeight];
+    shadeFactor = new float[dataWidth][dataHeight];
     Vector2 vectorCursor = new Vector2();
 
-    for (int x = 0; x < getWidth(); x++) {
-      for (int z = 0; z < getHeight(); z++) {
+    for (int x = 0; x < dataWidth; x++) {
+      for (int z = 0; z < dataHeight; z++) {
 
-        float total = 0.0f;
+        /*float total = 0.0f;
         for (int i = 0; i < islandCenters.size; i++) {
           Vector3 islandVector   = islandCenters.get(i);
           float distanceToCenter = vectorCursor.set(x, z).dst(islandVector.x, islandVector.y);
@@ -69,7 +71,7 @@ public class TerrainData implements Disposable {
             total += (islandVector.z - distanceToCenter) / islandVector.z;
           }
         }
-        total = MathUtils.clamp(total, 0.1f, 1.0f);
+        total = MathUtils.clamp(total, 0.1f, 1.0f);*/
 
         elevation[x][z]   = 10 + noise.terrainNoise(x,z, 10, 6, 0.9f); //MathUtils.clamp((total - noise.terrainNoise(x,z, 1.0f, 6, 0.9f)), -1f, 1f) * getMaxElevation();
         shadeFactor[x][z] = noise.interpolatedNoise(x,z) * MAX_SHADE_FACTOR;
@@ -90,8 +92,8 @@ public class TerrainData implements Disposable {
    * @return
    */
   public float getElevation(int x, int z) {
-    if (x <= 0 || z <= 0 || z >= getHeight() || x >= getWidth()) {
-      return 1;
+    if (x < 0 || z < 0 || z > getHeight() || x > getWidth()) {
+      return 0;
     } else {
       return elevation[x][z];
     }

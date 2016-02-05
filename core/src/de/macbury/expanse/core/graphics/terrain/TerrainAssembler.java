@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
@@ -81,14 +82,12 @@ public class TerrainAssembler implements Disposable {
           );
         }
 
+
         terrainRenderableComponents.add(terrainRenderableComponent);
-        //buildTileEntityBase(terrainRenderableComponent);
       }
     }
   }
 
-
-  private Vector3 tempNormal = new Vector3();
   private void calcNormal(MeshPartBuilder.VertexInfo p1, MeshPartBuilder.VertexInfo p2, MeshPartBuilder.VertexInfo p3) {
     // u = p3 - p1
     float ux = p3.position.x - p1.position.x;
@@ -129,20 +128,19 @@ public class TerrainAssembler implements Disposable {
     int startY = tileY * TILE_SIZE;
     int endX   = startX + TILE_SIZE;
     int endY   = startY + TILE_SIZE;
-    int resolution = lod.resolution;
-    int patchSize  = lod == Lod.High ? 0 : lod.resolution;
+
     meshBuilder.begin(VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked); {
       meshBuilder.part("tile"+tileX+"x"+tileY, primitiveType, tileRenderable.meshPart);
-      for (int x = startX; x < endX; x+=resolution) {
-        for (int z = startY; z < endY; z+=resolution) {
-          buildQuad(x,z, resolution);
+
+      for (int x = startX; x < endX; x+=lod.resolution) {
+        for (int z = startY; z < endY; z+=lod.resolution) {
+          buildQuad(x,z, lod);
         }
       }
 
     } meshBuilder.end();
 
     lodRenderables.get(lod).add(tileRenderable);
-    tileRenderable.meshPart.mesh.setAutoBind(true);
     return tileRenderable;
   }
 
@@ -164,7 +162,7 @@ public class TerrainAssembler implements Disposable {
    * @param z
    * @param resolution
    */
-  private void buildQuad(int x, int z, int resolution) {
+  private void buildQuad(int x, int z, Lod lod) {
     Color colorA = terrainData.getColor(x, z);
     topLeftVertexInfo.setPos(
       x * TRIANGLE_SIZE,
@@ -173,21 +171,21 @@ public class TerrainAssembler implements Disposable {
     );
 
     topRightVertexInfo.setPos(
-      (x + resolution) * TRIANGLE_SIZE,
-      terrainData.getElevation(x + resolution, z),
+      (x + lod.resolution) * TRIANGLE_SIZE,
+      terrainData.getElevation(x + lod.resolution, z),
       z * TRIANGLE_SIZE
     );
 
     bottomLeftVertexInfo.setPos(
       x * TRIANGLE_SIZE,
-      terrainData.getElevation(x, z + resolution),
-      (z + resolution) * TRIANGLE_SIZE
+      terrainData.getElevation(x, z + lod.resolution),
+      (z + lod.resolution) * TRIANGLE_SIZE
     );
 
     bottomRightVertexInfo.setPos(
-      (x + resolution) * TRIANGLE_SIZE,
-      terrainData.getElevation(x + resolution, z + resolution),
-      (z + resolution) * TRIANGLE_SIZE
+      (x + lod.resolution) * TRIANGLE_SIZE,
+      terrainData.getElevation(x + lod.resolution, z + lod.resolution),
+      (z + lod.resolution) * TRIANGLE_SIZE
     );
 
 

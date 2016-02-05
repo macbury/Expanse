@@ -53,7 +53,9 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
       Gdx.gl.glClearColor(1,1,1,1);
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
       modelBatch.begin(camera); {
-        super.update(deltaTime);
+        camera.extendFov(); {
+          super.update(deltaTime);
+        } camera.restoreFov();
       } modelBatch.end();
     } fb.end();
   }
@@ -82,6 +84,7 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
         Components.TerrainRenderable.get(entity),
         env,
         Lod.by(camera, positionComponent)
+        //Lod.byDebugButton()
       );
     }
   }

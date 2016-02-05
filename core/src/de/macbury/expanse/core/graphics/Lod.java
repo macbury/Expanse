@@ -42,6 +42,13 @@ public enum Lod {
   }
 
   public static Lod byDebugButton() {
-    return Gdx.input.isKeyPressed(Input.Keys.L) ? Low : High;
+    if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
+      return UltraLow;
+    } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
+      return Low;
+    } if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
+      return Medium;
+    }
+    return High;
   }
 }
