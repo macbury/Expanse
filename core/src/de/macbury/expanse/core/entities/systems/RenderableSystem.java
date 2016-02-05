@@ -18,8 +18,8 @@ import de.macbury.expanse.core.graphics.LodModelBatch;
 import de.macbury.expanse.core.graphics.camera.GameCamera;
 import de.macbury.expanse.core.graphics.framebuffer.Fbo;
 import de.macbury.expanse.core.graphics.framebuffer.FrameBufferManager;
+import de.macbury.expanse.core.octree.LevelOctree;
 import de.macbury.expanse.core.octree.OctreeNode;
-import de.macbury.expanse.core.octree.WorldOctree;
 
 /**
  * This system finds all {@link Entity} with components {@link de.macbury.expanse.core.entities.components.RenderableComponent} and {@link de.macbury.expanse.core.entities.components.PositionComponent}
@@ -33,7 +33,7 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
   private GameCamera camera;
   private BoundingBox tempBox = new BoundingBox();
   private Vector3 tempVec     = new Vector3();
-  public RenderableSystem(WorldOctree octree, GameCamera camera, LodModelBatch modelBatch, FrameBufferManager fb) {
+  public RenderableSystem(LevelOctree<PositionComponent> octree, GameCamera camera, LodModelBatch modelBatch, FrameBufferManager fb) {
     super(octree, Family.all(
       PositionComponent.class
     ).one(

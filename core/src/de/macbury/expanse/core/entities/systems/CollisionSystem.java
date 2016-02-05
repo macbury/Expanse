@@ -10,16 +10,16 @@ import de.macbury.expanse.core.entities.Components;
 import de.macbury.expanse.core.entities.components.BodyComponent;
 import de.macbury.expanse.core.entities.components.PositionComponent;
 import de.macbury.expanse.core.graphics.terrain.Terrain;
-import de.macbury.expanse.core.octree.WorldOctree;
+import de.macbury.expanse.core.octree.LevelOctree;
 
 /**
  * This system checks each {@link Entity} with {@link PositionComponent} and {@link BodyComponent}
  */
 public class CollisionSystem extends IteratingSystem implements Disposable, EntityListener {
-  private WorldOctree octree;
+  private LevelOctree<PositionComponent> octree;
   private Terrain terrain;
 
-  public CollisionSystem(WorldOctree octree, Terrain terrain) {
+  public CollisionSystem(LevelOctree<PositionComponent> octree, Terrain terrain) {
     super(Family.all(PositionComponent.class, BodyComponent.class).get());
     this.octree  = octree;
     this.terrain = terrain;

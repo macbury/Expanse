@@ -23,7 +23,6 @@ import de.macbury.expanse.core.entities.states.RobotMotorState;
 import de.macbury.expanse.core.graphics.DebugShape;
 import de.macbury.expanse.core.graphics.camera.Overlay;
 import de.macbury.expanse.core.graphics.camera.RTSCameraController;
-import de.macbury.expanse.core.octree.WorldOctree;
 import de.macbury.expanse.core.screens.ScreenBase;
 import de.macbury.expanse.core.scripts.ScriptRunner;
 
@@ -41,7 +40,6 @@ public class RobotTestScreen extends ScreenBase {
   private EntityManager entities;
   private boolean entityPause;
   private Entity myRobotEntity;
-  private WorldOctree octree;
   private ShapeRenderer shapeRenderer;
   private Array<Entity> tempEntities = new Array<Entity>();
   private CameraInputController cameraController;
@@ -75,9 +73,9 @@ public class RobotTestScreen extends ScreenBase {
 
     this.texture     = this.assets.get("textures:bot.png", Texture.class);
     this.spriteBatch = new SpriteBatch();
-    this.octree      = new WorldOctree();
+    //this.octree      = new WorldOctree();
 
-    octree.setBounds(new BoundingBox(new Vector3(-500, -2, -500), new Vector3(500, 100, 500))); // in pixels
+    //octree.setBounds(new BoundingBox(new Vector3(-500, -2, -500), new Vector3(500, 100, 500))); // in pixels
     //this.entities    = new EntityManager(camera, messages, octree);
     this.fpsLogger   = new FPSLogger();
 
@@ -182,7 +180,7 @@ public class RobotTestScreen extends ScreenBase {
     shapeRenderer.setProjectionMatrix(camera.combined);
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line); {
       shapeRenderer.setColor(Color.WHITE);
-      DebugShape.octree(shapeRenderer, octree);
+      //DebugShape.octree(shapeRenderer, octree);
     } shapeRenderer.end();
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line); {
       shapeRenderer.setColor(Color.RED);

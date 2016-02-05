@@ -13,7 +13,7 @@ public class EngineFileHandleResolver implements FileHandleResolver {
   private static final String TAG = "EngineFileHandleResolver";
   private HashMap<String, String> pathMappings;
 
-  EngineFileHandleResolver() {
+  public EngineFileHandleResolver() {
     pathMappings = new HashMap<String, String>();
     configureMappings();
   }
@@ -23,6 +23,7 @@ public class EngineFileHandleResolver implements FileHandleResolver {
     putMapping("model", "models/");
     putMapping("entity", "entities/");
     putMapping("terrain", "terrains/");
+    putMapping("world", "worlds/");
   }
 
   private String applyMapping(String path) {

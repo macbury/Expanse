@@ -1,0 +1,6 @@
+{
+  width: 513,
+  height: 513,
+  seed: 12345678,
+  maxElevation: 20
+}

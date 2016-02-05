@@ -3,10 +3,6 @@ package de.macbury.expanse.test;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.FPSLogger;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -15,20 +11,15 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import de.macbury.expanse.core.entities.Components;
 import de.macbury.expanse.core.entities.EntityManager;
 import de.macbury.expanse.core.entities.components.*;
 import de.macbury.expanse.core.entities.states.RobotInstructionState;
 import de.macbury.expanse.core.entities.states.RobotMotorState;
-import de.macbury.expanse.core.graphics.DebugShape;
 import de.macbury.expanse.core.graphics.camera.GameCamera;
 import de.macbury.expanse.core.graphics.camera.RTSCameraController;
 import de.macbury.expanse.core.graphics.terrain.Terrain;
-import de.macbury.expanse.core.graphics.terrain.TerrainAssembler;
-import de.macbury.expanse.core.graphics.terrain.TerrainData;
-import de.macbury.expanse.core.octree.WorldOctree;
+import de.macbury.expanse.core.octree.LevelOctree;
 import de.macbury.expanse.core.screens.ScreenBase;
-import de.macbury.expanse.core.ui.Hud;
 
 /**
  * Created on 29.01.16.
@@ -36,11 +27,10 @@ import de.macbury.expanse.core.ui.Hud;
 public class GameTestScreen extends ScreenBase {
   private GameCamera camera;
   private RTSCameraController rtsCameraController;
-  private WorldOctree octree;
   private EntityManager entities;
-  private FPSLogger fpsLogger;
   private ShapeRenderer shapeRenderer;
   private Terrain terrain;
+  private LevelOctree<PositionComponent> octree;
 
   @Override
   public void preload() {
@@ -56,11 +46,10 @@ public class GameTestScreen extends ScreenBase {
     this.camera               = new GameCamera();
     this.rtsCameraController  = new RTSCameraController(input);
 
-    this.octree               = new WorldOctree();
+    this.octree               = new LevelOctree<PositionComponent>();
 
     this.entities             = new EntityManager(game, camera, octree, terrain);
     terrain.addToEntityManager(entities);
-    this.fpsLogger            = new FPSLogger();
 
     rtsCameraController.setCamera(camera);
     rtsCameraController.setOverlay(hud.getOverlay());
@@ -87,7 +76,6 @@ public class GameTestScreen extends ScreenBase {
   public void render(float delta) {
     rtsCameraController.update(delta);
     entities.update(delta);
-    fpsLogger.log();
 
     if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
       camera.saveDebugFrustrum();
@@ -141,9 +129,9 @@ public class GameTestScreen extends ScreenBase {
     assets.unload("model:rock.g3dj");
     assets.unload("model:cube.g3dj");
     assets.unload("terrain:playground.json");
-    octree.dispose();
     entities.dispose();
     shapeRenderer.dispose();
     rtsCameraController.dispose();
+    octree.dispose();
   }
 }

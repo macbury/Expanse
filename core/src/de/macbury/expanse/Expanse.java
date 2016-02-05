@@ -7,6 +7,7 @@ import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import de.macbury.expanse.core.assets.Assets;
+import de.macbury.expanse.core.assets.EngineFileHandleResolver;
 import de.macbury.expanse.core.entities.Messages;
 import de.macbury.expanse.core.graphics.framebuffer.FrameBufferManager;
 import de.macbury.expanse.core.input.InputManager;
@@ -15,6 +16,7 @@ import de.macbury.expanse.core.scripts.RobotScriptContextFactory;
 import de.macbury.expanse.core.ui.Hud;
 import de.macbury.expanse.test.EntitiesBlueprintsScreen;
 import de.macbury.expanse.test.GameTestScreen;
+import de.macbury.expanse.test.WorldTestScreen;
 
 public class Expanse extends ApplicationAdapter {
   public final static String VERSION = "0.0.6";
@@ -54,13 +56,13 @@ public class Expanse extends ApplicationAdapter {
     RobotScriptContextFactory.init();
 
     this.input      = new InputManager();
-    this.assets     = new Assets();
+    this.assets     = new Assets(new EngineFileHandleResolver(), this);
     this.messages   = new Messages();
     this.screens    = new ScreenManager(this);
     this.fb         = new FrameBufferManager();
     this.hud        = new Hud(input, assets, fb);
 
-    screens.set(new GameTestScreen());
+    screens.set(new WorldTestScreen("world:playground.json"));
 
     Gdx.input.setInputProcessor(input);
   }

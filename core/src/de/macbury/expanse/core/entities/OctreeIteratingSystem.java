@@ -8,9 +8,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.core.entities.components.BodyComponent;
 import de.macbury.expanse.core.entities.components.PositionComponent;
+import de.macbury.expanse.core.octree.LevelOctree;
 import de.macbury.expanse.core.octree.OctreeNode;
 import de.macbury.expanse.core.octree.OctreeObject;
-import de.macbury.expanse.core.octree.WorldOctree;
 import de.macbury.expanse.core.octree.query.OctreeQuery;
 
 /**
@@ -19,10 +19,10 @@ import de.macbury.expanse.core.octree.query.OctreeQuery;
  */
 public abstract class OctreeIteratingSystem extends EntitySystem implements Disposable, OctreeQuery<PositionComponent> {
   protected Family family;
-  protected WorldOctree octree;
+  protected LevelOctree<PositionComponent> octree;
   private Array<PositionComponent> treeObjects;
 
-  public OctreeIteratingSystem(WorldOctree octree, Family family) {
+  public OctreeIteratingSystem(LevelOctree<PositionComponent> octree, Family family) {
     this.family       = family;
     this.octree       = octree;
     this.treeObjects  = new Array<PositionComponent>();

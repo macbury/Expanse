@@ -76,11 +76,13 @@ public class ScreenManager implements Disposable {
       @Override
       public void enter(ScreenManager manager) {
         manager.game.hud.getLoader().setVisible(true);
+        manager.game.hud.getFullScreenFrameBufferResult().setVisible(false);
       }
 
       @Override
       public void exit(ScreenManager manager) {
         manager.game.hud.getLoader().setVisible(false);
+        manager.game.hud.getFullScreenFrameBufferResult().setVisible(true);
       }
 
       @Override

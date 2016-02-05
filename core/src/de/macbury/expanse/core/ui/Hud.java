@@ -57,6 +57,7 @@ public class Hud extends Stage {
     loader.setVisible(false);
   }
 
+
   public Overlay getOverlay() {
     return overlay;
   }
@@ -82,5 +83,9 @@ public class Hud extends Stage {
    */
   public AnimatedImage getLoader() {
     return loader;
+  }
+
+  public FullScreenFrameBufferResult getFullScreenFrameBufferResult() {
+    return fullScreenFrameBufferResult;
   }
 }

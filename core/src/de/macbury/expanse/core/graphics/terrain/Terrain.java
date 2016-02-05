@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.core.entities.EntityManager;
 import de.macbury.expanse.core.entities.components.PositionComponent;
+import de.macbury.expanse.core.entities.components.StaticComponent;
 import de.macbury.expanse.core.entities.components.TerrainRenderableComponent;
 import de.macbury.expanse.core.graphics.Lod;
 import de.macbury.expanse.core.graphics.camera.RTSCameraController;
@@ -65,6 +66,7 @@ public class Terrain implements Disposable, RTSCameraListener {
       Entity tileEntity = entityManager.createEntity();
       tileEntity.add(terrainRenderableComponent);
       tileEntity.add(positionComponent);
+      tileEntity.add(entityManager.createComponent(StaticComponent.class));
 
       entityManager.addEntity(tileEntity);
     }

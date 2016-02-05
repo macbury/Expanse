@@ -79,7 +79,8 @@ public class TerrainData implements Disposable {
 
   @Override
   public void dispose() {
-
+    elevation = null;
+    shadeFactor = null;
   }
 
   public float getElevation(int x, int z) {

@@ -19,4 +19,5 @@ public class Components {
 
   public final static ComponentMapper<ModelComponent>   Model                         = ComponentMapper.getFor(ModelComponent.class);
   public final static ComponentMapper<TerrainRenderableComponent>   TerrainRenderable                         = ComponentMapper.getFor(TerrainRenderableComponent.class);
+  public final static ComponentMapper<StaticComponent>   Static                         = ComponentMapper.getFor(StaticComponent.class);
 }

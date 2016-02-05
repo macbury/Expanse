@@ -13,7 +13,7 @@ public enum Lod {
   High(1),
   Medium(2),
   Low(4),
-  UltraLow(6)
+  UltraLow(8)
   ;
   private final static Vector3 tempPos = new Vector3();
   public final int resolution;
@@ -34,7 +34,7 @@ public enum Lod {
       return UltraLow;
     } else if (distance >= 0.70f) {
       return Low;
-    } else if (distance >= 0.55f) {
+    } else if (distance >= 0.60f) {
       return Medium;
     } else {
       return High;
