@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import de.macbury.expanse.Expanse;
@@ -75,14 +76,12 @@ public class ScreenManager implements Disposable {
     Loading {
       @Override
       public void enter(ScreenManager manager) {
-        manager.game.hud.getLoader().setVisible(true);
-        manager.game.hud.getFullScreenFrameBufferResult().setVisible(false);
+        manager.game.hud.showLoading();
       }
 
       @Override
       public void exit(ScreenManager manager) {
-        manager.game.hud.getLoader().setVisible(false);
-        manager.game.hud.getFullScreenFrameBufferResult().setVisible(true);
+        manager.game.hud.hideLoading();
       }
 
       @Override

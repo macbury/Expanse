@@ -48,7 +48,7 @@ public class GameTestScreen extends ScreenBase {
 
     this.octree               = new LevelOctree<PositionComponent>();
 
-    this.entities             = new EntityManager(game, camera, octree, terrain);
+    //ssthis.entities             = new EntityManager(game, camera, octree, terrain);
     terrain.addToEntityManager(entities);
 
     rtsCameraController.setCamera(camera);

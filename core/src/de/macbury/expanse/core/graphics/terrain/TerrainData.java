@@ -83,6 +83,12 @@ public class TerrainData implements Disposable {
     shadeFactor = null;
   }
 
+  /**
+   * Return elveation for passed coordinates
+   * @param x
+   * @param z
+   * @return
+   */
   public float getElevation(int x, int z) {
     if (x <= 0 || z <= 0 || z >= getHeight() || x >= getWidth()) {
       return 1;
@@ -90,6 +96,7 @@ public class TerrainData implements Disposable {
       return elevation[x][z];
     }
   }
+
 
   public int getWidth() {
     return width;

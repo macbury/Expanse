@@ -27,13 +27,13 @@ import de.macbury.expanse.core.octree.OctreeNode;
  */
 //TODO separate systems for rendering in color, reflection and glow batch, We can use components to make it use diffrent systems
 public class RenderableSystem extends OctreeIteratingSystem implements Disposable {
-  private final Environment env;
+  private Environment env;
   private FrameBufferManager fb;
   private LodModelBatch modelBatch;
   private GameCamera camera;
   private BoundingBox tempBox = new BoundingBox();
   private Vector3 tempVec     = new Vector3();
-  public RenderableSystem(LevelOctree<PositionComponent> octree, GameCamera camera, LodModelBatch modelBatch, FrameBufferManager fb) {
+  public RenderableSystem(LevelOctree<PositionComponent> octree, GameCamera camera, LodModelBatch modelBatch, FrameBufferManager fb, Environment env) {
     super(octree, Family.all(
       PositionComponent.class
     ).one(
@@ -44,10 +44,7 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
     this.fb         = fb;
     this.camera     = camera;
     this.modelBatch = modelBatch;
-    this.env        = new Environment();// TODO move this to provider or something, else, this should not be initialized here
-    env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.5f, 1f));
-    env.add(new DirectionalLight().set(0.6f, 0.6f, 0.5f, -1f, -0.8f, -0.2f));
-    env.set(new ColorAttribute(ColorAttribute.Fog,1f,1f,1f,1f));
+    this.env        = env;
   }
 
   @Override
@@ -95,6 +92,7 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
     modelBatch = null;
     camera     = null;
     fb         = null;
+    env        = null;
   }
 
   /**

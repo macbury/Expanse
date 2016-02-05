@@ -1,6 +1,7 @@
 package de.macbury.expanse.core.graphics.framebuffer;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -27,12 +28,11 @@ public class FullScreenFrameBufferResult extends Actor {
 
   @Override
   public void draw(Batch batch, float parentAlpha) {
-    super.draw(batch, parentAlpha);
     Texture tex = frameBufferManager.get(fbo).getColorBufferTexture();
     region.setTexture(tex);
     region.setRegion(0, 0, tex.getWidth(), tex.getHeight());
     region.flip(false, true);
-
+    batch.setColor(getColor());
     batch.draw(region, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
   }
 

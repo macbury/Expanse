@@ -19,7 +19,7 @@ import de.macbury.expanse.test.GameTestScreen;
 import de.macbury.expanse.test.WorldTestScreen;
 
 public class Expanse extends ApplicationAdapter {
-  public final static String VERSION = "0.0.6";
+  public final static String VERSION = "0.0.7";
   private static final String TAG    = "Expanse";
   /**
    * This class helps with input managment

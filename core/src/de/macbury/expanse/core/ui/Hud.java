@@ -1,6 +1,7 @@
 package de.macbury.expanse.core.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -13,6 +14,8 @@ import de.macbury.expanse.core.graphics.framebuffer.Fbo;
 import de.macbury.expanse.core.graphics.framebuffer.FrameBufferManager;
 import de.macbury.expanse.core.graphics.framebuffer.FullScreenFrameBufferResult;
 import de.macbury.expanse.core.input.InputManager;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
+import static com.badlogic.gdx.math.Interpolation.*;
 
 /**
  * This manages all stuff with in game interface
@@ -87,5 +90,16 @@ public class Hud extends Stage {
 
   public FullScreenFrameBufferResult getFullScreenFrameBufferResult() {
     return fullScreenFrameBufferResult;
+  }
+
+  public void showLoading() {
+    loader.setVisible(true);
+    fullScreenFrameBufferResult.setVisible(false);
+  }
+
+
+  public void hideLoading() {
+    loader.setVisible(false);
+    fullScreenFrameBufferResult.setVisible(true);
   }
 }

@@ -91,11 +91,10 @@ public class Terrain implements Disposable, RTSCameraListener {
    */
   public BoundingBox getBoundingBox(BoundingBox out) {
     return out.set(
-      tempVecA.set(0, -1, 0),
+      tempVecA.set(0, terrainData.getMaxElevation() * TerrainAssembler.TRIANGLE_SIZE, 0),
       tempVecB.set(terrainData.getWidth() * TerrainAssembler.TRIANGLE_SIZE, terrainData.getMaxElevation() * TerrainAssembler.TRIANGLE_SIZE + 5, terrainData.getHeight() * TerrainAssembler.TRIANGLE_SIZE)
     );
   }
-
 
   /**
    * Returns elevation for this world cordinates
