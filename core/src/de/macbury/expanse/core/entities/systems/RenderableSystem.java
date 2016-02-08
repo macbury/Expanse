@@ -1,6 +1,7 @@
 package de.macbury.expanse.core.entities.systems;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -26,7 +27,7 @@ import de.macbury.expanse.core.octree.OctreeNode;
  * and adds it to {@link com.badlogic.gdx.graphics.g3d.ModelBatch}
  */
 //TODO separate systems for rendering in color, reflection and glow batch, We can use components to make it use diffrent systems
-public class RenderableSystem extends OctreeIteratingSystem implements Disposable {
+public class RenderableSystem extends OctreeIteratingSystem implements Disposable, EntityListener {
   private Environment env;
   private FrameBufferManager fb;
   private LodModelBatch modelBatch;
@@ -71,11 +72,10 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
 
     if (Components.Model.has(entity)) {
       ModelComponent modelComponent = Components.Model.get(entity);
-      modelComponent.modelInstance.transform.idt().rotate(Vector3.Y, positionComponent.rotationDeg).trn(
-        positionComponent
-      );
 
-      //throw new GdxRuntimeException("Fix this!");
+      if (!Components.Static.has(entity))
+        calculateTransformMatrix(modelComponent, positionComponent);
+
       modelBatch.render(modelComponent.modelInstance, env);
     }
 
@@ -83,10 +83,15 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
       modelBatch.render(
         Components.TerrainRenderable.get(entity),
         env,
-        Lod.by(camera, positionComponent)
-        //Lod.byDebugButton()
+        Lod.High
       );
     }
+  }
+
+  private void calculateTransformMatrix(ModelComponent modelComponent, PositionComponent positionComponent) {
+    modelComponent.modelInstance.transform.idt().rotate(Vector3.Y, positionComponent.rotationDeg).trn(
+      positionComponent
+    );
   }
 
   @Override
@@ -117,5 +122,21 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
   @Override
   public boolean checkNode(OctreeNode node) {
     return camera.normalOrDebugFrustrum().boundsInFrustum(node.getBounds());
+  }
+
+  @Override
+  public void entityAdded(Entity entity) {
+    if (Components.Model.has(entity)) {
+      ModelComponent modelComponent = Components.Model.get(entity);
+
+      if (Components.Static.has(entity)) {
+        calculateTransformMatrix(modelComponent, Components.Position.get(entity));
+      }
+    }
+  }
+
+  @Override
+  public void entityRemoved(Entity entity) {
+
   }
 }

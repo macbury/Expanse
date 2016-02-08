@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
 import de.macbury.expanse.core.assets.Assets;
 import de.macbury.expanse.core.entities.Messages;
@@ -49,6 +51,16 @@ public class ModelComponent extends RenderableComponent {
     @Override
     public void applyTo(ModelComponent component, Entity owner, Messages messages) {
       component.modelInstance = new ModelInstance(model);
+    }
+
+    @Override
+    public void load(JsonValue source, Json json) {
+      name = source.getString("name");
+    }
+
+    @Override
+    public void save(Json target, ModelComponent source) {
+      target.writeValue("name", name);
     }
 
     @Override

@@ -13,6 +13,9 @@ public enum TelegramEvents {
   ScriptStop,
   Test,//TODO remove
 
+  SelectedEntity,
+  DeselectedEntity,
+
   /**
    * This event is triggered when entity have collided with terrain!
    */
@@ -62,5 +65,9 @@ public enum TelegramEvents {
    */
   public boolean is(Telegram telegram) {
     return telegram.message == ordinal();
+  }
+
+  public static TelegramEvents from(Telegram msg) {
+    return TelegramEvents.values()[msg.message];
   }
 }

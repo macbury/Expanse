@@ -148,3 +148,12 @@ loader
   orig: 64, 64
   offset: 0, 0
   index: 17
+selected_unit
+  rotate: false
+  xy: 332, 68
+  size: 32, 32
+  split: 7, 8, 7, 6
+  pad: 8, 7, 7, 6
+  orig: 32, 32
+  offset: 0, 0
+  index: -1

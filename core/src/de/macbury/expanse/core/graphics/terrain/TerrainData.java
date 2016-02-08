@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * This class contains all information about terrain like height and colors
  */
 public class TerrainData implements Disposable {
-  private static final float MAX_SHADE_FACTOR = 0.05f;
+  private static final float MAX_SHADE_FACTOR = 0.08f;
   private final Color tempColor;
   private final Color groundColor;
   private final Color snowColor;

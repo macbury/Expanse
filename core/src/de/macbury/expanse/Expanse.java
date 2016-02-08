@@ -60,7 +60,8 @@ public class Expanse extends ApplicationAdapter {
     this.messages   = new Messages();
     this.screens    = new ScreenManager(this);
     this.fb         = new FrameBufferManager();
-    this.hud        = new Hud(input, assets, fb);
+    this.hud        = new Hud(input, assets, fb, messages);
+
 
     screens.set(new WorldTestScreen("world:playground.json"));
 

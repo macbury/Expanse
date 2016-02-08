@@ -8,5 +8,6 @@
   },
   Model: {
     name: "model:rock.g3dj"
-  }
+  },
+  Static: {}
 }

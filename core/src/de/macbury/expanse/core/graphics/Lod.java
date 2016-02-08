@@ -10,10 +10,14 @@ import de.macbury.expanse.core.graphics.camera.GameCamera;
  * This class describes all level of details
  */
 public enum Lod {
+  /**
+   * For normal game rendering
+   */
   High(1),
-  Medium(2),
-  Low(4),
-  UltraLow(8)
+  /**
+   * For reflections and effects
+   */
+  Low(4)
   ;
   private final static Vector3 tempPos = new Vector3();
   public final int resolution;
@@ -27,7 +31,7 @@ public enum Lod {
    * @param position
    * @return
    */
-  public static Lod by(GameCamera camera, Vector3 position) {
+  /*public static Lod by(GameCamera camera, Vector3 position) {
     float distance = tempPos.set(camera.normalOrDebugPosition()).dst(position) / camera.far;
 
     if (distance >= 0.80f) {
@@ -37,7 +41,7 @@ public enum Lod {
     } else if (distance >= 0.60f) {
       return Medium;
     } else {
-      return High;
+      return byDebugButton();
     }
   }
 
@@ -50,5 +54,5 @@ public enum Lod {
       return Medium;
     }
     return High;
-  }
+  }*/
 }

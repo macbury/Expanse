@@ -5,12 +5,38 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import de.macbury.expanse.core.TelegramEvents;
+import de.macbury.expanse.core.entities.components.PositionComponent;
 import de.macbury.expanse.core.entities.components.RobotInstructionStateComponent;
 
 /**
  * Message dispatcher with nicer helper methods to send information
  */
 public class Messages extends MessageDispatcher {
+
+  /**
+   * Dispatch message from entity
+   * @param sender
+   * @param event
+   * @param payload
+   */
+  public void dispatchMessage(Telegraph sender, TelegramEvents event, Object payload) {
+    synchronized (this) {
+      dispatchMessage(sender, event.ordinal(), payload);
+    }
+  }
+
+  /**
+   * Dispatch message from entity, Sender is {@link PositionComponent}
+   * @param sender
+   * @param event
+   * @param payload
+   */
+  public void dispatchMessage(Entity sender, TelegramEvents event, Object payload) {
+    synchronized (this) {
+      PositionComponent positionComponent = Components.Position.get(sender);
+      dispatchMessage(positionComponent, event.ordinal(), payload);
+    }
+  }
 
   /**
    * Dispatch message in two frames to sender

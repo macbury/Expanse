@@ -132,9 +132,23 @@ public class TerrainAssembler implements Disposable {
     meshBuilder.begin(VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.ColorPacked); {
       meshBuilder.part("tile"+tileX+"x"+tileY, primitiveType, tileRenderable.meshPart);
 
+      int doubleLod = lod.resolution * 2;
       for (int x = startX; x < endX; x+=lod.resolution) {
         for (int z = startY; z < endY; z+=lod.resolution) {
-          buildQuad(x,z, lod);
+          buildQuadVertex(x, z, lod);
+          if (z % doubleLod == 0) {
+            if (x % doubleLod == 0) {
+              buildQuadAIndicies(x,z);
+            } else {
+              buildQuadBIndicies(x,z);
+            }
+          } else {
+            if (x % doubleLod == 0) {
+              buildQuadBIndicies(x,z);
+            } else {
+              buildQuadAIndicies(x,z);
+            }
+          }
         }
       }
 
@@ -160,35 +174,9 @@ public class TerrainAssembler implements Disposable {
    *        Triangle last
    * @param x
    * @param z
-   * @param resolution
    */
-  private void buildQuad(int x, int z, Lod lod) {
+  private void buildQuadAIndicies(int x, int z) {
     Color colorA = terrainData.getColor(x, z);
-    topLeftVertexInfo.setPos(
-      x * TRIANGLE_SIZE,
-      terrainData.getElevation(x, z),
-      z * TRIANGLE_SIZE
-    );
-
-    topRightVertexInfo.setPos(
-      (x + lod.resolution) * TRIANGLE_SIZE,
-      terrainData.getElevation(x + lod.resolution, z),
-      z * TRIANGLE_SIZE
-    );
-
-    bottomLeftVertexInfo.setPos(
-      x * TRIANGLE_SIZE,
-      terrainData.getElevation(x, z + lod.resolution),
-      (z + lod.resolution) * TRIANGLE_SIZE
-    );
-
-    bottomRightVertexInfo.setPos(
-      (x + lod.resolution) * TRIANGLE_SIZE,
-      terrainData.getElevation(x + lod.resolution, z + lod.resolution),
-      (z + lod.resolution) * TRIANGLE_SIZE
-    );
-
-
     topLeftVertexInfo.setCol(colorA);
     topRightVertexInfo.setCol(colorA);
     bottomLeftVertexInfo.setCol(colorA);
@@ -198,7 +186,6 @@ public class TerrainAssembler implements Disposable {
       topRightVertexInfo,
       topLeftVertexInfo
     );
-
 
     meshBuilder.triangle(
       bottomLeftVertexInfo,
@@ -222,6 +209,88 @@ public class TerrainAssembler implements Disposable {
       bottomLeftVertexInfo,
       bottomRightVertexInfo,
       topRightVertexInfo
+    );
+  }
+
+  /**
+   * Triangle first
+   * (0,0) ----- (1,0)
+   *   | \        |
+   *   |  \       |
+   *   |   \      |
+   *   |    \     |
+   *   |     \    |
+   *   |      \   |
+   *   |       \  |
+   *   |        \ |
+   *   |         \|
+   *  (0,1)----- (1,1)
+   *        Triangle last
+   * @param x
+   * @param z
+   */
+
+  private void buildQuadBIndicies(int x, int z) {
+    Color colorA = terrainData.getColor(x+1, z+1);
+    topLeftVertexInfo.setCol(colorA);
+    bottomLeftVertexInfo.setCol(colorA);
+    bottomRightVertexInfo.setCol(colorA);
+
+    calcNormal(
+      topLeftVertexInfo,
+      bottomLeftVertexInfo,
+      bottomRightVertexInfo
+    );
+
+    meshBuilder.triangle(
+      topLeftVertexInfo,
+      bottomLeftVertexInfo,
+      bottomRightVertexInfo
+    );
+
+    Color colorB = terrainData.getColor(x, z);
+
+    calcNormal(
+      topLeftVertexInfo,
+      bottomRightVertexInfo,
+      topRightVertexInfo
+    );
+
+    topLeftVertexInfo.setCol(colorB);
+    bottomRightVertexInfo.setCol(colorB);
+    topRightVertexInfo.setCol(colorB);
+
+    meshBuilder.triangle(
+      topLeftVertexInfo,
+      bottomRightVertexInfo,
+      topRightVertexInfo
+    );
+  }
+
+
+  private void buildQuadVertex(int x, int z, Lod lod) {
+    topLeftVertexInfo.setPos(
+      x * TRIANGLE_SIZE,
+      terrainData.getElevation(x, z),
+      z * TRIANGLE_SIZE
+    );
+
+    topRightVertexInfo.setPos(
+      (x + lod.resolution) * TRIANGLE_SIZE,
+      terrainData.getElevation(x + lod.resolution, z),
+      z * TRIANGLE_SIZE
+    );
+
+    bottomLeftVertexInfo.setPos(
+      x * TRIANGLE_SIZE,
+      terrainData.getElevation(x, z + lod.resolution),
+      (z + lod.resolution) * TRIANGLE_SIZE
+    );
+
+    bottomRightVertexInfo.setPos(
+      (x + lod.resolution) * TRIANGLE_SIZE,
+      terrainData.getElevation(x + lod.resolution, z + lod.resolution),
+      (z + lod.resolution) * TRIANGLE_SIZE
     );
   }
 

@@ -1,14 +1,24 @@
 package de.macbury.expanse.core.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
+import de.macbury.expanse.core.TelegramEvents;
 import de.macbury.expanse.core.assets.Assets;
+import de.macbury.expanse.core.entities.Messages;
+import de.macbury.expanse.core.entities.components.PositionComponent;
 import de.macbury.expanse.core.graphics.camera.Overlay;
 import de.macbury.expanse.core.graphics.framebuffer.Fbo;
 import de.macbury.expanse.core.graphics.framebuffer.FrameBufferManager;
@@ -21,7 +31,7 @@ import static com.badlogic.gdx.math.Interpolation.*;
  * This manages all stuff with in game interface
  * https://github.com/kotcrab/VisEditor/wiki/VisUI
  */
-public class Hud extends Stage {
+public class Hud extends Stage implements Telegraph {
   private static final String SKIN_FILE = "ui/ui.json";
   private final AnimatedImage loader;
   private FullScreenFrameBufferResult fullScreenFrameBufferResult;
@@ -29,7 +39,8 @@ public class Hud extends Stage {
   private Skin skin;
   private Assets assets;
   private InputManager input;
-  public Hud(InputManager input, Assets assets, FrameBufferManager fb) {
+  private Vector3 tempVec = new Vector3();
+  public Hud(InputManager input, Assets assets, FrameBufferManager fb, Messages messages) {
     super(new ScalingViewport(Scaling.stretch, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
     this.input  = input;
     this.assets = assets;
@@ -97,9 +108,13 @@ public class Hud extends Stage {
     fullScreenFrameBufferResult.setVisible(false);
   }
 
-
   public void hideLoading() {
     loader.setVisible(false);
     fullScreenFrameBufferResult.setVisible(true);
+  }
+
+  @Override
+  public boolean handleMessage(Telegram msg) {
+    return false;
   }
 }

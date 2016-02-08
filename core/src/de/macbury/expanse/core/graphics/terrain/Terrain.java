@@ -25,6 +25,7 @@ import de.macbury.expanse.core.graphics.camera.RTSCameraListener;
 public class Terrain implements Disposable, RTSCameraListener {
   private static final String TAG = "Terrain";
   private static final float MIN_CAMERA_DISTANCE_TO_TERRAIN = 15;
+  private static final float DIMENSION_EXTRA = 2;
   private BoundingBox cameraBoundingBox;
   private ElevationHelper elevation;
   private Vector3 tempVecA = new Vector3();
@@ -61,7 +62,7 @@ public class Terrain implements Disposable, RTSCameraListener {
 
       PositionComponent positionComponent = entityManager.createComponent(PositionComponent.class);
       tempBoundingBox.getCenter(positionComponent);
-      positionComponent.dimension.set(TerrainAssembler.TILE_SIZE * TerrainAssembler.TRIANGLE_SIZE, terrainData.getMaxElevation(), TerrainAssembler.TILE_SIZE * TerrainAssembler.TRIANGLE_SIZE);
+      positionComponent.dimension.set(TerrainAssembler.TILE_SIZE * TerrainAssembler.TRIANGLE_SIZE + DIMENSION_EXTRA, terrainData.getMaxElevation()+ DIMENSION_EXTRA, TerrainAssembler.TILE_SIZE * TerrainAssembler.TRIANGLE_SIZE+ DIMENSION_EXTRA);
 
       Entity tileEntity = entityManager.createEntity();
       tileEntity.add(terrainRenderableComponent);
@@ -116,4 +117,19 @@ public class Terrain implements Disposable, RTSCameraListener {
     return getElevation(cameraPosition.x, cameraPosition.z) + MIN_CAMERA_DISTANCE_TO_TERRAIN;
   }
 
+  /**
+   * Returns terrain size in world units
+   * @return
+   */
+  public float getWidth() {
+    return terrainData.getWidth() * TerrainAssembler.TRIANGLE_SIZE;
+  }
+
+  /**
+   * Returns terrain size in world units
+   * @return
+   */
+  public float getHeight() {
+    return terrainData.getHeight() * TerrainAssembler.TRIANGLE_SIZE;
+  }
 }

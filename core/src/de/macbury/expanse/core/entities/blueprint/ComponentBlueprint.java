@@ -6,6 +6,8 @@ import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 import de.macbury.expanse.core.assets.Assets;
 import de.macbury.expanse.core.entities.Messages;
 
@@ -30,5 +32,19 @@ public abstract class ComponentBlueprint<T extends Component> implements Disposa
    * Apply all blueprint configuration to component
    * @param component
    */
-  public abstract void applyTo(T component, Entity owner, Messages messages);
+  public abstract void applyTo(T component, Entity target, Messages messages);
+
+  /**
+   * Loads all information from json to this blueprint class
+   * @param source
+   */
+  public abstract void load(JsonValue source, Json json);
+
+  /**
+   * Save component values to blueprint(for save purpose)
+   * @param target
+   * @param json
+   * @param source
+   */
+  public abstract void save(Json target, T source);
 }

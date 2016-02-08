@@ -86,7 +86,6 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-ai:$aiVersion"
         compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
         compile 'rhino:js:1.7R2'
-        //compile "com.kotcrab.vis:vis-ui:$visuiVersion"
         compile "net.dermetfan.libgdx-utils:libgdx-utils:$gdxUtilsVersion"
     }
 }

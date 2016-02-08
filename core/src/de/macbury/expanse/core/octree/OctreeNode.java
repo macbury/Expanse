@@ -371,4 +371,21 @@ public class OctreeNode<E extends OctreeObject> implements Pool.Poolable, Dispos
     }
   }
 
+  public Array<E> getObjects() {
+    return objects;
+  }
+
+  /**
+   * Returns all objects
+   * @param returnObjects
+   */
+  public void retrieve(Array<E> returnObjects) {
+    if (haveNodes()) {
+      for(OctreeNode node : nodes) {
+        node.retrieve(returnObjects);
+      }
+    }
+
+    returnObjects.addAll(this.objects);
+  }
 }

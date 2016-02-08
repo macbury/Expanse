@@ -48,18 +48,23 @@ public class EntityBlueprintLoader extends SynchronousAssetLoader<EntityBlueprin
     Array<AssetDescriptor> deps                   = new Array<AssetDescriptor>();
     this.componentBlueprints                      = new Array<ComponentBlueprint>();
     JsonValue blueprintRoot                       = jsonReader.parse(file);
-
+    Json json                                     = new Json();
     for (JsonValue jsonBlueprint : blueprintRoot) {
       String componentSimpleNamePart = jsonBlueprint.name();
       try {
         Class<ComponentBlueprint> blueprintKlassToLoad = (Class<ComponentBlueprint>)Class.forName(getComponentKlassName(componentSimpleNamePart) + "$Blueprint");
         Class<Component> componentKlass                = (Class<Component>)Class.forName(getComponentKlassName(componentSimpleNamePart));
-        ComponentBlueprint blueprint                   = json.readValue(blueprintKlassToLoad, jsonBlueprint);
+        ComponentBlueprint blueprint                   = blueprintKlassToLoad.newInstance();
+        blueprint.load(jsonBlueprint, json);
         blueprint.componentKlass                       = componentKlass;
         blueprint.prepareDependencies(deps);
 
         componentBlueprints.add(blueprint);
       } catch (ClassNotFoundException e) {
+        e.printStackTrace();
+      } catch (InstantiationException e) {
+        e.printStackTrace();
+      } catch (IllegalAccessException e) {
         e.printStackTrace();
       }
     }

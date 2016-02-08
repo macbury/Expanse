@@ -10,6 +10,7 @@ import de.macbury.expanse.core.entities.systems.*;
  * This class manages all entities in game
  */
 public class EntityManager extends PooledEngine implements Disposable {
+  private SelectableSystem selectableSystem;
   private CollisionSystem collisionSystem;
   private RenderableSystem renderableSystem;
   private WorldOctreeSystem worldOctreeSystem;
@@ -20,6 +21,7 @@ public class EntityManager extends PooledEngine implements Disposable {
 
   public EntityManager(World world, Expanse game) {
     super();
+    this.selectableSystem      = new SelectableSystem(world.octree, game.hud, world.camera, game.messages);
     this.timerSystem           = new TimerSystem(game.messages);
     this.spriteRenderingSystem = new SpriteRenderingSystem(world.camera);
     this.robotManagerSystem    = new RobotManagerSystem(game.messages);
@@ -28,10 +30,13 @@ public class EntityManager extends PooledEngine implements Disposable {
     this.worldOctreeSystem     = new WorldOctreeSystem(world.octree);
     this.renderableSystem      = new RenderableSystem(world.octree, world.camera, world.modelBatch, game.fb, world.env);
 
+    addEntityListener(selectableSystem);
     addEntityListener(robotManagerSystem);
     addEntityListener(collisionSystem);
     addEntityListener(worldOctreeSystem);
+    addEntityListener(renderableSystem);
     addSystem(robotManagerSystem);
+    addSystem(selectableSystem);
     addSystem(timerSystem);
     addSystem(motorSystem);
 
@@ -48,6 +53,8 @@ public class EntityManager extends PooledEngine implements Disposable {
     removeEntityListener(robotManagerSystem);
     removeEntityListener(collisionSystem);
     removeEntityListener(worldOctreeSystem);
+    removeEntityListener(renderableSystem);
+    removeEntityListener(selectableSystem);
     removeAllEntities();
     clearPools();
 
@@ -58,7 +65,9 @@ public class EntityManager extends PooledEngine implements Disposable {
     worldOctreeSystem.dispose();
     robotManagerSystem.dispose();
     collisionSystem.dispose();
+    selectableSystem.dispose();
 
+    selectableSystem = null;
     collisionSystem = null;
     robotManagerSystem = null;
     spriteRenderingSystem = null;
