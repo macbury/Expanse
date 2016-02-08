@@ -39,8 +39,8 @@ public class PositionComponent extends Vector3 implements Component, Pool.Poolab
   }
 
   @Override
-  public void getBoundingBox(BoundingBox outBox) {
-    outBox.set(boundingBox);
+  public BoundingBox getBoundingBox(BoundingBox outBox) {
+    return outBox.set(boundingBox);
   }
 
   @Override

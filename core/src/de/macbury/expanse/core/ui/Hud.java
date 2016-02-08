@@ -62,7 +62,7 @@ public class Hud extends Stage implements Telegraph {
 
     DebugLabel debugLabel = new DebugLabel(skin);
     debugLabel.setAlignment(Align.left);
-    debugLabel.setPosition(20, Gdx.graphics.getHeight() - 40);
+    debugLabel.setPosition(20, Gdx.graphics.getHeight() - 80);
     addActor(debugLabel);
 
     this.loader = new AnimatedImage(new Animation(0.05f, skin.getAtlas().findRegions("loader")));

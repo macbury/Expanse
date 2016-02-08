@@ -9,10 +9,7 @@ import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.SynchronousAssetLoader;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.*;
 import de.macbury.expanse.core.assets.Assets;
 import de.macbury.expanse.core.entities.blueprint.ComponentBlueprint;
 import de.macbury.expanse.core.entities.blueprint.EntityBlueprint;
@@ -61,11 +58,11 @@ public class EntityBlueprintLoader extends SynchronousAssetLoader<EntityBlueprin
 
         componentBlueprints.add(blueprint);
       } catch (ClassNotFoundException e) {
-        e.printStackTrace();
+        throw new GdxRuntimeException(e);
       } catch (InstantiationException e) {
-        e.printStackTrace();
+        throw new GdxRuntimeException(e);
       } catch (IllegalAccessException e) {
-        e.printStackTrace();
+        throw new GdxRuntimeException(e);
       }
     }
     return deps;

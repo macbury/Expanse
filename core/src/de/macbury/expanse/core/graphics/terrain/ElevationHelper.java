@@ -40,7 +40,7 @@ class ElevationHelper implements Disposable {
     );
 
     float elevation = 0.0f;
-
+    //TODO fix triangles for current implementation
     if (tempBaryCentric.x <= (1-tempBaryCentric.y)) {
       // We are in top left triangle
       topLeftVertex.y    = terrainData.getElevation(terrainX, terrainZ);

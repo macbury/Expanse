@@ -27,9 +27,15 @@ public class DebugLabel extends Label {
       this.setText(
           "FPS: " + Gdx.graphics.getFramesPerSecond() + "\n" +
           "Vertex avg: " + String.valueOf(Math.round(GLProfiler.vertexCount.average)) + "\n" +
+          "Draw calls: " + GLProfiler.drawCalls + "\n" +
+          "Texture binds: " + GLProfiler.textureBindings + "\n" +
+          "Shader switch: " + GLProfiler.shaderSwitches + "\n" +
           "Memory: " + humanReadableByteCount(Gdx.app.getNativeHeap(), true) + "/" + humanReadableByteCount(Gdx.app.getJavaHeap(), true)
       );
+
+
     }
+    GLProfiler.reset();
   }
 
   public static String humanReadableByteCount(long bytes, boolean si) {

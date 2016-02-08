@@ -45,9 +45,8 @@ public class LevelOctree<C extends OctreeObject> implements Disposable {
    * @param query
    */
   public void retrieve(Array<C> returnObjects, OctreeQuery<C> query) {
-    for (i = 0; i < nodes.size; i++) {
-      nodes.get(i).retrieve(returnObjects, query);
-    }
+    staticOctree.retrieve(returnObjects, query);
+    dynamicOctree.retrieve(returnObjects, query);
   }
 
   @Override

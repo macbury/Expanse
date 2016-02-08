@@ -55,7 +55,7 @@ public class SelectableSystem extends EntitySystem implements Disposable, Octree
     this.messages = messages;
     this.worldCamera = worldCamera;
     this.octree = octree;
-    this.selectedObjects = new Array<PositionComponent>();
+    this.selectedObjects = new Array<PositionComponent>(2000);
 
     this.inputListener = new HudInputListener(hud) {
       @Override
@@ -83,6 +83,11 @@ public class SelectableSystem extends EntitySystem implements Disposable, Octree
 
       //Gdx.app.log(TAG, "Selected: " + selectedObjects.size);
       return selectedObjects.size >= 0;
+    } else if (button == Input.Buttons.RIGHT) {
+      //TODO implement clicking on terrain or giving action
+      mouseSelectableRay.set(worldCamera.getPickRay(Gdx.input.getX(), Gdx.input.getY()));
+
+      return false;
     } else {
       return false;
     }

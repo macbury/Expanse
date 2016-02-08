@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.math.Frustum;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Disposable;
@@ -34,6 +35,8 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
   private GameCamera camera;
   private BoundingBox tempBox = new BoundingBox();
   private Vector3 tempVec     = new Vector3();
+  private Frustum currentFrustrum;
+
   public RenderableSystem(LevelOctree<PositionComponent> octree, GameCamera camera, LodModelBatch modelBatch, FrameBufferManager fb, Environment env) {
     super(octree, Family.all(
       PositionComponent.class
@@ -55,6 +58,7 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
       modelBatch.begin(camera); {
         camera.extendFov(); {
+          currentFrustrum = camera.normalOrDebugFrustrum();
           super.update(deltaTime);
         } camera.restoreFov();
       } modelBatch.end();
@@ -77,9 +81,7 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
         calculateTransformMatrix(modelComponent, positionComponent);
 
       modelBatch.render(modelComponent.modelInstance, env);
-    }
-
-    if (Components.TerrainRenderable.has(entity)) {
+    } else if (Components.TerrainRenderable.has(entity)) {
       modelBatch.render(
         Components.TerrainRenderable.get(entity),
         env,
@@ -110,8 +112,7 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
    */
   @Override
   public boolean checkEntity(Entity entity) {
-    Components.Position.get(entity).getBoundingBox(tempBox);
-    return camera.normalOrDebugFrustrum().boundsInFrustum(tempBox);
+    return camera.normalOrDebugFrustrum().boundsInFrustum(Components.Position.get(entity).boundingBox);
   }
 
   /**
@@ -121,7 +122,7 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
    */
   @Override
   public boolean checkNode(OctreeNode node) {
-    return camera.normalOrDebugFrustrum().boundsInFrustum(node.getBounds());
+    return currentFrustrum.boundsInFrustum(node.getBounds());
   }
 
   @Override

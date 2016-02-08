@@ -1,6 +1,14 @@
 package de.macbury.expanse.core.entities.components;
 
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+import de.macbury.expanse.core.assets.Assets;
+import de.macbury.expanse.core.entities.Messages;
+import de.macbury.expanse.core.entities.blueprint.ComponentBlueprint;
 import de.macbury.expanse.core.entities.states.RobotMotorState;
 
 /**
@@ -59,5 +67,50 @@ public class MotorComponent extends BaseFSMComponent<RobotMotorState> {
   public void finishAlpha() {
     moveAlpha     = 1.0f;
     rotationAlpha = 1.0f;
+  }
+
+  public static class Blueprint extends ComponentBlueprint<MotorComponent> {
+    private float rotationAlpha;
+    private float moveAlpha;
+    private float speed;
+    private Vector3 startPosition;
+    private Vector3 targetPosition;
+
+    @Override
+    public void prepareDependencies(Array<AssetDescriptor> dependencies) {
+
+    }
+
+    @Override
+    public void assignDependencies(Assets assets) {
+
+    }
+
+    @Override
+    public void applyTo(MotorComponent component, Entity target, Messages messages) {
+      component.speed = speed;
+      component.init(target, messages, null, RobotMotorState.Idle);
+    }
+
+    @Override
+    public void load(JsonValue source, Json json) {
+      //TODO serializing whole motor
+      //this.rotationAlpha = source.getFloat("rotationAlpha", 0.0f);
+      //this.moveAlpha     = source.getFloat("moveAlpha", 0.0f);
+      this.speed         = source.getFloat("speed", 0.0f);
+
+      //this.startPosition  = json.readValue("startPosition", Vector3.class, new Vector3(), source);
+      //this.targetPosition = json.readValue("targetPosition", Vector3.class, new Vector3(), source);
+    }
+
+    @Override
+    public void save(Json target, MotorComponent source) {
+
+    }
+
+    @Override
+    public void dispose() {
+
+    }
   }
 }

@@ -25,22 +25,23 @@ public abstract class OctreeIteratingSystem extends EntitySystem implements Disp
   public OctreeIteratingSystem(LevelOctree<PositionComponent> octree, Family family) {
     this.family       = family;
     this.octree       = octree;
-    this.treeObjects  = new Array<PositionComponent>();
+    this.treeObjects  = new Array<PositionComponent>(1000);
   }
 
   @Override
   public void update(float deltaTime) {
-    treeObjects.clear();
     octree.retrieve(treeObjects, this);
     for (int i = 0; i < treeObjects.size; i++) {
       processEntity(treeObjects.get(i).entity, deltaTime);
     }
+    treeObjects.clear();
   }
 
   protected abstract void processEntity (Entity entity, float deltaTime);
 
   @Override
   public void dispose() {
+    treeObjects.clear();
     octree = null;
     family = null;
   }

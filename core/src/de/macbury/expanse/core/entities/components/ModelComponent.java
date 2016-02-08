@@ -28,9 +28,7 @@ public class ModelComponent extends RenderableComponent {
 
   @Override
   public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool, Lod lod) {
-    if (modelInstance != null) {
-      modelInstance.getRenderables(renderables, pool);
-    }
+    modelInstance.getRenderables(renderables, pool);
   }
 
   public static class Blueprint extends ComponentBlueprint<ModelComponent> {

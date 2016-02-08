@@ -35,6 +35,7 @@ public class WorldTestScreen extends ScreenBase {
     assets.load(worldToLoad, World.class);
     assets.load("entity:rock.json", EntityBlueprint.class);
     assets.load("entity:tree.json", EntityBlueprint.class);
+    assets.load("entity:robot.json", EntityBlueprint.class);
   }
 
   @Override
@@ -46,9 +47,23 @@ public class WorldTestScreen extends ScreenBase {
     SelectedUnitCursor selectedUnitCursor = new SelectedUnitCursor(messages, hud.getSkin().getPatch("selected_unit"), world.camera);
     inGameUi.addActor(selectedUnitCursor);
 
+    EntityBlueprint robotBlueprint = assets.get("entity:robot.json");
+
+    for (int i = 0; i < 10; i++) {
+      Entity robotEntity = robotBlueprint.create(world.entities, this.messages);
+
+      Vector2 center = new Vector2((float)(Math.random() * world.terrain.getWidth()), (float)(Math.random() * world.terrain.getHeight()));
+      Components.Position.get(robotEntity).set(
+        center.x,
+        0,
+        center.y
+      );
+      world.entities.addEntity(robotEntity);
+    }
+
     EntityBlueprint rockBlueprint = assets.get("entity:rock.json");
 
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 2000; i++) {
       Entity rockEntity = rockBlueprint.create(world.entities, this.messages);
 
       Vector2 center = new Vector2((float)(Math.random() * world.terrain.getWidth()), (float)(Math.random() * world.terrain.getHeight()));
@@ -64,7 +79,7 @@ public class WorldTestScreen extends ScreenBase {
 
     EntityBlueprint treeBlueprint = assets.get("entity:tree.json");
 
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 2000; i++) {
       Entity treeEntity = treeBlueprint.create(world.entities, this.messages);
 
       Vector2 center = new Vector2((float)(Math.random() * world.terrain.getWidth()), (float)(Math.random() * world.terrain.getHeight()));
@@ -120,6 +135,7 @@ public class WorldTestScreen extends ScreenBase {
   @Override
   public void dispose() {
     assets.unload("entity:tree.json");
+    assets.unload("entity:robot.json");
     assets.unload("entity:rock.json");
     assets.unload(worldToLoad);
   }

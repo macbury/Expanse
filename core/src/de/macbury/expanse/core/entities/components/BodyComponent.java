@@ -19,8 +19,8 @@ public class BodyComponent extends BoundingBox implements Component, Pool.Poolab
   public Vector3 dimension = new Vector3();
 
   @Override
-  public void getBoundingBox(BoundingBox outBox) {
-    outBox.set(this);
+  public BoundingBox getBoundingBox(BoundingBox outBox) {
+    return outBox.set(this);
   }
 
   @Override

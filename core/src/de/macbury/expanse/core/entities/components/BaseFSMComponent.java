@@ -71,7 +71,8 @@ public abstract class BaseFSMComponent<S extends State<Entity>> implements Compo
 
   @Override
   public void reset() {
-    stateMachine.setOwner(null);
+    if (stateMachine != null)
+      stateMachine.setOwner(null);
     stateMachine = null;
     messages = null;
   }
