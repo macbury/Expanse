@@ -1,16 +1,16 @@
 {
   Position: {
-    dimension: { x: 1, y: 1, z: 1 },
+    dimension: { x: 1.1, y: 1, z: 1.1 },
   },
   Model: {
     name: "model:cube.g3dj"
   },
   Motor: {
-    speed: 1
+    speed: 0.3
   },
   RobotInstructionState: {},
   RobotScript: {
-    source: "scripts/my_robot.js",
+    source: "scripts/terrain_test.js",
   },
   Timer: {},
   Selectable: {}

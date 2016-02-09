@@ -81,6 +81,10 @@ public class Terrain implements Disposable, RTSCameraListener {
     elevation.dispose();
   }
 
+  /**
+   * Get world center
+   * @return
+   */
   public Vector2 getCenter() {
     return terrainData.getCenter().scl(TerrainAssembler.TRIANGLE_SIZE);
   }

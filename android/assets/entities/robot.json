@@ -6,11 +6,11 @@
     name: "model:cube.g3dj"
   },
   Motor: {
-    speed: 1
+    speed: 0.1
   },
   RobotInstructionState: {},
   RobotScript: {
-    source: "scripts/my_robot.js",
+    source: "scripts/terrain_test.js",
   },
   Timer: {},
   Selectable: {}

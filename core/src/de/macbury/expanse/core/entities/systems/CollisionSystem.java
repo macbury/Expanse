@@ -20,7 +20,7 @@ public class CollisionSystem extends IteratingSystem implements Disposable, Enti
   private Terrain terrain;
 
   public CollisionSystem(LevelOctree<PositionComponent> octree, Terrain terrain) {
-    super(Family.all(PositionComponent.class, BodyComponent.class).get());
+    super(Family.all(PositionComponent.class).get());
     this.octree  = octree;
     this.terrain = terrain;
   }
@@ -28,7 +28,7 @@ public class CollisionSystem extends IteratingSystem implements Disposable, Enti
 
   @Override
   protected void processEntity(Entity entity, float deltaTime) {
-    if (Components.Body.get(entity).isStatic)
+    if (Components.Static.has(entity))
       return;
 
     snapEntityToTerrain(entity);

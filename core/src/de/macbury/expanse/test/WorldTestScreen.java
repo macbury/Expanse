@@ -49,18 +49,19 @@ public class WorldTestScreen extends ScreenBase {
 
     EntityBlueprint robotBlueprint = assets.get("entity:robot.json");
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 1; i++) {
       Entity robotEntity = robotBlueprint.create(world.entities, this.messages);
 
-      Vector2 center = new Vector2((float)(Math.random() * world.terrain.getWidth()), (float)(Math.random() * world.terrain.getHeight()));
+      Vector2 center = new Vector2();
+
       Components.Position.get(robotEntity).set(
-        center.x,
+        world.terrain.getCenter().x+0.5f,
         0,
-        center.y
+        world.terrain.getCenter().y
       );
       world.entities.addEntity(robotEntity);
     }
-
+/*
     EntityBlueprint rockBlueprint = assets.get("entity:rock.json");
 
     for (int i = 0; i < 2000; i++) {
@@ -91,7 +92,7 @@ public class WorldTestScreen extends ScreenBase {
 
       Components.Position.get(treeEntity).rotationDeg = (float)Math.random() * 360;
       world.entities.addEntity(treeEntity);
-    }
+    }*/
   }
 
   @Override
