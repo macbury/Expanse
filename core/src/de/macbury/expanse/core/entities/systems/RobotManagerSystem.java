@@ -11,8 +11,7 @@ import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.core.TelegramEvents;
 import de.macbury.expanse.core.entities.Components;
 import de.macbury.expanse.core.entities.Messages;
-import de.macbury.expanse.core.entities.components.RobotScriptComponent;
-import de.macbury.expanse.core.entities.components.RobotInstructionStateComponent;
+import de.macbury.expanse.core.entities.components.RobotCPUComponent;
 import de.macbury.expanse.core.scripts.ScriptRunner;
 import de.macbury.expanse.core.scripts.ScriptRunnerListener;
 import de.macbury.expanse.game.Keywords;
@@ -21,15 +20,14 @@ import org.mozilla.javascript.ContinuationPending;
 /**
  * This system updates state machine, redirect telegrams for {@link TelegramEvents#RobotInstructionEvents} to each {@link Entity} and handles robot script controlling.
  * To control robot you need two components:
- * {@link RobotInstructionStateComponent}
- * {@link RobotScriptComponent}
+ * {@link RobotCPUComponent}
  */
 public class RobotManagerSystem extends IteratingSystem implements Disposable, EntityListener, ScriptRunnerListener, Telegraph {
   private static final String TAG = "RobotManagerSystem";
   private Messages messages;
 
   public RobotManagerSystem(Messages messages) {
-    super(Family.all(RobotInstructionStateComponent.class, RobotScriptComponent.class).get());
+    super(Family.all(RobotCPUComponent.class).get());
     this.messages = messages;
 
     messages.addListener(this, TelegramEvents.StartRobot);
@@ -38,15 +36,14 @@ public class RobotManagerSystem extends IteratingSystem implements Disposable, E
 
   @Override
   protected void processEntity(Entity entity, float deltaTime) {
-    Components.RobotInstructionState.get(entity).update();
+    Components.RobotCPU.get(entity).update();
   }
 
   /**
    * Stops script in entity
    */
   private void stopScript(Entity entity) {
-    RobotScriptComponent robotScriptComponent = Components.RobotScript.get(entity);
-    robotScriptComponent.stop();
+    Components.RobotCPU.get(entity).stop();
   }
 
   /**
@@ -54,11 +51,11 @@ public class RobotManagerSystem extends IteratingSystem implements Disposable, E
    * @param entity
    */
   private void reprogram(Entity entity) {
-    RobotScriptComponent robotScriptComponent = Components.RobotScript.get(entity);
-    ScriptRunner robotScriptRunner            = new ScriptRunner(robotScriptComponent.getSource(), new Keywords(entity, messages), false);
+    RobotCPUComponent robotCPUComponent       = Components.RobotCPU.get(entity);
+    ScriptRunner robotScriptRunner            = new ScriptRunner(robotCPUComponent.getSource(), new Keywords(entity, messages), false);
     robotScriptRunner.addListener(this);
     robotScriptRunner.setOwner(entity);
-    robotScriptComponent.setScriptRunner(robotScriptRunner);
+    robotCPUComponent.setScriptRunner(robotScriptRunner);
     robotScriptRunner.start();
   }
 
@@ -67,10 +64,10 @@ public class RobotManagerSystem extends IteratingSystem implements Disposable, E
    * @param entity
    */
   private void registerListenersForEntity(Entity entity) {
-    RobotInstructionStateComponent robotState = Components.RobotInstructionState.get(entity);
+    RobotCPUComponent robotCPUComponent       = Components.RobotCPU.get(entity);
 
     for (TelegramEvents event : TelegramEvents.RobotInstructionEvents) {
-      messages.addListener(robotState, event.ordinal());
+      messages.addListener(robotCPUComponent, event.ordinal());
     }
   }
 
@@ -79,10 +76,10 @@ public class RobotManagerSystem extends IteratingSystem implements Disposable, E
    * @param entity
    */
   private void unregisterListenersForEntity(Entity entity) {
-    RobotInstructionStateComponent robotState = Components.RobotInstructionState.get(entity);
+    RobotCPUComponent robotCPUComponent       = Components.RobotCPU.get(entity);
 
     for (TelegramEvents event : TelegramEvents.RobotInstructionEvents) {
-      messages.removeListener(robotState, event.ordinal());
+      messages.removeListener(robotCPUComponent, event.ordinal());
     }
   }
 
@@ -146,8 +143,8 @@ public class RobotManagerSystem extends IteratingSystem implements Disposable, E
 
   @Override
   public boolean handleMessage(Telegram msg) {
-    RobotInstructionStateComponent robotInstructionStateComponent = (RobotInstructionStateComponent)msg.sender;
-    Entity targetEntity                                           = robotInstructionStateComponent.getEntity();
+    RobotCPUComponent robotCPUComponent = (RobotCPUComponent)msg.sender;
+    Entity targetEntity                                           = robotCPUComponent.getEntity();
 
     if (TelegramEvents.StartRobot.is(msg)) {
       reprogram(targetEntity);

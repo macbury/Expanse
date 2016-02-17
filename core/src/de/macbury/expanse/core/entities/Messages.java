@@ -6,7 +6,7 @@ import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import de.macbury.expanse.core.TelegramEvents;
 import de.macbury.expanse.core.entities.components.PositionComponent;
-import de.macbury.expanse.core.entities.components.RobotInstructionStateComponent;
+import de.macbury.expanse.core.entities.components.RobotCPUComponent;
 
 /**
  * Message dispatcher with nicer helper methods to send information
@@ -45,11 +45,11 @@ public class Messages extends MessageDispatcher {
    */
   public void dispatchInNextFrame(Entity sender, TelegramEvents event, Object payload) {
     synchronized (this) {
-      RobotInstructionStateComponent robotInstructionStateComponent = Components.RobotInstructionState.get(sender);
+      RobotCPUComponent robotCPUComponent = Components.RobotCPU.get(sender);
       dispatchMessage(
         Gdx.graphics.getDeltaTime(),
-        robotInstructionStateComponent,
-        robotInstructionStateComponent,
+        robotCPUComponent,
+        robotCPUComponent,
         event.ordinal(),
         payload
       );
@@ -86,8 +86,8 @@ public class Messages extends MessageDispatcher {
    * @param senderEntity
    */
   public void dispatchStartRobot(Entity senderEntity) {
-    RobotInstructionStateComponent robotInstructionStateComponent = Components.RobotInstructionState.get(senderEntity);
-    dispatchMessage(robotInstructionStateComponent, null, TelegramEvents.StartRobot.ordinal());
+    RobotCPUComponent robotCPUComponent = Components.RobotCPU.get(senderEntity);
+    dispatchMessage(robotCPUComponent, null, TelegramEvents.StartRobot.ordinal());
   }
 
   /**
@@ -95,7 +95,7 @@ public class Messages extends MessageDispatcher {
    * @param senderEntity
    */
   public void dispatchStopRobot(Entity senderEntity) {
-    RobotInstructionStateComponent robotInstructionStateComponent = Components.RobotInstructionState.get(senderEntity);
-    dispatchMessage(robotInstructionStateComponent, null, TelegramEvents.StopRobot.ordinal());
+    RobotCPUComponent robotCPUComponent = Components.RobotCPU.get(senderEntity);
+    dispatchMessage(robotCPUComponent, null, TelegramEvents.StopRobot.ordinal());
   }
 }

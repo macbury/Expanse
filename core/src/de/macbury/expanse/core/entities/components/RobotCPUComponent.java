@@ -1,13 +1,11 @@
 package de.macbury.expanse.core.entities.components;
 
-import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.Pool;
 import de.macbury.expanse.core.assets.Assets;
 import de.macbury.expanse.core.entities.Messages;
 import de.macbury.expanse.core.entities.blueprint.ComponentBlueprint;
@@ -15,10 +13,9 @@ import de.macbury.expanse.core.entities.states.RobotInstructionState;
 import de.macbury.expanse.core.scripts.ScriptRunner;
 
 /**
- * This component contains {@link ScriptRunner} and redirect all listener outputs using telegram messages
- * TODO: Connect {@link RobotScriptComponent} with {@link RobotInstructionStateComponent} as one RobotCPUComponent
+ * This is main component that handles state machine of robot using {@link RobotInstructionState}.
  */
-public class RobotScriptComponent implements Component, Pool.Poolable {
+public class RobotCPUComponent extends BaseFSMComponent<RobotInstructionState> {
   private String source;
   private ScriptRunner scriptRunner;
 
@@ -65,8 +62,7 @@ public class RobotScriptComponent implements Component, Pool.Poolable {
       this.scriptRunner.resume(result);
   }
 
-  public static class Blueprint extends ComponentBlueprint<RobotScriptComponent> {
-
+  public static class Blueprint extends ComponentBlueprint<RobotCPUComponent> {
     private String scriptSource;
 
     @Override
@@ -80,7 +76,8 @@ public class RobotScriptComponent implements Component, Pool.Poolable {
     }
 
     @Override
-    public void applyTo(RobotScriptComponent component, Entity target, Messages messages) {
+    public void applyTo(RobotCPUComponent component, Entity target, Messages messages) {
+      component.init(target, messages, RobotInstructionState.Living, RobotInstructionState.WaitForInstruction);
       component.setSource(scriptSource);
     }
 
@@ -90,7 +87,7 @@ public class RobotScriptComponent implements Component, Pool.Poolable {
     }
 
     @Override
-    public void save(Json target, RobotScriptComponent source) {
+    public void save(Json target, RobotCPUComponent source) {
 
     }
 

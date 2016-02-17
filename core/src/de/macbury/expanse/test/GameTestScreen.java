@@ -96,19 +96,19 @@ public class GameTestScreen extends ScreenBase {
     motorComponent.changeState(RobotMotorState.Idle);
     motorComponent.speed                          = 1;
 
-    RobotInstructionStateComponent robotInstructionStateComponent = entities.createComponent(RobotInstructionStateComponent.class);
-    robotInstructionStateComponent.init(robotEntity, messages, RobotInstructionState.Living, RobotInstructionState.WaitForInstruction);//TODO entity manager should do this
+    RobotCPUComponent robotCPUComponent = entities.createComponent(RobotCPUComponent.class);
+    robotCPUComponent.init(robotEntity, messages, RobotInstructionState.Living, RobotInstructionState.WaitForInstruction);//TODO entity manager should do this
 
-    RobotScriptComponent robotScriptComponent = entities.createComponent(RobotScriptComponent.class);
-    robotScriptComponent.setSource(source);
+    //RobotScriptComponent robotScriptComponent = entities.createComponent(RobotScriptComponent.class);
+    //robotScriptComponent.setSource(source);
 
     PositionComponent positionComponent = entities.createComponent(PositionComponent.class);
     positionComponent.dimension.set(2,2,2);
     positionComponent.set(position);
 
     robotEntity.add(entities.createComponent(TimerComponent.class));
-    robotEntity.add(robotInstructionStateComponent);
-    robotEntity.add(robotScriptComponent);
+    robotEntity.add(robotCPUComponent);
+    //robotEntity.add(robotScriptComponent);
     robotEntity.add(positionComponent);
     robotEntity.add(motorComponent);
     robotEntity.add(bodyComponent);

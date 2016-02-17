@@ -59,7 +59,7 @@ public class PerlinNoise2D {
     return interpolate(i1, i2, fractZ);
   }
 
-  public float terrainNoise(int x, int z, float amplitude, int octaves, float roughness) {
+  public float terrainNoise(float x, float z, float amplitude, int octaves, float roughness) {
     float total = 0;
     float d     = (float)Math.pow(2, octaves - 1);
     for (int i = 0; i < octaves; i++) {

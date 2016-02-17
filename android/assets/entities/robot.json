@@ -8,8 +8,7 @@
   Motor: {
     speed: 0.1
   },
-  RobotInstructionState: {},
-  RobotScript: {
+  RobotCPU: {
     source: "scripts/terrain_test.js",
   },
   Timer: {},

@@ -8,13 +8,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
-import de.macbury.expanse.core.TelegramEvents;
 import de.macbury.expanse.core.entities.Components;
 import de.macbury.expanse.core.entities.EntityManager;
 import de.macbury.expanse.core.entities.components.*;
@@ -120,11 +117,11 @@ public class RobotTestScreen extends ScreenBase {
     motorComponent.changeState(RobotMotorState.Idle);
     motorComponent.speed                          = 1;
 
-    RobotInstructionStateComponent robotInstructionStateComponent = entities.createComponent(RobotInstructionStateComponent.class);
-    robotInstructionStateComponent.init(robotEntity, messages, RobotInstructionState.Living, RobotInstructionState.WaitForInstruction);
+    RobotCPUComponent robotCPUComponent = entities.createComponent(RobotCPUComponent.class);
+    robotCPUComponent.init(robotEntity, messages, RobotInstructionState.Living, RobotInstructionState.WaitForInstruction);
 
-    RobotScriptComponent robotScriptComponent = entities.createComponent(RobotScriptComponent.class);
-    robotScriptComponent.setSource(source);
+    //RobotScriptComponent robotScriptComponent = entities.createComponent(RobotScriptComponent.class);
+    //robotScriptComponent.setSource(source);
 
     PositionComponent positionComponent = entities.createComponent(PositionComponent.class);
     positionComponent.set(position);
@@ -136,8 +133,8 @@ public class RobotTestScreen extends ScreenBase {
     spriteComponent.setRegion(texture);
 
     robotEntity.add(entities.createComponent(TimerComponent.class));
-    robotEntity.add(robotInstructionStateComponent);
-    robotEntity.add(robotScriptComponent);
+    robotEntity.add(robotCPUComponent);
+    //robotEntity.add(robotScriptComponent);
     robotEntity.add(positionComponent);
     //robotEntity.build(spriteComponent);
     robotEntity.add(motorComponent);

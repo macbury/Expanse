@@ -14,8 +14,7 @@ import de.macbury.expanse.core.entities.Components;
 import de.macbury.expanse.core.entities.Messages;
 import de.macbury.expanse.core.entities.components.MotorComponent;
 import de.macbury.expanse.core.entities.components.PositionComponent;
-import de.macbury.expanse.core.entities.components.RobotInstructionStateComponent;
-import de.macbury.expanse.core.graphics.terrain.Terrain;
+import de.macbury.expanse.core.entities.components.RobotCPUComponent;
 
 /**
  * Updates {@link PositionComponent} with information from {@link MotorComponent}
@@ -128,8 +127,8 @@ public class MotorSystem extends IteratingSystem implements Disposable, Telegrap
       MotorComponent motorComponent = (MotorComponent)msg.sender;
       return calculateRotation(motorComponent.getEntity());
     } else if (TelegramEvents.StopRobot.is(msg)) {
-      RobotInstructionStateComponent robotInstructionStateComponent = (RobotInstructionStateComponent)msg.sender;
-      MotorComponent motorComponent = Components.Motor.get(robotInstructionStateComponent.getEntity());
+      RobotCPUComponent robotCPUComponent = (RobotCPUComponent)msg.sender;
+      MotorComponent motorComponent = Components.Motor.get(robotCPUComponent.getEntity());
       motorComponent.finishedMoving();
       motorComponent.finishedRotation();
       return true;

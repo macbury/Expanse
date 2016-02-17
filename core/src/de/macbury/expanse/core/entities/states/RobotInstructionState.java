@@ -20,10 +20,10 @@ public enum RobotInstructionState implements State<Entity> {
     @Override
     public boolean onMessage(Entity receiverEntity, Telegram telegram) {
       if (TelegramEvents.ScriptStart.is(telegram)) {
-        Components.RobotInstructionState.get(receiverEntity).changeState(RobotInstructionState.WaitForInstruction);
+        Components.RobotCPU.get(receiverEntity).changeState(RobotInstructionState.WaitForInstruction);
         return true;
       } else if (TelegramEvents.ScriptStop.is(telegram)) {
-        Components.RobotInstructionState.get(receiverEntity).changeState(RobotInstructionState.Stopped);
+        Components.RobotCPU.get(receiverEntity).changeState(RobotInstructionState.Stopped);
         return true;
       }
       return false;
@@ -47,7 +47,7 @@ public enum RobotInstructionState implements State<Entity> {
          */
         case InstructionWait:
           Components.Timer.get(reciverEntity).setWaitFor((Float)telegram.extraInfo);
-          Components.RobotInstructionState.get(reciverEntity).changeState(RobotInstructionState.Wait);
+          Components.RobotCPU.get(reciverEntity).changeState(RobotInstructionState.Wait);
           return true;
 
         /**
@@ -55,7 +55,7 @@ public enum RobotInstructionState implements State<Entity> {
          */
         case InstructionMove:
           Components.Motor.get(reciverEntity).distance = (Integer)telegram.extraInfo;
-          Components.RobotInstructionState.get(reciverEntity).changeState(RobotInstructionState.Move);
+          Components.RobotCPU.get(reciverEntity).changeState(RobotInstructionState.Move);
           return true;
 
         /**
@@ -63,7 +63,7 @@ public enum RobotInstructionState implements State<Entity> {
          */
         case InstructionTurn:
           Components.Motor.get(reciverEntity).rotateBy = (Integer)telegram.extraInfo;
-          Components.RobotInstructionState.get(reciverEntity).changeState(RobotInstructionState.Turn);
+          Components.RobotCPU.get(reciverEntity).changeState(RobotInstructionState.Turn);
           return true;
 
         default:
@@ -85,7 +85,7 @@ public enum RobotInstructionState implements State<Entity> {
     @Override
     public void update(Entity entity) {
       if (Components.Motor.get(entity).finishedMoving()) {
-        Components.RobotInstructionState.get(entity).changeState(RobotInstructionState.WaitForInstruction);
+        Components.RobotCPU.get(entity).changeState(RobotInstructionState.WaitForInstruction);
       } else {
         Components.Motor.get(entity).update();
       }
@@ -99,7 +99,7 @@ public enum RobotInstructionState implements State<Entity> {
     @Override
     public void exit(Entity entity) {
       //Components.Motor.get(entity).finishAlpha();
-      Components.RobotScript.get(entity).resume(null);
+      Components.RobotCPU.get(entity).resume(null);
     }
   },
 
@@ -115,7 +115,7 @@ public enum RobotInstructionState implements State<Entity> {
     @Override
     public void update(Entity entity) {
       if (Components.Motor.get(entity).finishedRotation()) {
-        Components.RobotInstructionState.get(entity).changeState(RobotInstructionState.WaitForInstruction);
+        Components.RobotCPU.get(entity).changeState(RobotInstructionState.WaitForInstruction);
       } else {
         Components.Motor.get(entity).update();
       }
@@ -124,7 +124,7 @@ public enum RobotInstructionState implements State<Entity> {
     @Override
     public void exit(Entity entity) {
       //Components.Motor.get(entity).finishAlpha();
-      Components.RobotScript.get(entity).resume(null);
+      Components.RobotCPU.get(entity).resume(null);
     }
 
     @Override
@@ -141,14 +141,14 @@ public enum RobotInstructionState implements State<Entity> {
     @Override
     public void update(Entity entity) {
       if (Components.Timer.get(entity).haveFinishingWaiting()) {
-        Components.RobotInstructionState.get(entity).changeState(RobotInstructionState.WaitForInstruction);
+        Components.RobotCPU.get(entity).changeState(RobotInstructionState.WaitForInstruction);
       }
     }
 
     @Override
     public void exit(Entity entity) {
       //Components.Timer.get(entity).finishWaiting();
-      Components.RobotScript.get(entity).resume(null);
+      Components.RobotCPU.get(entity).resume(null);
     }
   },
   ;

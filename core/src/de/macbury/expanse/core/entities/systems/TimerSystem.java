@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.Disposable;
 import de.macbury.expanse.core.TelegramEvents;
 import de.macbury.expanse.core.entities.Components;
 import de.macbury.expanse.core.entities.Messages;
-import de.macbury.expanse.core.entities.components.RobotInstructionStateComponent;
+import de.macbury.expanse.core.entities.components.RobotCPUComponent;
 import de.macbury.expanse.core.entities.components.TimerComponent;
 
 /**
@@ -48,8 +48,8 @@ public class TimerSystem extends IteratingSystem implements Disposable, Telegrap
   @Override
   public boolean handleMessage(Telegram msg) {
     if (TelegramEvents.StopRobot.is(msg)) {
-      RobotInstructionStateComponent robotInstructionStateComponent = (RobotInstructionStateComponent)msg.sender;
-      Components.Timer.get(robotInstructionStateComponent.getEntity()).finishWaiting();
+      RobotCPUComponent robotCPUComponent = (RobotCPUComponent)msg.sender;
+      Components.Timer.get(robotCPUComponent.getEntity()).finishWaiting();
       return true;
     }
     return false;
