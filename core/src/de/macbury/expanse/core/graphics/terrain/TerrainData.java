@@ -108,19 +108,38 @@ public class TerrainData implements Disposable {
     return height;
   }
 
+  public Color getSampledColor(int x, int z) {
+
+    float numSam = 0;
+    float r      = 0;
+    float g      = 0;
+    float b      = 0f;
+
+    for (int sx = x-1; sx < x+1; sx++) {
+      for (int sz = z-1; sz < z+1; sz++) {
+        Color color = getColor(sx,sz);
+        r += color.r;
+        g += color.g;
+        b += color.b;
+        numSam++;
+      }
+    }
+    tempColor.set(r / numSam, g / numSam, b / numSam, 0);
+    float f = shadeFactor[x][z];
+    tempColor.sub(f, f, f,0);
+    return tempColor;
+  }
+
   public Color getColor(int x, int z) {
-/*
-    if (elevation[x][z] >= getMaxElevation() * 0.67f) {
+    float elevation = getElevation(x,z);
+
+    if (elevation >= getMaxElevation() * 0.90f) {
       tempColor.set(snowColor);
-    } else if (elevation[x][z] >= getMaxElevation() * 0.47f) {
-      tempColor.set(rockColor);
+   // } else if (elevation[x][z] >= getMaxElevation() * 0.47f) {
+     // tempColor.set(rockColor);
     } else {
       tempColor.set(groundColor);
     }
-*/
-    tempColor.set(groundColor);
-    float f = shadeFactor[x][z];
-    tempColor.sub(f, f, f,0);
 
     return tempColor;
   }

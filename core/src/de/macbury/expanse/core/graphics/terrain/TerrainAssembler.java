@@ -178,7 +178,7 @@ public class TerrainAssembler implements Disposable {
    * @param z
    */
   private void buildQuadAIndicies(int x, int z) {
-    Color colorA = terrainData.getColor(x, z);
+    Color colorA = terrainData.getSampledColor(x + 1, z + 1);
     topLeftVertexInfo.setCol(colorA);
     topRightVertexInfo.setCol(colorA);
     bottomLeftVertexInfo.setCol(colorA);
@@ -195,7 +195,7 @@ public class TerrainAssembler implements Disposable {
       topLeftVertexInfo
     );
 
-    Color colorB = terrainData.getColor(x+1, z+1);
+    Color colorB = terrainData.getSampledColor(x, z);
 
     calcNormal(
       bottomLeftVertexInfo,
@@ -233,7 +233,7 @@ public class TerrainAssembler implements Disposable {
    */
 
   private void buildQuadBIndicies(int x, int z) {
-    Color colorA = terrainData.getColor(x+1, z+1);
+    Color colorA = terrainData.getSampledColor(x,z);
     topLeftVertexInfo.setCol(colorA);
     bottomLeftVertexInfo.setCol(colorA);
     bottomRightVertexInfo.setCol(colorA);
@@ -250,7 +250,7 @@ public class TerrainAssembler implements Disposable {
       bottomRightVertexInfo
     );
 
-    Color colorB = terrainData.getColor(x, z);
+    Color colorB = terrainData.getSampledColor(x + 1, z + 1);
 
     calcNormal(
       topLeftVertexInfo,

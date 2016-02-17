@@ -1,8 +1,0 @@
-{
-  terrain: {
-    width: 513,
-    height: 513,
-    seed: 22345678,
-    maxElevation: 20
-  }
-}

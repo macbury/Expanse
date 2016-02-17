@@ -2,7 +2,7 @@
   terrain: {
     width: 256,
     height: 256,
-    seed: 22345678,
+    seed: 22345671,
     maxElevation: 20
   }
 }
