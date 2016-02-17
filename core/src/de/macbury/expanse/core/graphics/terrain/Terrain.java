@@ -107,8 +107,9 @@ public class Terrain implements Disposable, RTSCameraListener {
    * @param z
    * @return
    */
-  public float getElevation(float x, float z) {
-    return elevation.get(x,z);
+  public ElevationHelper getElevation(float x, float z) {
+    elevation.set(x,z);
+    return elevation;
   }
 
   @Override
@@ -118,7 +119,7 @@ public class Terrain implements Disposable, RTSCameraListener {
 
   @Override
   public float getCameraElevation(RTSCameraController cameraController, Vector3 cameraPosition) {
-    return getElevation(cameraPosition.x, cameraPosition.z) + MIN_CAMERA_DISTANCE_TO_TERRAIN;
+    return getElevation(cameraPosition.x, cameraPosition.z).get() + MIN_CAMERA_DISTANCE_TO_TERRAIN;
   }
 
   /**

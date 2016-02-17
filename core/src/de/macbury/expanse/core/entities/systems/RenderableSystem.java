@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.math.Frustum;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Disposable;
@@ -91,9 +92,10 @@ public class RenderableSystem extends OctreeIteratingSystem implements Disposabl
   }
 
   private void calculateTransformMatrix(ModelComponent modelComponent, PositionComponent positionComponent) {
-    modelComponent.modelInstance.transform.idt().rotate(Vector3.Y, positionComponent.rotationDeg).trn(
-      positionComponent
-    );
+    Matrix4 transMat = modelComponent.modelInstance.transform;
+    transMat.idt();
+    transMat.rotate(Vector3.Y, positionComponent.rotationDeg);
+    transMat.trn(positionComponent);
   }
 
   @Override

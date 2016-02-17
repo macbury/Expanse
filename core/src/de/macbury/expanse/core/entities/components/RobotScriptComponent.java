@@ -16,6 +16,7 @@ import de.macbury.expanse.core.scripts.ScriptRunner;
 
 /**
  * This component contains {@link ScriptRunner} and redirect all listener outputs using telegram messages
+ * TODO: Connect {@link RobotScriptComponent} with {@link RobotInstructionStateComponent} as one RobotCPUComponent
  */
 public class RobotScriptComponent implements Component, Pool.Poolable {
   private String source;

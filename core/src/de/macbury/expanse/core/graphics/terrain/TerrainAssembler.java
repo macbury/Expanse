@@ -86,6 +86,8 @@ public class TerrainAssembler implements Disposable {
         terrainRenderableComponents.add(terrainRenderableComponent);
       }
     }
+
+    meshBuilder.clear();
   }
 
   private void calcNormal(MeshPartBuilder.VertexInfo p1, MeshPartBuilder.VertexInfo p2, MeshPartBuilder.VertexInfo p3) {
